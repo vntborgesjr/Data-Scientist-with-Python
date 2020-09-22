@@ -89,10 +89,12 @@ area = 14.0
 # if statement for room
 if room == "kit" :
     print("looking around in the kitchen.")
+quit()
 
 # if statement for area
 if area > 15:
   print("big place!")
+quit()
 
 # Add else
 # Define variables
@@ -104,12 +106,14 @@ if room == "kit" :
     print("looking around in the kitchen.")
 else :
     print("looking around elsewhere.")
+quit()
 
 # if-else construct for area
 if area > 15 :
     print("big place!")
 else:
   print("pretty small.")
+quit()
 
 # Customize further: elif
 # Define variables
@@ -123,6 +127,7 @@ elif room == "bed":
     print("looking around in the bedroom.")
 else :
     print("looking around elsewhere.")
+quit()
 
 # if-elif-else construct for area
 if area > 15 :
@@ -131,7 +136,8 @@ elif area > 10 :
   print("medium size, nice!")
 else :
     print("pretty small.")
- 
+quit()
+
 ######################################################################
 # Filtering pandas DataFrames  -------------------------------------------
 # Driving right (1)
@@ -180,4 +186,3 @@ medium = pd.DataFrame(cars[np.logical_and(cars["cars_per_cap"] > 100, cars["cars
 print(medium)
  
 ######################################################################
-# while loop  -------------------------------------------
