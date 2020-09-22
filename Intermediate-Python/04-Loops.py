@@ -119,3 +119,39 @@ quit()
  
 ######################################################################
 # Loop Data Structures Part 2  -------------------------------------------
+# Loop over DataFrame (1)
+# Import cars data
+import pandas as pd
+cars = pd.read_csv('Datasets/Cars.csv', index_col = 0)
+
+# Iterate over rows of cars
+for lab, row in cars.iterrows() :
+  print(lab)
+  print(row)
+quit()
+
+# Loop over DataFrame (2)
+# Adapt for loop
+for lab, row in cars.iterrows() :
+    print(str(lab) + ": " + str(row["cars_per_cap"]))
+quit()
+
+# Add column (1)
+# Code for loop that adds COUNTRY column
+for lab, row in cars.iterrows() :
+  cars.loc[lab, "COUNTRY"] = row["country"].upper()
+quit()
+
+# Print cars
+print(cars)
+
+# Add column (2)
+# Import cars data
+import pandas as pd
+cars = pd.read_csv('Datasets/Cars.csv', index_col = 0)
+
+# Use .apply(str.upper)
+cars["COUNTRY"] = cars["country"].apply(str.upper)
+print(cars)
+ 
+######################################################################
