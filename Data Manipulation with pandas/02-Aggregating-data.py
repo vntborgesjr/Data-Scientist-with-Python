@@ -96,9 +96,10 @@ print(sales_1_1[["date", "weekly_sales", "cum_weekly_sales", "cum_max_sales"]])
 ####################################################
 # .drop_duplicates(subset = "") - removes duplicates from the colunms informed 
 # in the subset argument
-# .value_counts(sort = , normalize = ) - counts the number of times each element apear in a specific
-# column. Use the sort argument to sort the count. The normalize argument can be
-# used to turn the counts into proportions of the total
+# .value_counts(sort = , normalize = ) - counts the number of times each element
+# apear in a specific column. Use the sort argument to sort the count. The
+# normalize argument can be used to turn the counts into proportions of the
+# total
 
 # Dropping duplicates
 # Drop duplicate store/type combinations
