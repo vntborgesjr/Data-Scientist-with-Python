@@ -36,7 +36,7 @@ apps = apps_with_duplicates.drop_duplicates()
 # Print the total number of apps
 print('Total number of apps in the dataset =', apps.count()[0])
 
-# Print a concise summary of apps dataframe
+# Print a concise summary of apps DataFrame
 print(apps.info())
 ```
 
@@ -74,7 +74,7 @@ for col in cols_to_clean:
     for char in chars_to_remove:
         apps[col] = apps[col].astype(str).str.replace(char, '')
     # Convert col to numeric
-    apps[col] = pd.to_numeric(apps[col], downcast = 'float')
+    apps[col] = pd.to_numeric(apps[col], downcast = None)
 quit()
 ```
 
@@ -111,15 +111,15 @@ plt.clf()
 
 After having witnessed the market share for each category of apps, let's see how all these apps perform on an average. App rating (on a scale of 1 to 5) impact the discoverability, conversion of apps as well as the company's overall brand image. Ratings are a key performance indicator of an app.
 
-From our research, we found that the average volume of ratings across all app categories is 4.19. The histogram plot is skewed to the left indicating that the majority of the apps are highly rated with only a few exceptions in the low-rated apps.
+From our research, we found that the average volume of ratings across all app categories is 4.17. The histogram plot is skewed to the left indicating that the majority of the apps are highly rated with only a few exceptions in the low-rated apps.
 
 ```{python}
 # Average rating of apps
-avg_app_rating = apps.Rating.mean().round(2)
+avg_app_rating = apps.Rating.mean().round(5)
 print('Average app rating = ', avg_app_rating)
 
 # Distribution of apps according to their ratings
-apps.Rating.hist(bins = 100)
+apps.Rating.hist(bins = 35)
 plt.xlim(0, 5)
 plt.xlabel('Ratings')
 plt.ylabel('Count of Ratings')
@@ -140,3 +140,139 @@ How can we effectively come up with strategies to size and price our app?
 - Do users always prefer free apps over paid apps?
 
 We find that the majority of top rated apps (rating over 4) range from 2 MB to 20 MB. We also find the vast majority of apps price themselves under $10.
+
+```{python}
+import seaborn as sns
+sns.set_style("darkgrid")
+import warnings
+warnings.filterwarnings("ignore")
+
+# Filter rows where both Rating and Size values are not null
+apps_with_size_and_rating_present = apps[(~apps['Rating'].isnull()) & (~apps['Size'].isnull())] # ~ == NOT operation
+
+# Subset for categories with at least 250 apps
+large_categories = apps_with_size_and_rating_present.groupby('Category').filter(lambda x: len(x) >= 250).reset_index()
+
+# Plot size vs. rating
+plt1 = sns.jointplot(x = large_categories['Size'], y = large_categories['Rating'], kind = 'hex')
+
+# Subset apps whose 'Type' is 'Paid'
+paid_apps = apps_with_size_and_rating_present[apps_with_size_and_rating_present['Type'] == 'Paid']
+
+# Plot price vs. rating
+plt2 = sns.jointplot(x = paid_apps['Price'], y = paid_apps['Rating'])
+```
+
+## **6. Relation between app category and app price**
+
+So now comes the hard part. How are companies and developers supposed to make ends meet? What monetization strategies can companies use to maximize profit? The costs of apps are largely based on features, complexity, and platform.
+
+There are many factors to consider when selecting the right pricing strategy for your mobile app. It is important to consider the willingness for your customer to pay for your app. A wrong price could break the deal before downloading even happens. Potential customers could be turned off by what they perceive to be a shocking cost, or they might delete an app they've downloaded after receiving too many ads or simply not getting their money's worth.
+
+Different categories demand different price ranges. Some apps that are simple and used daily, like the calculator app, should probably be kept free. However, it would male sense to charge for a highly-specialized medical app that diagnoses diabetic patients. Below, we see that *Medical* and * Family* apps are the most expensive. Some medical apps extend even up to $80! All game apps are reasonably priced below \$20.
+
+```{python}
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots()
+fig.set_size_inches(15, 8)
+
+# Select a few popular app categories
+popular_app_cats = apps[apps.Category.isin(['GAME', 'FAMILY', 'PHOTOGRAPHY', 'MEDICAL', 'TOOLS', 'FINANCE', 'LIFESTYLE','BUSINESS'])]
+
+# Examine the price trend by plotting Price vs Category
+ax = sns.stripplot(x = popular_app_cats['Price'], y = popular_app_cats['Category'], jitter = True, linewidth = 1)
+ax.set_title('App pricing trend across categories')
+
+# Apps whose Price is greater than 200
+apps_above_200 = popular_app_cats[['Category', 'App', 'Price']][popular_app_cats['Price'] > 200]
+apps_above_200
+```
+
+## **7. Filter out "junk" apps**
+
+It looks like a brunch of the really expensive apps are "junk" apps. That is, apps that don't really have a purpose. So,e app developer may create an app called *I Am Rich Premium* or *most expensive app (H)* just for a joke or to test their app development skills. Some developers even do this with malicious intent and try to make money by hoping people accidentally click purchase on their app in the store. 
+
+Let's filter out these junk apps and re-do our visualization.
+
+```{python}
+# Select apps priced below $100
+apps_under_100 = popular_app_cats[popular_app_cats['Price'] < 100]
+
+fig, ax = plt.subplots()
+fig.set_size_inches(15, 8)
+
+# Examine price vs category with the authentic apps (apps_under_100)
+ax = sns.stripplot(x = 'Price', y = "Category", data = apps_under_100,
+                   jitter = True, linewidth = 1)
+ax.set_title('App pricing trend across categories after filtering for junk apps')
+```
+
+## **8. Popularity of paid apps vs free apps**
+
+For apps in the Play Store today, there are five types of pricing strategies? free, freemium, paid, paymium, and subscription. Let's focus on free and apsid apps only. 
+
+- Free to download.
+- Main source of income often comes from advertisements.
+- Often created by companies that have other products and the app serves as an extension of those products. 
+- Can serve as a tool for customer retention, communication, and customer service.
+
+Some characteristics of paid apps are:
+
+- Users are asked to pay once for the app to download and uses it. 
+- The user can't really get a feel for the app before buying it.
+
+Are paid apps installed as much as free apps? It turns out that paid apps have a relatively lower number of installs than free apps, though the difference is not as stark as I would have expected!
+
+```{python}
+trace0 = go.Box(
+    # Data for paid apps
+    y=apps[apps['Type'] == 'Paid']['Installs'],
+    name = 'Paid'
+)
+
+trace1 = go.Box(
+    # Data for free apps
+    y=apps[apps['Type'] == 'Free']['Installs'],
+    name = 'Free'
+)
+
+layout = go.Layout(
+    title = "Number of downloads of paid apps vs. free apps",
+    yaxis = dict(
+        type = 'log',
+        autorange = True
+    )
+)
+
+# Add trace0 and trace1 to a list for plotting
+data = [trace0, trace1]
+#plotly.offline.iplot({'data': data, 'layout': layout})
+
+```
+
+## **9. Sentimental analysis if user reviews**
+
+Mining user review data to determine how people fell about your product, brand. or service can be done using a technique called sentiment analysis. User reviews for apps can be analyzed to identify if the mood is positive, negative or neutral about that app. For example, positive words in an app review might include words such as 'amazing', friendly', 'good', 'great', and 'love'. Negative words might like 'malware', 'hate', 'problem', 'refund', and 'incompetent'.
+
+By plotting sentiment polarity scores of user reviews for paid and free apps, we observed that free apps receive a lot of harsh comments, as indicated by the outliers on the negative y-axis. Reviews for paid apps appear never to be extremely negative.This may indicate something about app quality, i.e., paid apps being of higher quality than free apps on average. The median polarity score for paid apps is a little higher that free apps, thereby syncing with our previous observation. 
+
+In this notebook, we analyzed over ten thousand apps from Google Play Store. We can use our findings to inform our decisions should we ever wish to create an app ourselves.
+
+```{python}
+# Load user_reviews.csv
+reviews_df = pd.read_csv('datasets/user_reviews.csv')
+
+# Join and merge the two dataframe
+merged_df = pd.merge(apps, reviews_df, on = 'App', how = "inner")
+
+# Drop NA values from Sentiment and Translated_Review columns
+merged_df = merged_df.dropna(subset=['Sentiment', 'Translated_Review'])
+
+sns.set_style('ticks')
+fig, ax = plt.subplots()
+fig.set_size_inches(11, 8)
+
+# User review sentiment polarity for paid vs. free apps
+ax = sns.boxplot(x = 'Type', y = 'Sentiment_Polarity', data = merged_df)
+ax.set_title('Sentiment Polarity Distribution')
+```
