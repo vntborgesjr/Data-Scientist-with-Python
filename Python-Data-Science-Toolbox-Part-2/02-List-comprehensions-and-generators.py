@@ -1,0 +1,187 @@
+####################################################
+# Python Data Science Toolbox (Part 2) - List comprehensions and generators
+# 02 Nov 2020
+# VNTBJR
+####################################################
+#
+####################################################
+# List comprehensions ------------------------------
+####################################################
+# Let's ay that you have a list of numbers and you want to create a new 
+# list of numbers that's the same as the old lit, except taht each number
+# has 1 added to it.
+nums = [12, 8, 21, 3, 16] # List of numbers
+# You could: 
+new_nums = [] # initialize a new empty list;
+for num in nums: # loop through the old list;
+  new_nums.append(num + 1) # add 1 to each entry and append all new values
+# to the new list.
+quit()
+print(new_nums)
+# Or do this in one line of code using a list comprehension. 
+# Open the square bracket, followed by the operation (num + 1), and the 
+# for loop
+new_nums = [num + 1 for num in nums]
+print(new_nums)
+# To summarize, list comprehensions collapse for loops for building lists 
+# intoa single line and the required components are (1) an iterable, (2)
+# an iterator variable that represents the members of the iterable and 
+# (3) an output expression.
+
+# Write a basic list comprehension
+doctor = ['house', 'cuddy', 'chase', 'thirteen', 'wilson']
+[doc[0] for doc in doctor]
+
+# List comprehension over iterables
+[num for num in range(50)]
+underwood = 'After all, we are nothing more or less than what we choose to reveal'
+[letter for letter in underwood]
+jean = '24601'
+[str for str in jean]
+flash = ['jay garrick', 'barry allen', 'wally west', 'bart allen']
+[actor[0] for actor in flash]
+valjean = 24601
+[num for num in valjean] # do not work
+
+# Writing list comprehensions
+# Create list comprehension: squares
+squares = [i ** 2 for i in range(0, 10)]
+print(squares)
+
+# Nested list comprehensions
+# Create a 5 x 5 matrix using a list of lists: matrix
+matrix = [[col for col in range(0, 5)] for row in range(0, 5)]
+
+# Print the matrix
+for row in matrix:
+    print(row)
+quit()
+
+####################################################
+# Advanced comprehensions ------------------------------
+####################################################
+# Conditionals in comprehensions
+[num ** 2 for num in range(10) if num % 2 == 0]
+[num ** 2 if num % 2 == 0 else 0 for num in range(10)]
+# Dict comprehensions
+pos_neg = {num: -num for num in range(9)}
+print(pos_neg)
+
+# Using conditionals in comprehensions (1)
+# Create a list of strings: fellowship
+fellowship = ['frodo', 'samwise', 'merry', 'aragorn', 'legolas', 'boromir', 'gimli']
+
+# Create list comprehension: new_fellowship
+new_fellowship = [member for member in fellowship if len(member) >= 7]
+
+# Print the new list
+print(new_fellowship)
+
+# Using conditionals in comprehensions (2)
+# Create a list of strings: fellowship
+fellowship = ['frodo', 'samwise', 'merry', 'aragorn', 'legolas', 'boromir', 'gimli']
+
+# Create list comprehension: new_fellowship
+new_fellowship = [member if len(member) >= 7 else '' for member in fellowship]
+
+# Print the new list
+print(new_fellowship)
+
+# Dict comprehension
+# Create a list of strings: fellowship
+fellowship = ['frodo', 'samwise', 'merry', 'aragorn', 'legolas', 'boromir', 'gimli']
+
+# Create dict comprehension: new_fellowship
+new_fellowship = {member: len(member) for member in fellowship}
+
+# Print the new dictionary
+print(new_fellowship)
+
+####################################################
+# Introduction to generator expressions ------------------------------
+####################################################
+#
+# List comprehensions vs generators
+# List of strings
+fellowship = ['frodo', 'samwise', 'merry', 'aragorn', 'legolas', 'boromir', 'gimli']
+
+# List comprehension
+fellow1 = [member for member in fellowship if len(member) >= 7]
+
+# Generator expression
+fellow2 = (member for member in fellowship if len(member) >= 7)
+
+print(fellow1)
+print(fellow2)
+
+# Write your own generator expression
+# Create generator object: result
+result = (num for num in range(0, 31))
+
+# Print the first 5 values
+print(next(result))
+print(next(result))
+print(next(result))
+print(next(result))
+print(next(result))
+
+# Print the rest of the values
+for value in result:
+    print(value)
+quit()
+
+# Chaging the output in generator expressions
+# Create a list of strings: lannister
+lannister = ['cersei', 'jaime', 'tywin', 'tyrion', 'joffrey']
+
+# Create a generator object: lengths
+lengths = (len(person) for person in lannister)
+
+# Iterate over and print the values in lengths
+for value in lengths:
+    print(value)
+quit()
+
+# Build a generator
+# Create a list of strings
+lannister = ['cersei', 'jaime', 'tywin', 'tyrion', 'joffrey']
+
+# Define generator function get_lengths
+def get_lengths(input_list):
+    """Generator function that yields the
+    length of the strings in input_list."""
+    # Yield the length of a string
+    for person in input_list:
+        yield len(person)
+quit()
+# Print the values generated by get_lengths()
+for value in get_lengths(lannister):
+    print(value)
+quit()
+
+####################################################
+# Wrapping up comprehensions and generators ------------------------------
+####################################################
+# 
+# List comprehensions for time-stamped
+import pandas as pd
+df = pd.read_csv('Datasets/tweets.csv')
+
+# Extract the created_at column from df: tweet_time
+tweet_time = df['created_at']
+
+# Extract the clock time: tweet_clock_time
+tweet_clock_time = [entry[11:19] for entry in tweet_time]
+
+# Print the extracted times
+print(tweet_clock_time)
+
+# Conditional list comprehensions for time-stamped data
+# Extract the created_at column from df: tweet_time
+tweet_time = df['created_at']
+
+# Extract the clock time: tweet_clock_time
+tweet_clock_time = [entry[11:19] for entry in tweet_time if entry[17:19] == '19']
+
+# Print the extracted times
+print(tweet_clock_time)
