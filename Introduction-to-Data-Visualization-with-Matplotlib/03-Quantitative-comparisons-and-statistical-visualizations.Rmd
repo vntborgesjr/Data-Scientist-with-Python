@@ -7,7 +7,7 @@ output: html_notebook
 knitr::opts_chunk$set(echo = TRUE)
 import pandas as pd
 import matplotlib.pyplot as plt
-medals = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/medals_by_country_2016.csv')
+medals = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/medals_by_country_2016.csv', index_col = 0)
 summer_2016 = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/summer2016.csv')
 mens_rowing = summer_2016[summer_2016.Sex.isin(['M']) & summer_2016.Sport.isin(['Rowing'])]
 mens_gymnastics = summer_2016[summer_2016.Sex.isin(['M']) & summer_2016.Sport.isin(['Gymnastics'])]
