@@ -8,11 +8,13 @@ knitr::opts_chunk$set(echo = TRUE)
 import pandas as pd
 import matplotlib.pyplot as plt
 
+seattle_weather = pd.read_csv('/Users/clari/Documents/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/seattle_weather.csv')
+austin_weather = pd.read_csv('/Users/clari/Documents/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/austin_weather.csv')
 ```
 
-# Introduction to data visualization with matplotlib
+# **Introduction to data visualization with matplotlib**
 
-## Using the matplotlib.pyplot interface
+## **Using the matplotlib.pyplot interface**
 
 There are many ways to use Matplotlib. In this course, we will focus on the `pyplot` interface, which provides the most flexibility in creating and customizing data visualizations.
 
@@ -20,7 +22,7 @@ Initially, we will use the `pyplot` interface to create two kinds of objects: `F
 
 This course introduces a lot of new concepts, so if you ever need a quick refresher, download the [Matplotlib Cheat Sheet](https://datacamp-community-prod.s3.amazonaws.com/28b8210c-60cc-4f13-b0b4-5b4f2ad4790b) and keep it handy!
 
-### Instructions
+### **Instructions**
 
 - Import the `matplotlib.pyplot` API, using the conventional name `plt`.
 - Create `Figure` and `Axes` objects using the `plt.subplots` function.
@@ -37,7 +39,7 @@ fig, ax = plt.subplots()
 plt.show()
 ```
 
-## Adding data to an Axes object
+## **Adding data to an Axes object**
 
 Adding data to a figure is done by calling methods of the `Axes` object. In this exercise, we will use the `plot` method to add data about rainfall in two American cities: Seattle, WA and Austin, TX.
 
@@ -45,20 +47,12 @@ The data are stored in two Pandas DataFrame objects that are already loaded into
 
 In this exercise, you will create a visualization that will allow you to compare the rainfall in these two cities.
 
-### Instructions
+### **Instructions**
 
 - Import the `matplotlib.pyplot` submodule as `plt`.
 - Create a `Figure` and an `Axes` object by calling `plt.subplots`.
 - Add data from the `seattle_weather` DataFrame by calling the Axes `plot` method.
 - Add data from the `austin_weather` DataFrame in a similar manner and call `plt.show` to show the results.
-
-```{python, eval = TRUE, echo = FALSE}
-import pandas as pd
-
-seattle_weather = pd.read_csv('/Users/clari/Documents/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/seattle_weather.csv')
-austin_weather = pd.read_csv('/Users/clari/Documents/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/austin_weather.csv')
-
-```
 
 ```{python, echo = TRUE, eval = TRUE}
 # Import the matplotlib.pyplot submodule and name it plt
@@ -77,7 +71,7 @@ _ = ax.plot(austin_weather["DATE"], austin_weather['MLY-PRCP-NORMAL'])
 plt.show()
 ```
 
-## Customizing data appearance
+## **Customizing data appearance**
 
 We can customize the appearance of data in our plots, while adding the data to the plot, using key-word arguments to the plot command.
 
@@ -87,7 +81,7 @@ As before, the data is already provided in Pandas DataFrame objects loaded into 
 
 In addition, a Figure object named `fig` and an Axes object named `ax` have already been created for you.
 
-### Instructions
+### **Instructions**
 
 - Call `plt.plot` to plot "MLY-PRCP-NORMAL" against "MONTHS" in both DataFrames.
 - Pass the `color` key-word arguments to these commands to set the color of the Seattle data to blue ('b') and the Austin data to red ('r').
@@ -108,7 +102,7 @@ _ = ax.plot(austin_weather["DATE"], austin_weather["MLY-PRCP-NORMAL"], color = '
 plt.show()
 ```
 
-## Customizing axis labels and adding titles
+## **Customizing axis labels and adding titles**
 
 Customizing the axis labels requires using the `set_xlabel` and `set_ylabel` methods of the Axes object. Adding a title uses the `set_title` method.
 
@@ -118,7 +112,7 @@ As before, the data is already provided in Pandas DataFrame objects loaded into 
 
 In addition, a Figure object named `fig` and an Axes object named `ax` have already been created for you.
 
-### Instructions
+### **Instructions**
 
 - Use the `set_xlabel` method to add the label: "Time (months)".
 - Use the `set_ylabel` method to add the label: "Precipitation (inches)".
@@ -145,13 +139,13 @@ _ = ax.set_title('Weather patterns in Austin and Seattle')
 plt.show()
 ```
 
-## Creating small multiples with plt.subplots
+## **Creating small multiples with plt.subplots**
 
 Small multiples are used to plot several datasets side-by-side. In Matplotlib, small multiples can be created using the `plt.subplots()` function. The first argument is the number of rows in the array of Axes objects generate and the second argument is the number of columns. In this exercise, you will use the Austin and Seattle data to practice creating and populating an array of subplots.
 
 The data is given to you in DataFrames: `seattle_weather` and `austin_weather`. These each have a `MONTH` column and `MLY-PRCP-NORMAL` (for average precipitation), as well as `MLY-TAVG-NORMAL` (for average temperature) columns. In this exercise, you will plot in a separate subplot the monthly average precipitation and average temperatures in each city.
 
-### Instructions
+### **Instructions**
 
 - Create a Figure and an array of subplots with 2 rows and 2 columns.
 - Addressing the top left Axes as index 0, 0, plot the Seattle precipitation.
@@ -176,13 +170,13 @@ _ = ax[1, 1].plot(austin_weather['DATE'], austin_weather['MLY-TAVG-NORMAL'])
 plt.show()
 ```
 
-## Small multiples with shared y axis
+## **Small multiples with shared y axis**
 
 When creating small multiples, it is often preferable to make sure that the different plots are displayed with the same scale used on the y-axis. This can be configured by setting the `sharey` key-word to `True`.
 
 In this exercise, you will create a Figure with two Axes objects that share their y-axis. As before, the data is provided in `seattle_weather` and `austin_weather` DataFrames.
 
-### Instructions
+### **Instructions**
 
 - Create a Figure with an array of two Axes objects that share their y-axis range.
 - Plot Seattle's "MLY-PRCP-NORMAL" in a solid blue line in the top Axes.
