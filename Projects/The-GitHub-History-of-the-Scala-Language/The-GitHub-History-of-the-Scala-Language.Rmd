@@ -1,5 +1,5 @@
 ---
-title: "The-GitHub-History-of-the-Scala-Language"
+title: "The GitHub History of the Scala Language"
 author: "Vitor Borges"
 date: "16/02/2021"
 output: 
