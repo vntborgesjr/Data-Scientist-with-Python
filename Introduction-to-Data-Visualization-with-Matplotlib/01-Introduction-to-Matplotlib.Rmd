@@ -8,8 +8,8 @@ knitr::opts_chunk$set(echo = TRUE)
 import pandas as pd
 import matplotlib.pyplot as plt
 
-seattle_weather = pd.read_csv('/Users/clari/Documents/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/seattle_weather.csv')
-austin_weather = pd.read_csv('/Users/clari/Documents/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/austin_weather.csv')
+seattle_weather = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/seattle_weather.csv')
+austin_weather = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/austin_weather.csv')
 ```
 
 # **Introduction to data visualization with matplotlib**
@@ -34,6 +34,9 @@ import matplotlib.pyplot as plt
 
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
 
 # Call the show function to show the result
 plt.show()
@@ -60,6 +63,9 @@ import matplotlib.pyplot as plt
 
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
 
 # Plot MLY-PRCP-NORMAL from seattle_weather against the MONTH
 _ = ax.plot(seattle_weather["DATE"][0:12], seattle_weather['MLY-PRCP-NORMAL'][0:12])
@@ -92,6 +98,9 @@ In addition, a Figure object named `fig` and an Axes object named `ax` have alre
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
 
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
+
 # Plot Seattle data, setting data appearance
 _ = ax.plot(seattle_weather["DATE"][0:12], seattle_weather["MLY-PRCP-NORMAL"][0:12], color = 'b', marker = 'o', linestyle = '--')
 
@@ -121,6 +130,9 @@ In addition, a Figure object named `fig` and an Axes object named `ax` have alre
 ```{python, echo = True, eval = True}
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
 
 # Plot Seattle and Austin data, setting data appearance
 _ = ax.plot(seattle_weather["DATE"][0:12], seattle_weather["MLY-PRCP-NORMAL"][0:12], color = 'b', marker = 'o', linestyle = '--')
@@ -156,6 +168,9 @@ The data is given to you in DataFrames: `seattle_weather` and `austin_weather`. 
 # Create a Figure and an array of subplots with 2 rows and 2 columns
 fig, ax = plt.subplots(2, 2)
 
+# Fit the subplots in to the figure area
+_ = fig.tight_layout(pad = 5)
+
 # Addressing the top left Axes as index 0, 0, plot month and Seattle precipitation
 _ = ax[0, 0].plot(seattle_weather['DATE'][0:12], seattle_weather['MLY-PRCP-NORMAL'][0:12])
 
@@ -187,6 +202,9 @@ In this exercise, you will create a Figure with two Axes objects that share thei
 # Create a figure and an array of axes: 2 rows, 1 column with shared y axis
 fig, ax = plt.subplots(2, 1, sharey = True)
 
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 3.2)
+
 # Plot Seattle precipitation data in the top axes
 _ = ax[0].plot(seattle_weather['DATE'][0:12], seattle_weather['MLY-PRCP-NORMAL'][0:12], color = 'b')
 _ = ax[0].plot(seattle_weather['DATE'][0:12], seattle_weather['MLY-PRCP-25PCTL'][0:12], color = 'b', linestyle = '--')
@@ -210,4 +228,3 @@ _ = ax[0].set_title('Weather patterns in Austin and Seattle')
 
 plt.show()
 ```
-
