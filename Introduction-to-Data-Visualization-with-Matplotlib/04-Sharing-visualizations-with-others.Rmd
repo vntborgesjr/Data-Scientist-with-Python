@@ -34,12 +34,14 @@ Here, you will practice plotting data in two different styles. The data you will
 # Use the "ggplot" style and create new Figure/Axes
 _ = plt.style.use('ggplot')
 fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 _ = ax.plot(seattle_weather["DATE"][0:12], seattle_weather["MLY-TAVG-NORMAL"][0:12])
 plt.show()
 
 # Use the "Solarize_Light2" style and create new Figure/Axes
 _ = plt.style.use('Solarize_Light2')
 fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 _ = ax.plot(austin_weather["DATE"][0:12], austin_weather["MLY-TAVG-NORMAL"][0:12])
 plt.show()
 _ = plt.style.use('default')
@@ -62,6 +64,9 @@ If you want to share your visualizations with others, you will need to save them
 ```{python}
 # Show the figure
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 10)
 
 # Plot a bar-chart of gold medals as a function of country
 _ = ax.bar(medals.index, medals['Gold'])
@@ -96,10 +101,12 @@ Here, you will again have a `Figure` object called `fig` already provided (you c
 ```{python}
 # Set figure dimensions and save as a PNG
 _ = fig.set_size_inches([3, 5])
+_ = fig.tight_layout(pad = 10)
 _ = fig.savefig('figure_3_5.png')
 
 # Set figure dimensions and save as a PNG
 _ = fig.set_size_inches([5, 3])
+_ = fig.tight_layout(pad = 5)
 _ = fig.savefig('figure_5_3.png')
 ```
 
@@ -146,6 +153,9 @@ This is what you will do in this exercise. You will be visualizing data about me
 ```{python}
 fig, ax = plt.subplots()
 
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 9)
+
 # Loop over the different sports branches
 for sport in sports:
   # Extract the rows only for this sport
@@ -156,7 +166,9 @@ for sport in sports:
 _ = ax.set_ylabel("Weight")
 _ = ax.set_xticklabels(sports, rotation = 90)
 
+# Show the figure
+plt.show()
+
 # Save the figure to file
 _ = fig.savefig('sports_weights.png')
 ```
-
