@@ -34,7 +34,7 @@ By the way, if you haven't downloaded it already, check out the [Matplotlib Chea
 import pandas as pd
 
 # Read the data from file using read_csv
-climate_change = pd.read_csv('/Users/clari/Documents/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/climate_change.csv', parse_dates = True, index_col = 'date')
+climate_change = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/climate_change.csv', parse_dates = True, index_col = 'date')
 ```
 
 ## Plot time-series data
@@ -55,6 +55,9 @@ In this case, the index of the DataFrame would be used as the x-axis values and 
 ```{python}
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
 
 # Add the time-series for "relative_temp" to the plot
 _ = ax.plot(climate_change.index, climate_change.relative_temp)
@@ -86,6 +89,9 @@ import matplotlib.pyplot as plt
 
 # Use plt.subplots to create fig and ax
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 3)
 
 # Create variable seventies with data from "1970-01-01" to "1979-12-31"
 seventies = climate_change["1970-01-01":"1979-12-31"]
@@ -121,6 +127,9 @@ import matplotlib.pyplot as plt
 
 # Initalize a Figure and Axes
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 4)
 
 # Plot the CO2 variable in blue
 _ = ax.plot(climate_change.index, climate_change.co2, color = 'blue')
@@ -188,6 +197,9 @@ Use the function `plot_timeseries` to add the data in the `"relative_temp"` colu
 ```{python}
 fig, ax = plt.subplots()
 
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
+
 # Plot the CO2 levels time-series in blue
 _ = plot_timeseries(ax, climate_change.index, climate_change['co2'], "blue", 'Time (years)', 'CO2 levels')
 
@@ -216,6 +228,9 @@ For this, we will use the `annotate` method of the Axes object. In this exercise
 
 ```{python}
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
 
 # Plot the relative temperature data
 _ = ax.plot(climate_change.index, climate_change['relative_temp'])
@@ -248,6 +263,9 @@ Then, you will annotate with text an important time-point in the data: on 2015-1
 
 ```{python}
 fig, ax = plt.subplots()
+
+# Fit the subplot in to the figure area
+_ = fig.tight_layout(pad = 5)
 
 # Plot the CO2 levels time-series in blue
 _ = plot_timeseries(ax, climate_change.index, climate_change['co2'], 'blue', 'Time (years)', 'CO2 levels')
