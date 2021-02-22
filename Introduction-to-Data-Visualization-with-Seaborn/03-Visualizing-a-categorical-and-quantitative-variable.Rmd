@@ -1,0 +1,82 @@
+---
+title: "03 - Visualizing a categorical and quantitative variable"
+output: html_notebook
+---
+
+```{python setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+import pandas as pd
+
+countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
+countries = countries.replace(to_replace = ',', value = '.', regex = True)
+countries['Phones (per 1000)'] = countries['Phones (per 1000)'].astype(float, errors = 'raise')
+countries['Literacy (%)'] = countries['Literacy (%)'].astype(float, errors = 'raise')
+gdp = list(countries['GDP ($ per capita)'])
+phones = list(countries['Phones (per 1000)'])
+percent_literate = list(countries['Literacy (%)'])
+region = list(countries.Region)
+csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv'
+student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
+```
+
+## **Count plots and bar plots**
+
+## **Count plots**
+
+
+```{python}
+
+```
+
+## **Bar plots with percentages**
+
+
+```{python}
+
+```
+
+## **Customizing bar plots**
+
+
+```{python}
+
+```
+
+## **Box plots**
+
+## **Create and interpret a box plot**
+
+```{python}
+
+```
+
+## **Oimtting outliers**
+
+
+```{python}
+
+```
+
+## **Adjusting the whiskers**
+
+
+```{python}
+
+```
+
+## **Point plots**
+
+## **Customizing point plots**
+
+```{python}
+
+```
+
+## **Point plots with subplots**
+
+
+
+```{python}
+
+```
+
