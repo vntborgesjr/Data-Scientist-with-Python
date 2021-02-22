@@ -1,0 +1,97 @@
+---
+title: "04 - Customizing seaborn plots"
+output: html_notebook
+---
+
+```{python setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+import pandas as pd
+
+countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
+countries = countries.replace(to_replace = ',', value = '.', regex = True)
+countries['Phones (per 1000)'] = countries['Phones (per 1000)'].astype(float, errors = 'raise')
+countries['Literacy (%)'] = countries['Literacy (%)'].astype(float, errors = 'raise')
+gdp = list(countries['GDP ($ per capita)'])
+phones = list(countries['Phones (per 1000)'])
+percent_literate = list(countries['Literacy (%)'])
+region = list(countries.Region)
+csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv'
+student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
+```
+
+## **Change plot style and color**
+
+## **Change style and palette**
+
+
+```{python}
+
+```
+
+## **Changing the scale**
+
+
+```{python}
+
+```
+
+## **Using a custom palette**
+
+
+```{python}
+
+```
+
+## **Adding titles and lables: part 1**
+
+## **FacetGrids vs. AxesSubplots**
+
+
+
+```{python}
+
+```
+
+## **Adding a title to a FacetGrid object**
+
+
+```{python}
+
+```
+
+## **Adding titles and labels:part 2**
+
+## **Adding a title and axis lables**
+
+
+
+```{python}
+
+```
+
+## **Rotating x-tick labels**
+
+
+
+```{python}
+
+```
+
+## **Putting it all together**
+
+## **Box plot with subgroups**
+
+
+
+```{python}
+
+```
+
+## **Bar plots with subgroups and subplots**
+
+
+
+```{python}
+
+```
+
