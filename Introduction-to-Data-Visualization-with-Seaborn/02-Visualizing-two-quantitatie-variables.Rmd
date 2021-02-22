@@ -1,0 +1,79 @@
+---
+title: "02 - Visualizing two quantitatie variables"
+output: html_notebook
+---
+
+```{python setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+import pandas as pd
+
+countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
+countries = countries.replace(to_replace = ',', value = '.', regex = True)
+countries['Phones (per 1000)'] = countries['Phones (per 1000)'].astype(float, errors = 'raise')
+countries['Literacy (%)'] = countries['Literacy (%)'].astype(float, errors = 'raise')
+gdp = list(countries['GDP ($ per capita)'])
+phones = list(countries['Phones (per 1000)'])
+percent_literate = list(countries['Literacy (%)'])
+region = list(countries.Region)
+csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv'
+student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
+```
+
+## **Introduction to relational plots and subplots**
+
+## **Creating subplots with col and row**
+
+
+```{python}
+
+```
+
+## **Creating two-factor subplots**
+
+
+```{python}
+
+```
+
+## **Customizing scatter plots**
+
+## **Change the size of scatter plot points**
+
+
+```{python}
+
+```
+
+## **Change the style of scatter plot points**
+
+
+```{python}
+
+```
+
+## **Introduction to line plots**
+
+## **Interpreting line plots**
+
+
+
+```{python}
+
+```
+
+## **Visualizing standard deviation with line plots**
+
+
+
+```{python}
+
+```
+
+## **Plotting subgroups in linen plots**
+
+
+
+```{python}
+
+```
+
