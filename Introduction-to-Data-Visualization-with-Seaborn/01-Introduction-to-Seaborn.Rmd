@@ -1,0 +1,187 @@
+---
+title: "01 - Introduction to Seaborn"
+output: html_notebook
+---
+
+```{python setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+import pandas as pd
+
+countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
+countries = countries.replace(to_replace = ',', value = '.', regex = True)
+countries['Phones (per 1000)'] = countries['Phones (per 1000)'].astype(float, errors = 'raise')
+countries['Literacy (%)'] = countries['Literacy (%)'].astype(float, errors = 'raise')
+gdp = list(countries['GDP ($ per capita)'])
+phones = list(countries['Phones (per 1000)'])
+percent_literate = list(countries['Literacy (%)'])
+region = list(countries.Region)
+csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv'
+student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
+```
+
+# **Introduction to Seaborn**
+
+## **Making a scatter plot with lists**
+
+In this exercise, we'll use a dataset that contains information about 227 countries. This dataset has lots of interesting information on each country, such as the country's birth rates, death rates, and its gross domestic product (GDP). GDP is the value of all the goods and services produced in a year, expressed as dollars per person.
+
+We've created three lists of data from this dataset to get you started. `'gdp'` is a list that contains the value of GDP per country, expressed as dollars per person. `phones` is a list of the number of mobile phones per 1,000 people in that country. Finally, `percent_literate` is a list that contains the percent of each country's population that can read and write.
+
+### **Instructions** 
+
+1. Import Matplotlib and Seaborn using the standard naming convention.
+2. Create a scatter plot of GDP (`gdp`) vs. number of phones per 1000 people (`phones`).
+3. Display the plot.
+4. Change the scatter plot so it displays the percent of the population that can read and write (`percent_literate`) on the y-axis.
+
+```{python}
+# Import Matplotlib and Seaborn
+import matplotlib.pyplot as plt
+import seaborn as sns
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+# Create scatter plot with GDP on the x-axis and number of phones on the y-axis
+_ = sns.scatterplot(x = gdp, y = phones)
+
+# Show plot
+plt.show()
+plt.clf()
+
+# Change this scatter plot to have percent literate on the y-axis
+_ = sns.scatterplot(x = gdp, y = percent_literate)
+
+# Show plot
+plt.show()
+plt.clf()
+```
+
+While this plot does not show a linear relationship between GDP and percent literate, countries with a lower GDP do seem more likely to have a lower percent of the population that can read and write.
+
+## **Making a count plot with a list**
+
+In the last exercise, we explored a dataset that contains information about 227 countries. Let's do more exploration of this data - specifically, how many countries are in each region of the world?
+
+To do this, we'll need to use a count plot. Count plots take in a categorical list and return bars that represent the number of list entries per category. You can create one here using a list of regions for each country, which is a variable named `region`.
+
+## **Instructions**
+
+- Import Matplotlib and Seaborn using the standard naming conventions.
+- Use Seaborn to create a count plot with `region` on the y-axis.
+- Display the plot.
+
+```{python}
+# Import Matplotlib and Seaborn
+import matplotlib.pyplot as plt
+import seaborn as sns
+plt.clf()
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 10)
+
+
+# Create count plot with region on the y-axis
+_ = sns.countplot(y = region)
+
+# Show plot
+plt.show()
+plt.clf()
+```
+
+Sub-Saharan Africa contains the most countries in this list. We'll revisit count plots later in the course.
+
+## **Using pandas with seaborn**
+
+## **Making a count plot with a DataFrame**
+
+In this exercise, we'll look at the responses to a survey sent out to young people. Our primary question here is: how many young people surveyed report being scared of spiders? Survey participants were asked to agree or disagree with the statement "I am afraid of spiders". Responses vary from 1 to 5, where 1 is "Strongly disagree" and 5 is "Strongly agree".
+
+To get you started, the filepath to the csv file with the survey data has been assigned to the variable `csv_filepath`.
+
+Note that because `csv_filepath` is a Python variable, you will not need to put quotation marks around it when you read the csv.
+
+## **Instructions**
+
+- Import Matplotlib, Pandas, and Seaborn using the standard names.
+Create a DataFrame named `df` from the csv file located at `csv_filepath`.
+- Use the `countplot()` function with the `x =` and `data =` arguments to create a count plot with the `"Spiders"` column values on the x-axis.
+- Display the plot.
+
+```{python}
+# Import Matplotlib, Pandas, and Seaborn
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+# Create a DataFrame from csv file
+df = pd.read_csv(csv_filepath)
+
+# Create a count plot with "Spiders" on the x-axis
+_ = sns.countplot(x = 'Spiders', orient = 'v', data = df)
+
+# Display the plot
+plt.show()
+plt.clf()
+```
+
+This plot shows us that most young people reported not being afraid of spiders.
+
+## **Hue and scatter plots**
+
+In the prior video, we learned how `hue` allows us to easily make subgroups within Seaborn plots. Let's try it out by exploring data from students in secondary school. We have a lot of information about each student like their age, where they live, their study habits and their extracurricular activities.
+
+For now, we'll look at the relationship between the number of absences they have in school and their final grade in the course, segmented by where the student lives (rural vs. urban area).
+
+## **Instructions**
+
+1. Create a scatter plot with `"absences"` on the x-axis and final grade (`"G3"`) on the y-axis using the DataFrame `student_data`. Color the plot points based on `"location"` (urban vs. rural).
+
+2. Make `"Rural"` appear before `"Urban"` in the plot legend.
+
+```{python}
+# Import Matplotlib and Seaborn
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a scatter plot of absences vs. final grade
+_ = sns.scatterplot(x = 'absences', y = 'G3', hue = 'location', hue_order = ['Rural', 'Urban'], data = student_data)
+
+# Show plot
+plt.show()
+plt.clf()
+```
+
+ It looks like students with higher absences tend to have lower grades in both rural and urban areas.
+ 
+## **Hue and count plots**
+
+Let's continue exploring our dataset from students in secondary school by looking at a new variable. The `"school"` column indicates the initials of which school the student attended - either "GP" or "MS".
+
+In the last exercise, we created a scatter plot where the plot points were colored based on whether the student lived in an urban or rural area. How many students live in urban vs. rural areas, and does this vary based on what school the student attends? Let's make a count plot with subgroups to find out.
+
+## **Instructions**
+
+- Fill in the `palette_colors` dictionary to map the `"Rural"` location value to the color `"green"` and the `"Urban"` location value to the color `"blue"`.
+- Create a count plot with `"school"` on the x-axis using the `student_data` DataFrame.
+- Add subgroups to the plot using `"location"` variable and use the `palette_colors` dictionary to make the location subgroups green and blue.
+
+
+
+```{python}
+# Import Matplotlib and Seaborn
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a dictionary mapping subgroup values to colors
+palette_colors = {'Rural': "green", 'Urban': "blue"}
+
+# Create a count plot of school with location subgroups
+sns.countplot(x = 'school', hue = 'location', palette = palette_colors, data = student_data)
+
+# Display plot
+plt.show()
+plt.clf()
+```
+
+Students at GP tend to come from an urban location, but students at MS are more evenly split.
