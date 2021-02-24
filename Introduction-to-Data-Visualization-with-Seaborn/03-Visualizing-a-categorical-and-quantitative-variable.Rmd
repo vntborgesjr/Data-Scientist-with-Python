@@ -17,66 +17,322 @@ percent_literate = list(countries['Literacy (%)'])
 region = list(countries.Region)
 csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv'
 student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
+tips = sns.load_dataset('tips')
+mpg = sns.load_dataset('mpg')
 ```
 
 ## **Count plots and bar plots**
 
+**1. Count plots and bar plots**
+
+Welcome to Chapter 3! In this chapter, we'll focus on visualizations that involve categorical variables. The first two plots we'll look at are count plots and bar plots.
+
+**2. Categorical plots**
+
+Count plots and bar plots are two types of visualizations that Seaborn calls "categorical plots". Categorical plots involve a categorical variable, which is a variable that consists of a fixed, typically small number of possible values, or categories. These types of plots are commonly used when we want to make comparisons between different groups. We began to explore categorical plots in Chapter 1 with count plots. As a reminder, a count plot displays the number of observations in each category. We saw several examples of count plots in earlier chapters, like the number of men reporting that they feel masculine. Most men surveyed here feel "somewhat" or "very" masculine.
+
+**3. catplot()**
+
+Just like we used "relplot()" to create different types of relational plots, in this chapter we'll be using "catplot()" to create different types of categorical plots. "catplot()" offers the same flexibility that "relplot()" does, which means it will be easy to create subplots if we need to using the same "col" and "row" parameters.
+
+**4. countplot() vs. catplot()**
+
+To see how "catplot()" works, let's return to the masculinity count plot. On the left, we see how we originally created a count plot with the "countplot()" function.
+
+**5. countplot() vs. catplot()**
+
+To make this plot with "catplot()" instead, we change the function name to "catplot()" and use the "kind" parameter to specify what kind of categorical plot to use. In this case, we'll set kind equal to the word "count".
+
+**6. Changing the order**
+
+Sometimes there is a specific ordering of categories that makes sense for these plots. In this case, it makes more sense for the categories to be in order from not masculine to very masculine. To change the order of the categories, create a list of category values in the order that you want them to appear, and then use the "order" parameter. This works for all types of categorical plots, not just count plots.
+
+**7. Bar plots**
+Bar plots look similar to count plots, but instead of the count of observations in each category, they show the mean of a quantitative variable among observations in each category. This bar plot uses the tips dataset and shows the average bill paid among people who visited the restaurant on each day of the week. From this, we can see that the average bill is slightly higher on the weekends. To create this bar plot, we use "catplot". Specify the categorical variable "day" on the x-axis, the quantitative variable "total bill" on the y-axis, and set the "kind" parameter equal to "bar".
+
+**8. Confidence intervals**
+
+Notice also that Seaborn automatically shows 95% confidence intervals for these means. Just like with line plots, these confidence intervals show us the level of uncertainty we have about these estimates. Assuming our data is a random sample of some population, we can be 95% sure that the true population mean in each group lies within the confidence interval shown.
+
+**9. Turning off confidence intervals**
+
+If we want to turn off these confidence intervals, we can do this by setting the "ci" parameter equal to "None" - just like we did with line plots.
+
+**10. Changing the orientation**
+
+Finally, you can also change the orientation of the bars in bar plots and count plots by switching the x and y parameters. However, it is fairly common practice to put the categorical variable on the x-axis.
+
+**11. Let's practice!**
+
+We'll introduce more types of categorical plots later in the chapter, but for now, let's practice what we've learned!
+
 ## **Count plots**
 
+In this exercise, we'll return to exploring our dataset that contains the responses to a survey sent out to young people. We might suspect that young people spend a lot of time on the internet, but how much do they report using the internet each day? Let's use a count plot to break down the number of survey responses in each category and then explore whether it changes based on age.
 
+As a reminder, to create a count plot, we'll use the catplot() function and specify the name of the categorical variable to count (x=____), the Pandas DataFrame to use (data=____), and the type of plot (kind="count").
+
+Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.
+
+**Instructions**
+
+- Use sns.catplot() to create a count plot using the survey_data DataFrame with "Internet usage" on the x-axis.
+- 
 ```{python}
+# Create count plot of internet usage
 
+
+
+# Show plot
+plt.show()
 ```
 
 ## **Bar plots with percentages**
 
+Let's continue exploring the responses to a survey sent out to young people. The variable "Interested in Math" is True if the person reported being interested or very interested in mathematics, and False otherwise. What percentage of young people report being interested in math, and does this vary based on gender? Let's use a bar plot to find out.
 
+As a reminder, we'll create a bar plot using the catplot() function, providing the name of categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of categorical plot (kind="bar").
+
+Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.
+
+**Instructions**
+
+- Use the survey_data DataFrame and sns.catplot() to create a bar plot with "Gender" on the x-axis and "Interested in Math" on the y-axis.
 ```{python}
+# Create a bar plot of interest in math, separated by gender
 
+
+
+# Show plot
+plt.show()
 ```
 
 ## **Customizing bar plots**
 
+In this exercise, we'll explore data from students in secondary school. The "study_time" variable records each student's reported weekly study time as one of the following categories: "<2 hours", "2 to 5 hours", "5 to 10 hours", or ">10 hours". Do students who report higher amounts of studying tend to get better final grades? Let's compare the average final grade among students in each category using a bar plot.
+
+Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.
+
+**Instructions**
+
+- Use sns.catplot() to create a bar plot with "study_time" on the x-axis and final grade ("G3") on the y-axis, using the student_data DataFrame.
 
 ```{python}
+# Create bar plot of average final grade in each study category
 
+
+
+
+# Show plot
+plt.show()
 ```
 
 ## **Box plots**
 
+
+**1. Creating a box plot**
+
+Hello! In this video we'll learn how to create a new type of categorical plot: the box plot.
+
+**2. What is a box plot?**
+
+A box plot shows the distribution of quantitative data. The colored box represents the 25th to 75th percentile, and the line in the middle of the box represents the median. The whiskers give a sense of the spread of the distribution, and the floating points represent outliers. Box plots are commonly used as a way to compare the distribution of a quantitative variable across different groups of a categorical variable. To see this, let's look at this example. The box plot shown here uses the tips dataset and compares the distribution of the total bill paid per table across the different days of the week. From this box plot we can quickly see that the median bill is higher on Saturday and Sunday, but the spread of the distribution is also larger. This comparison would be much harder to do with other types of visualizations.
+
+**3. How to create a box plot**
+
+Now let's look at how to create a box plot in Seaborn. While Seaborn does have a "boxplot()" function, we'll be using the "catplot()" function that we introduced in an earlier lesson because it makes it easy to create subplots using the "col" and "row" parameters. We'll put the categorical variable "time" on the x-axis and the quantitative variable "total bill" on the y-axis. Here, we want box plots, so we'll specify kind="box". That's it! We have a nice looking box plot. Next, we'll look at different ways to customize this plot.
+
+**4. Change the order of categories**
+
+As a reminder, "catplot" allows you to change the order of the categories using the "order" parameter. Here, we specified that "dinner" should be shown before "lunch".
+
+**5. Omitting the outliers using `sym`**
+
+Occasionally, you may want to omit the outliers from your box plot. You can do this using the "sym" parameter. If you pass an empty string into "sym", it will omit the outliers from your plot altogether. "Sym" can also be used to change the appearance of the outliers instead of omitting them.
+
+**6. Changing the whiskers using `whis`**
+
+By default, the whiskers extend to 1 point 5 times the interquartile range, or "IQR". The IQR is the 25th to the 75th percentile of a distribution of data. If you want to change the way the whiskers in your box plot are defined, you can do this using the "whis" parameter. There are several options for changing the whiskers. You can change the range of the whiskers from 1 point 5 times the IQR (which is the default) to 2 times the IQR by setting "whis" equal to 2 point 0. Alternatively, you can have the whiskers define specific lower and upper percentiles by passing in a list of the lower and upper values. In this example, passing in "[5, 95]" will result in the lower whisker being drawn at the 5th percentile and the upper whisker being drawn at the 95th percentile. Finally, you may just want to draw the whiskers at the min and max values. You can do this by specifying the lower percentile as 0 and the upper percentile as 100.
+
+**7. Changing the whiskers using `whis`**
+
+Here's an example where the whiskers are set to the min and max values. Note that there are no outliers, because the box and whiskers cover the entire range of the data.
+
+**8. Let's practice!**
+
+Let's now practice creating and customizing box plots!
+
 ## **Create and interpret a box plot**
 
-```{python}
+Let's continue using the student_data dataset. In an earlier exercise, we explored the relationship between studying and final grade by using a bar plot to compare the average final grade ("G3") among students in different categories of "study_time".
 
+In this exercise, we'll try using a box plot look at this relationship instead. As a reminder, to create a box plot you'll need to use the catplot() function and specify the name of the categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of plot (kind="box").
+
+We have already imported matplotlib.pyplot as plt and seaborn as sns.
+
+**Instructions**
+
+Use sns.catplot() and the student_data DataFrame to create a box plot with "study_time" on the x-axis and "G3" on the y-axis. Set the ordering of the categories to study_time_order.
+
+```{python}
+# Specify the category ordering
+study_time_order = ["<2 hours", "2 to 5 hours", 
+                    "5 to 10 hours", ">10 hours"]
+
+# Create a box plot and set the order of the categories
+
+
+
+
+
+# Show plot
+plt.show()
 ```
 
 ## **Oimtting outliers**
 
+Now let's use the student_data dataset to compare the distribution of final grades ("G3") between students who have internet access at home and those who don't. To do this, we'll use the "internet" variable, which is a binary (yes/no) indicator of whether the student has internet access at home.
+
+Since internet may be less accessible in rural areas, we'll add subgroups based on where the student lives. For this, we can use the "location" variable, which is an indicator of whether a student lives in an urban ("Urban") or rural ("Rural") location.
+
+Seaborn has already been imported as sns and matplotlib.pyplot has been imported as plt. As a reminder, you can omit outliers in box plots by setting the sym parameter equal to an empty string ("").
+
+**Instructions**
+
+- Use sns.catplot() to create a box plot with the student_data DataFrame, putting "internet" on the x-axis and "G3" on the y-axis.
+- Add subgroups so each box plot is colored based on "location".
+- Do not display the outliers.
 
 ```{python}
+# Create a box plot with subgroups and omit the outliers
 
+
+
+
+
+
+# Show plot
+plt.show()
 ```
 
 ## **Adjusting the whiskers**
 
+In the lesson we saw that there are multiple ways to define the whiskers in a box plot. In this set of exercises, we'll continue to use the student_data dataset to compare the distribution of final grades ("G3") between students who are in a romantic relationship and those that are not. We'll use the "romantic" variable, which is a yes/no indicator of whether the student is in a romantic relationship.
 
+Let's create a box plot to look at this relationship and try different ways to define the whiskers.
+
+We've already imported Seaborn as sns and matplotlib.pyplot as plt.
+
+**Instructions**
+
+1. Adjust the code to make the box plot whiskers to extend to 0.5 * IQR. Recall: the IQR is the interquartile range.
+2. Change the code to set the whiskers to extend to the 5th and 95th percentiles.
+3. Change the code to set the whiskers to extend to the min and max values.
 ```{python}
+# Set the whiskers to 0.5 * IQR
+sns.catplot(x="romantic", y="G3",
+            data=student_data,
+            kind="box")
 
+# Show plot
+plt.show()
 ```
 
 ## **Point plots**
 
+
+**1. Point plots**
+
+Welcome! So far we've seen several types of categorical plots including count plots, bar plots, and box plots. In this lesson, we'll see one final categorical plot: point plots.
+
+**2. What are point plots?**
+
+Point plots show the mean of a quantitative variable for the observations in each category, plotted as a single point. This point plot uses the tips dataset and shows the average bill among smokers versus non-smokers. The vertical bars extending above and below the mean represent the 95% confidence intervals for that mean. Just like the confidence intervals we saw in line plots and bar plots, these confidence intervals show us the level of uncertainty we have about these mean estimates. Assuming our data is a random sample of some population, we can be 95% sure that the true population mean in each group lies within the confidence interval shown.
+
+**3. Point plots vs. line plots**
+
+You may be thinking: point plots look a lot like line plots. What's the difference?
+
+**4. Point plots vs. line plots**
+
+Both line plots and point plots show the mean of a quantitative variable and 95% confidence intervals for the mean. However, there is a key difference. Line plots are relational plots, so both the x- and y-axis are quantitative variables. In a point plot, one axis - usually the x-axis - is a categorical variable, making it a categorical plot.
+
+**5. Point plots vs. bar plots**
+
+You may also be thinking: point plots seem to show the same information as bar plots. For each category, both show the mean of a quantitative variable and the confidence intervals for those means. When should we use one over the other? Let's look at an example using data from the masculinity survey that we've seen in prior lessons.
+
+**6. Point plots vs. bar plots**
+
+This is a bar plot of the percent of men per age group surveyed who report thinking that it's important that others see them as masculine, with subgroups based on whether they report feeling masculine or not. This is the same information, represented as a point plot. In the point plot, it's easier to compare the heights of the subgroup points when they're stacked above each other. In the point plot, it's also easier to look at the differences in slope between the categories than it is to compare the heights of the bars between them.
+
+**7. Creating a point plot**
+
+Here's the code to create the point plot we just saw. Since this is a categorical plot, we use "catplot" and set "kind" equal to "point".
+
+**8. Disconnecting the points**
+
+Sometimes we may want to remove the lines connecting each point, perhaps because we only wish to compare within a category group and not between them. To do this, set the "join" parameter equal to False.
+
+**9. Displaying the median**
+
+Let's return to the point plot using the tips dataset and go over a few more ways to customize your point plots. Here is the point plot of average bill comparing smokers to non-smokers.
+
+**10. Displaying the median**
+
+To have the points and confidence intervals be calculated for the median instead of the mean, import the median function from the numpy library and set "estimator" equal to the numpy median function. Why might you want to use the median instead of the mean? The median is more robust to outliers, so if your dataset has a lot of outliers, the median may be a better statistic to use.
+
+**11. Customizing the confidence intervals**
+
+You can also customize the way that the confidence intervals are displayed. To add “caps” to the end of the confidence intervals, set the “capsize” parameter equal to the desired width of the caps. In this case, we chose a width of 0.2.
+
+**12. Turning off confidence intervals**
+
+Finally, like we saw with line plots and bar plots, you can turn the confidence intervals off by setting the "ci" parameter equal to None.
+
+**13. Let's practice!**
+
+Alright! Now that we've covered how to interpret and customize point plots, let's practice what we've learned!
+
 ## **Customizing point plots**
 
-```{python}
+Let's continue to look at data from students in secondary school, this time using a point plot to answer the question: does the quality of the student's family relationship influence the number of absences the student has in school? Here, we'll use the "famrel" variable, which describes the quality of a student's family relationship from 1 (very bad) to 5 (very good).
 
+As a reminder, to create a point plot, use the catplot() function and specify the name of the categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of categorical plot (kind="point").
+
+We've already imported Seaborn as sns and matplotlib.pyplot as plt.
+
+**Instructions**
+
+- Use sns.catplot() and the student_data DataFrame to create a point plot with "famrel" on the x-axis and number of absences ("absences") on the y-axis.
+
+```{python}
+# Create a point plot of family relationship vs. absences
+
+
+
+            
+# Show plot
+plt.show()
 ```
 
 ## **Point plots with subplots**
 
+Let's continue exploring the dataset of students in secondary school. This time, we'll ask the question: is being in a romantic relationship associated with higher or lower school attendance? And does this association differ by which school the students attend? Let's find out using a point plot.
 
+We've already imported Seaborn as sns and matplotlib.pyplot as plt.
+
+**Instructions**
+
+- Use sns.catplot() and the student_data DataFrame to create a point plot with relationship status ("romantic") on the x-axis and number of absences ("absences") on the y-axis. Create subgroups based on the school that they attend ("school").
 
 ```{python}
+# Create a point plot with subgroups
 
+
+
+
+# Show plot
+plt.show()
 ```
+
 
