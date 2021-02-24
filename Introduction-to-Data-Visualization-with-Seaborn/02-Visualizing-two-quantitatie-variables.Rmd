@@ -6,6 +6,8 @@ output: html_notebook
 ```{python setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
 countries = countries.replace(to_replace = ',', value = '.', regex = True)
@@ -23,17 +25,114 @@ student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-w
 
 ## **Creating subplots with col and row**
 
+We've seen in prior exercises that students with more absences (`"absences"`) tend to have lower final grades (`"G3"`). Does this relationship hold regardless of how much time students study each week?
+
+To answer this, we'll look at the relationship between the number of absences that a student has in school and their final grade in the course, creating separate subplots based on each student's weekly study time (`"study_time"`).
+
+Seaborn has been imported as `sns` and `matplotlib.pyplot` has been imported as `plt`.
+
+## **Instructions**
+
+1. Modify the code to use `relplot()` instead of `scatterplot()`.
+
+2. Modify the code to create one scatter plot for each level of the variable `"study_time"`, arranged in columns.
+
+3. Adapt your code to create one scatter plot for each level of a student's weekly study time, this time arranged in rows.
 
 ```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 
+# Change to use relplot() instead of scatterplot()
+_ = sns.relplot(x = "absences", y = "G3", 
+                data = student_data, 
+                kind = 'scatter',
+height = 2.6)
+
+# Show plot
+plt.show()
+
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+# Change to make subplots based on study time
+_ = sns.relplot(x = "absences", y = "G3", 
+                data = student_data, 
+                kind = 'scatter', 
+                col = 'study_time',
+height = 2)
+
+# Show plot
+plt.show()
+
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+# Change this scatter plot to arrange the plots in rows instead of columns
+_ = sns.relplot(x = "absences", y = "G3", 
+                data = student_data, 
+                kind = 'scatter', 
+                row = 'study_time',
+height = 2)
+
+# Show plot
+plt.show()
 ```
+
+Because these subplots had a large range of x values, it's easier to read them arranged in rows instead of columns.
 
 ## **Creating two-factor subplots**
 
+Let's continue looking at the `student_data` dataset of students in secondary school. Here, we want to answer the following question: does a student's first semester grade (`"G1"`) tend to correlate with their final grade (`"G3"`)?
+
+There are many aspects of a student's life that could result in a higher or lower final grade in the class. For example, some students receive extra educational support from their school (`"schoolsup"`) or from their family (`"famsup"`), which could result in higher grades. Let's try to control for these two factors by creating subplots based on whether the student received extra educational support from their school or family.
+
+Seaborn has been imported as `sns` and `matplotlib.pyplot` has been imported as `plt`.
+
+## **Instructions**
+
+- Use `relplot()` to create a scatter plot with `"G1"` on the x-axis and `"G3"` on the y-axis, using the `student_data` DataFrame.
+- Create **column** subplots based on whether the student received support from the school (`"schoolsup"`), ordered so that "yes" comes before "no".
+- Add **row** subplots based on whether the student received support from the family (`"famsup"`), ordered so that "yes" comes before "no". This will result in subplots based on two factors.
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Create a scatter plot of G1 vs. G3
+_ = sns.relplot(x = 'G1', y = 'G3', 
+data = student_data,
+kind =  'scatter',
+height = 2.6)
+
+# Show plot
+plt.show()
+
+fig, ax = plt.subplots()
+# Adjust to add subplots based on school support
+_ = sns.relplot(x = 'G1', y = 'G3', 
+data = student_data,
+kind =  'scatter',
+col = 'schoolsup',
+col_order = ['yes', 'no'],
+height = 2)
+
+# Show plot
+plt.show()
+
+fig, ax = plt.subplots()
+# Adjust further to add subplots based on family support
+_ = sns.relplot(x = 'G1', y = 'G3', 
+data = student_data,
+kind =  'scatter',
+col = 'schoolsup',
+row = 'famsup',
+col_order = ['yes', 'no'],
+row_order = ['yes', 'no'],
+height = 1.3)
+
+# Show plot
+plt.show()
 ```
+
+It looks like the first semester grade does correlate with the final grade, regardless of what kind of support the student received.
 
 ## **Customizing scatter plots**
 
