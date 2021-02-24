@@ -21,6 +21,86 @@ student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-w
 
 ## **Change plot style and color**
 
+**1. Changing plot style and color**
+
+So far we've covered how to create a variety of different plot types. Now let's learn how to customize them.
+
+**2. Why customize?**
+
+By default, Seaborn plots are pleasing to look at, but there are several reasons you may want to change the appearance. Changing the style of a plot can be motivated by personal preference, but it can also help improve its readability or help orient an audience more quickly to the key takeaway.
+
+**3. Changing the figure style**
+
+Seaborn has five preset figure styles which change the background and axes of the plot. You can refer to them by name: "white", "dark", "whitegrid", "darkgrid", and "ticks". To set one of these as the global style for all of your plots, use the "set style" function.
+
+**4. Default figure style ("white")**
+
+This is a plot we've seen before, showing the percentage of men reporting that masculinity was important to them, stratified by their age and whether or not they feel masculine. The default style is called "white" and provides clean axes with a solid white background. If we only care about the comparisons between groups or the general trend across age groups instead of the specific values, this is a good choice.
+
+**5. Figure style: "whitegrid"**
+
+Changing the style to "whitegrid" will add a gray grid in the background. This is useful if you want your audience to be able to determine the specific values of the plotted points instead of making higher level observations.
+
+**6. Other styles**
+
+The other styles are variants on these. "ticks" is similar to "white", but adds small tick marks to the x- and y-axes.
+
+**7. Other styles**
+
+"dark" provides a gray background,
+
+**8. Other styles**
+
+and "darkgrid" provides a gray background with a white grid.
+
+**9. Changing the palette**
+
+You can change the color of the main elements of the plot with Seaborn's "set palette" function. Seaborn has many preset color palettes that you can refer to by name, or you can create your own custom palette. Let's see an example.
+
+**10. Diverging palettes**
+
+Seaborn has a group of preset palettes called diverging palettes that are great to use if your visualization deals with a scale where the two ends of the scale are opposites and there is a neutral midpoint. Here are some examples of diverging palettes - red/blue and purple/green. Note that if you append the palette name with "_r", you can reverse the palette.
+
+**11. Example (default palette)**
+
+To see this in action, let's return to a count plot we've seen before of the responses of men reporting how masculine they feel.
+
+**12. Example (diverging palette)**
+
+Setting this plot's palette to red/blue diverging provides a clearer contrast between the men who do not feel masculine and the men who do.
+
+**13. Sequential palettes**
+
+Another group of palettes are called sequential palettes. These are a single color (or two colors blended) moving from light to dark values.
+
+**14. Sequential palette example**
+
+Sequential palettes are great for emphasizing a variable on a continuous scale. One example is this plot depicting the relationship between a car's horsepower and its miles per gallon, where points grow larger and darker when the car has more cylinders.
+
+**15. Custom palettes**
+
+You can also create your own custom palettes by passing in a list of color names...
+
+**16. Custom palettes**
+
+or a list of hex color codes.
+
+**17. Changing the scale**
+
+Finally, you can change the scale of your plot by using the "set context" function. The scale options from smallest to largest are "paper", "notebook", "talk", and "poster".
+
+**18. Default context: "paper"**
+
+The default context is "paper".
+
+**19. Larger context: "talk"**
+
+You'll want to choose a larger scale like "talk" for posters or presentations where the audience is further away from the plot.
+
+**20. Let's practice!**
+
+Now that we've seen how to change the plot style, palette, and scale, let's practice!
+
 ## **Change style and palette**
 
 
