@@ -46,14 +46,15 @@ _ = sns.scatterplot(x = gdp, y = phones)
 
 # Show plot
 plt.show()
-plt.clf()
+
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 
 # Change this scatter plot to have percent literate on the y-axis
 _ = sns.scatterplot(x = gdp, y = percent_literate)
 
 # Show plot
 plt.show()
-plt.clf()
 ```
 
 While this plot does not show a linear relationship between GDP and percent literate, countries with a lower GDP do seem more likely to have a lower percent of the population that can read and write.
@@ -74,7 +75,7 @@ To do this, we'll need to use a count plot. Count plots take in a categorical li
 # Import Matplotlib and Seaborn
 import matplotlib.pyplot as plt
 import seaborn as sns
-plt.clf()
+
 fig, ax = plt.subplots()
 _ = fig.tight_layout(pad = 10)
 
@@ -84,7 +85,6 @@ _ = sns.countplot(y = region)
 
 # Show plot
 plt.show()
-plt.clf()
 ```
 
 Sub-Saharan Africa contains the most countries in this list. We'll revisit count plots later in the course.
@@ -122,7 +122,6 @@ _ = sns.countplot(x = 'Spiders', orient = 'v', data = df)
 
 # Display the plot
 plt.show()
-plt.clf()
 ```
 
 This plot shows us that most young people reported not being afraid of spiders.
@@ -143,13 +142,14 @@ For now, we'll look at the relationship between the number of absences they have
 # Import Matplotlib and Seaborn
 import matplotlib.pyplot as plt
 import seaborn as sns
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 
 # Create a scatter plot of absences vs. final grade
 _ = sns.scatterplot(x = 'absences', y = 'G3', hue = 'location', hue_order = ['Rural', 'Urban'], data = student_data)
 
 # Show plot
 plt.show()
-plt.clf()
 ```
 
  It looks like students with higher absences tend to have lower grades in both rural and urban areas.
@@ -172,6 +172,8 @@ In the last exercise, we created a scatter plot where the plot points were color
 # Import Matplotlib and Seaborn
 import matplotlib.pyplot as plt
 import seaborn as sns
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 
 # Create a dictionary mapping subgroup values to colors
 palette_colors = {'Rural': "green", 'Urban': "blue"}
@@ -181,7 +183,6 @@ sns.countplot(x = 'school', hue = 'location', palette = palette_colors, data = s
 
 # Display plot
 plt.show()
-plt.clf()
 ```
 
 Students at GP tend to come from an urban location, but students at MS are more evenly split.
