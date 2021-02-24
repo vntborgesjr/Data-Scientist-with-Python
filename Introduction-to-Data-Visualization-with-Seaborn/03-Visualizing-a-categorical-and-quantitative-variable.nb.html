@@ -242,72 +242,267 @@ summary {
 <!-- rnb-text-begin -->
 <div id="count-plots-and-bar-plots" class="section level2">
 <h2><strong>Count plots and bar plots</strong></h2>
+<p><strong>1. Count plots and bar plots</strong></p>
+<p>Welcome to Chapter 3! In this chapter, we’ll focus on visualizations that involve categorical variables. The first two plots we’ll look at are count plots and bar plots.</p>
+<p><strong>2. Categorical plots</strong></p>
+<p>Count plots and bar plots are two types of visualizations that Seaborn calls “categorical plots”. Categorical plots involve a categorical variable, which is a variable that consists of a fixed, typically small number of possible values, or categories. These types of plots are commonly used when we want to make comparisons between different groups. We began to explore categorical plots in Chapter 1 with count plots. As a reminder, a count plot displays the number of observations in each category. We saw several examples of count plots in earlier chapters, like the number of men reporting that they feel masculine. Most men surveyed here feel “somewhat” or “very” masculine.</p>
+<p><strong>3. catplot()</strong></p>
+<p>Just like we used “relplot()” to create different types of relational plots, in this chapter we’ll be using “catplot()” to create different types of categorical plots. “catplot()” offers the same flexibility that “relplot()” does, which means it will be easy to create subplots if we need to using the same “col” and “row” parameters.</p>
+<p><strong>4. countplot() vs. catplot()</strong></p>
+<p>To see how “catplot()” works, let’s return to the masculinity count plot. On the left, we see how we originally created a count plot with the “countplot()” function.</p>
+<p><strong>5. countplot() vs. catplot()</strong></p>
+<p>To make this plot with “catplot()” instead, we change the function name to “catplot()” and use the “kind” parameter to specify what kind of categorical plot to use. In this case, we’ll set kind equal to the word “count”.</p>
+<p><strong>6. Changing the order</strong></p>
+<p>Sometimes there is a specific ordering of categories that makes sense for these plots. In this case, it makes more sense for the categories to be in order from not masculine to very masculine. To change the order of the categories, create a list of category values in the order that you want them to appear, and then use the “order” parameter. This works for all types of categorical plots, not just count plots.</p>
+<p><strong>7. Bar plots</strong> Bar plots look similar to count plots, but instead of the count of observations in each category, they show the mean of a quantitative variable among observations in each category. This bar plot uses the tips dataset and shows the average bill paid among people who visited the restaurant on each day of the week. From this, we can see that the average bill is slightly higher on the weekends. To create this bar plot, we use “catplot”. Specify the categorical variable “day” on the x-axis, the quantitative variable “total bill” on the y-axis, and set the “kind” parameter equal to “bar”.</p>
+<p><strong>8. Confidence intervals</strong></p>
+<p>Notice also that Seaborn automatically shows 95% confidence intervals for these means. Just like with line plots, these confidence intervals show us the level of uncertainty we have about these estimates. Assuming our data is a random sample of some population, we can be 95% sure that the true population mean in each group lies within the confidence interval shown.</p>
+<p><strong>9. Turning off confidence intervals</strong></p>
+<p>If we want to turn off these confidence intervals, we can do this by setting the “ci” parameter equal to “None” - just like we did with line plots.</p>
+<p><strong>10. Changing the orientation</strong></p>
+<p>Finally, you can also change the orientation of the bars in bar plots and count plots by switching the x and y parameters. However, it is fairly common practice to put the categorical variable on the x-axis.</p>
+<p><strong>11. Let’s practice!</strong></p>
+<p>We’ll introduce more types of categorical plots later in the chapter, but for now, let’s practice what we’ve learned!</p>
 </div>
 <div id="count-plots" class="section level2">
 <h2><strong>Count plots</strong></h2>
+<p>In this exercise, we’ll return to exploring our dataset that contains the responses to a survey sent out to young people. We might suspect that young people spend a lot of time on the internet, but how much do they report using the internet each day? Let’s use a count plot to break down the number of survey responses in each category and then explore whether it changes based on age.</p>
+<p>As a reminder, to create a count plot, we’ll use the catplot() function and specify the name of the categorical variable to count (x=____), the Pandas DataFrame to use (data=____), and the type of plot (kind=“count”).</p>
+<p>Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use sns.catplot() to create a count plot using the survey_data DataFrame with “Internet usage” on the x-axis.</li>
+<li></li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBjb3VudCBwbG90IG9mIGludGVybmV0IHVzYWdlXG5cblxuXG4jIFNob3cgcGxvdFxucGx0LnNob3coKVxuYGBgIn0= -->
+<pre class="python"><code># Create count plot of internet usage
+
+
+
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="bar-plots-with-percentages" class="section level2">
 <h2><strong>Bar plots with percentages</strong></h2>
+<p>Let’s continue exploring the responses to a survey sent out to young people. The variable “Interested in Math” is True if the person reported being interested or very interested in mathematics, and False otherwise. What percentage of young people report being interested in math, and does this vary based on gender? Let’s use a bar plot to find out.</p>
+<p>As a reminder, we’ll create a bar plot using the catplot() function, providing the name of categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of categorical plot (kind=“bar”).</p>
+<p>Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use the survey_data DataFrame and sns.catplot() to create a bar plot with “Gender” on the x-axis and “Interested in Math” on the y-axis.</li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBhIGJhciBwbG90IG9mIGludGVyZXN0IGluIG1hdGgsIHNlcGFyYXRlZCBieSBnZW5kZXJcblxuXG5cbiMgU2hvdyBwbG90XG5wbHQuc2hvdygpXG5gYGAifQ== -->
+<pre class="python"><code># Create a bar plot of interest in math, separated by gender
+
+
+
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="customizing-bar-plots" class="section level2">
 <h2><strong>Customizing bar plots</strong></h2>
+<p>In this exercise, we’ll explore data from students in secondary school. The “study_time” variable records each student’s reported weekly study time as one of the following categories: “&lt;2 hours”, “2 to 5 hours”, “5 to 10 hours”, or “&gt;10 hours”. Do students who report higher amounts of studying tend to get better final grades? Let’s compare the average final grade among students in each category using a bar plot.</p>
+<p>Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use sns.catplot() to create a bar plot with “study_time” on the x-axis and final grade (“G3”) on the y-axis, using the student_data DataFrame.</li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBiYXIgcGxvdCBvZiBhdmVyYWdlIGZpbmFsIGdyYWRlIGluIGVhY2ggc3R1ZHkgY2F0ZWdvcnlcblxuXG5cblxuIyBTaG93IHBsb3RcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Create bar plot of average final grade in each study category
+
+
+
+
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="box-plots" class="section level2">
 <h2><strong>Box plots</strong></h2>
+<p><strong>1. Creating a box plot</strong></p>
+<p>Hello! In this video we’ll learn how to create a new type of categorical plot: the box plot.</p>
+<p><strong>2. What is a box plot?</strong></p>
+<p>A box plot shows the distribution of quantitative data. The colored box represents the 25th to 75th percentile, and the line in the middle of the box represents the median. The whiskers give a sense of the spread of the distribution, and the floating points represent outliers. Box plots are commonly used as a way to compare the distribution of a quantitative variable across different groups of a categorical variable. To see this, let’s look at this example. The box plot shown here uses the tips dataset and compares the distribution of the total bill paid per table across the different days of the week. From this box plot we can quickly see that the median bill is higher on Saturday and Sunday, but the spread of the distribution is also larger. This comparison would be much harder to do with other types of visualizations.</p>
+<p><strong>3. How to create a box plot</strong></p>
+<p>Now let’s look at how to create a box plot in Seaborn. While Seaborn does have a “boxplot()” function, we’ll be using the “catplot()” function that we introduced in an earlier lesson because it makes it easy to create subplots using the “col” and “row” parameters. We’ll put the categorical variable “time” on the x-axis and the quantitative variable “total bill” on the y-axis. Here, we want box plots, so we’ll specify kind=“box”. That’s it! We have a nice looking box plot. Next, we’ll look at different ways to customize this plot.</p>
+<p><strong>4. Change the order of categories</strong></p>
+<p>As a reminder, “catplot” allows you to change the order of the categories using the “order” parameter. Here, we specified that “dinner” should be shown before “lunch”.</p>
+<p><strong>5. Omitting the outliers using <code>sym</code></strong></p>
+<p>Occasionally, you may want to omit the outliers from your box plot. You can do this using the “sym” parameter. If you pass an empty string into “sym”, it will omit the outliers from your plot altogether. “Sym” can also be used to change the appearance of the outliers instead of omitting them.</p>
+<p><strong>6. Changing the whiskers using <code>whis</code></strong></p>
+<p>By default, the whiskers extend to 1 point 5 times the interquartile range, or “IQR”. The IQR is the 25th to the 75th percentile of a distribution of data. If you want to change the way the whiskers in your box plot are defined, you can do this using the “whis” parameter. There are several options for changing the whiskers. You can change the range of the whiskers from 1 point 5 times the IQR (which is the default) to 2 times the IQR by setting “whis” equal to 2 point 0. Alternatively, you can have the whiskers define specific lower and upper percentiles by passing in a list of the lower and upper values. In this example, passing in “[5, 95]” will result in the lower whisker being drawn at the 5th percentile and the upper whisker being drawn at the 95th percentile. Finally, you may just want to draw the whiskers at the min and max values. You can do this by specifying the lower percentile as 0 and the upper percentile as 100.</p>
+<p><strong>7. Changing the whiskers using <code>whis</code></strong></p>
+<p>Here’s an example where the whiskers are set to the min and max values. Note that there are no outliers, because the box and whiskers cover the entire range of the data.</p>
+<p><strong>8. Let’s practice!</strong></p>
+<p>Let’s now practice creating and customizing box plots!</p>
 </div>
 <div id="create-and-interpret-a-box-plot" class="section level2">
 <h2><strong>Create and interpret a box plot</strong></h2>
+<p>Let’s continue using the student_data dataset. In an earlier exercise, we explored the relationship between studying and final grade by using a bar plot to compare the average final grade (“G3”) among students in different categories of “study_time”.</p>
+<p>In this exercise, we’ll try using a box plot look at this relationship instead. As a reminder, to create a box plot you’ll need to use the catplot() function and specify the name of the categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of plot (kind=“box”).</p>
+<p>We have already imported matplotlib.pyplot as plt and seaborn as sns.</p>
+<p><strong>Instructions</strong></p>
+<p>Use sns.catplot() and the student_data DataFrame to create a box plot with “study_time” on the x-axis and “G3” on the y-axis. Set the ordering of the categories to study_time_order.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFNwZWNpZnkgdGhlIGNhdGVnb3J5IG9yZGVyaW5nXG5zdHVkeV90aW1lX29yZGVyID0gW1wiPDIgaG91cnNcIiwgXCIyIHRvIDUgaG91cnNcIiwgXG4gICAgICAgICAgICAgICAgICAgIFwiNSB0byAxMCBob3Vyc1wiLCBcIj4xMCBob3Vyc1wiXVxuXG4jIENyZWF0ZSBhIGJveCBwbG90IGFuZCBzZXQgdGhlIG9yZGVyIG9mIHRoZSBjYXRlZ29yaWVzXG5cblxuXG5cblxuIyBTaG93IHBsb3RcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Specify the category ordering
+study_time_order = [&quot;&lt;2 hours&quot;, &quot;2 to 5 hours&quot;, 
+                    &quot;5 to 10 hours&quot;, &quot;&gt;10 hours&quot;]
+
+# Create a box plot and set the order of the categories
+
+
+
+
+
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="oimtting-outliers" class="section level2">
 <h2><strong>Oimtting outliers</strong></h2>
+<p>Now let’s use the student_data dataset to compare the distribution of final grades (“G3”) between students who have internet access at home and those who don’t. To do this, we’ll use the “internet” variable, which is a binary (yes/no) indicator of whether the student has internet access at home.</p>
+<p>Since internet may be less accessible in rural areas, we’ll add subgroups based on where the student lives. For this, we can use the “location” variable, which is an indicator of whether a student lives in an urban (“Urban”) or rural (“Rural”) location.</p>
+<p>Seaborn has already been imported as sns and matplotlib.pyplot has been imported as plt. As a reminder, you can omit outliers in box plots by setting the sym parameter equal to an empty string (&quot;&quot;).</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use sns.catplot() to create a box plot with the student_data DataFrame, putting “internet” on the x-axis and “G3” on the y-axis.</li>
+<li>Add subgroups so each box plot is colored based on “location”.</li>
+<li>Do not display the outliers.</li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBhIGJveCBwbG90IHdpdGggc3ViZ3JvdXBzIGFuZCBvbWl0IHRoZSBvdXRsaWVyc1xuXG5cblxuXG5cblxuIyBTaG93IHBsb3RcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Create a box plot with subgroups and omit the outliers
+
+
+
+
+
+
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="adjusting-the-whiskers" class="section level2">
 <h2><strong>Adjusting the whiskers</strong></h2>
+<p>In the lesson we saw that there are multiple ways to define the whiskers in a box plot. In this set of exercises, we’ll continue to use the student_data dataset to compare the distribution of final grades (“G3”) between students who are in a romantic relationship and those that are not. We’ll use the “romantic” variable, which is a yes/no indicator of whether the student is in a romantic relationship.</p>
+<p>Let’s create a box plot to look at this relationship and try different ways to define the whiskers.</p>
+<p>We’ve already imported Seaborn as sns and matplotlib.pyplot as plt.</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li>Adjust the code to make the box plot whiskers to extend to 0.5 * IQR. Recall: the IQR is the interquartile range.</li>
+<li>Change the code to set the whiskers to extend to the 5th and 95th percentiles.</li>
+<li>Change the code to set the whiskers to extend to the min and max values.</li>
+</ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFNldCB0aGUgd2hpc2tlcnMgdG8gMC41ICogSVFSXG5zbnMuY2F0cGxvdCh4PVwicm9tYW50aWNcIiwgeT1cIkczXCIsXG4gICAgICAgICAgICBkYXRhPXN0dWRlbnRfZGF0YSxcbiAgICAgICAgICAgIGtpbmQ9XCJib3hcIilcblxuIyBTaG93IHBsb3RcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Set the whiskers to 0.5 * IQR
+sns.catplot(x=&quot;romantic&quot;, y=&quot;G3&quot;,
+            data=student_data,
+            kind=&quot;box&quot;)
+
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="point-plots" class="section level2">
 <h2><strong>Point plots</strong></h2>
+<p><strong>1. Point plots</strong></p>
+<p>Welcome! So far we’ve seen several types of categorical plots including count plots, bar plots, and box plots. In this lesson, we’ll see one final categorical plot: point plots.</p>
+<p><strong>2. What are point plots?</strong></p>
+<p>Point plots show the mean of a quantitative variable for the observations in each category, plotted as a single point. This point plot uses the tips dataset and shows the average bill among smokers versus non-smokers. The vertical bars extending above and below the mean represent the 95% confidence intervals for that mean. Just like the confidence intervals we saw in line plots and bar plots, these confidence intervals show us the level of uncertainty we have about these mean estimates. Assuming our data is a random sample of some population, we can be 95% sure that the true population mean in each group lies within the confidence interval shown.</p>
+<p><strong>3. Point plots vs. line plots</strong></p>
+<p>You may be thinking: point plots look a lot like line plots. What’s the difference?</p>
+<p><strong>4. Point plots vs. line plots</strong></p>
+<p>Both line plots and point plots show the mean of a quantitative variable and 95% confidence intervals for the mean. However, there is a key difference. Line plots are relational plots, so both the x- and y-axis are quantitative variables. In a point plot, one axis - usually the x-axis - is a categorical variable, making it a categorical plot.</p>
+<p><strong>5. Point plots vs. bar plots</strong></p>
+<p>You may also be thinking: point plots seem to show the same information as bar plots. For each category, both show the mean of a quantitative variable and the confidence intervals for those means. When should we use one over the other? Let’s look at an example using data from the masculinity survey that we’ve seen in prior lessons.</p>
+<p><strong>6. Point plots vs. bar plots</strong></p>
+<p>This is a bar plot of the percent of men per age group surveyed who report thinking that it’s important that others see them as masculine, with subgroups based on whether they report feeling masculine or not. This is the same information, represented as a point plot. In the point plot, it’s easier to compare the heights of the subgroup points when they’re stacked above each other. In the point plot, it’s also easier to look at the differences in slope between the categories than it is to compare the heights of the bars between them.</p>
+<p><strong>7. Creating a point plot</strong></p>
+<p>Here’s the code to create the point plot we just saw. Since this is a categorical plot, we use “catplot” and set “kind” equal to “point”.</p>
+<p><strong>8. Disconnecting the points</strong></p>
+<p>Sometimes we may want to remove the lines connecting each point, perhaps because we only wish to compare within a category group and not between them. To do this, set the “join” parameter equal to False.</p>
+<p><strong>9. Displaying the median</strong></p>
+<p>Let’s return to the point plot using the tips dataset and go over a few more ways to customize your point plots. Here is the point plot of average bill comparing smokers to non-smokers.</p>
+<p><strong>10. Displaying the median</strong></p>
+<p>To have the points and confidence intervals be calculated for the median instead of the mean, import the median function from the numpy library and set “estimator” equal to the numpy median function. Why might you want to use the median instead of the mean? The median is more robust to outliers, so if your dataset has a lot of outliers, the median may be a better statistic to use.</p>
+<p><strong>11. Customizing the confidence intervals</strong></p>
+<p>You can also customize the way that the confidence intervals are displayed. To add “caps” to the end of the confidence intervals, set the “capsize” parameter equal to the desired width of the caps. In this case, we chose a width of 0.2.</p>
+<p><strong>12. Turning off confidence intervals</strong></p>
+<p>Finally, like we saw with line plots and bar plots, you can turn the confidence intervals off by setting the “ci” parameter equal to None.</p>
+<p><strong>13. Let’s practice!</strong></p>
+<p>Alright! Now that we’ve covered how to interpret and customize point plots, let’s practice what we’ve learned!</p>
 </div>
 <div id="customizing-point-plots" class="section level2">
 <h2><strong>Customizing point plots</strong></h2>
+<p>Let’s continue to look at data from students in secondary school, this time using a point plot to answer the question: does the quality of the student’s family relationship influence the number of absences the student has in school? Here, we’ll use the “famrel” variable, which describes the quality of a student’s family relationship from 1 (very bad) to 5 (very good).</p>
+<p>As a reminder, to create a point plot, use the catplot() function and specify the name of the categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of categorical plot (kind=“point”).</p>
+<p>We’ve already imported Seaborn as sns and matplotlib.pyplot as plt.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use sns.catplot() and the student_data DataFrame to create a point plot with “famrel” on the x-axis and number of absences (“absences”) on the y-axis.</li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBhIHBvaW50IHBsb3Qgb2YgZmFtaWx5IHJlbGF0aW9uc2hpcCB2cy4gYWJzZW5jZXNcblxuXG5cbiAgICAgICAgICAgIFxuIyBTaG93IHBsb3RcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Create a point plot of family relationship vs. absences
+
+            
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="point-plots-with-subplots" class="section level2">
 <h2><strong>Point plots with subplots</strong></h2>
+<p>Let’s continue exploring the dataset of students in secondary school. This time, we’ll ask the question: is being in a romantic relationship associated with higher or lower school attendance? And does this association differ by which school the students attend? Let’s find out using a point plot.</p>
+<p>We’ve already imported Seaborn as sns and matplotlib.pyplot as plt.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use sns.catplot() and the student_data DataFrame to create a point plot with relationship status (“romantic”) on the x-axis and number of absences (“absences”) on the y-axis. Create subgroups based on the school that they attend (“school”).</li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBhIHBvaW50IHBsb3Qgd2l0aCBzdWJncm91cHNcblxuXG5cblxuIyBTaG93IHBsb3RcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Create a point plot with subgroups
+
+
+
+
+# Show plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDMgLSBWaXN1YWxpemluZyBhIGNhdGVnb3JpY2FsIGFuZCBxdWFudGl0YXRpdmUgdmFyaWFibGUiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCmBgYHtweXRob24gc2V0dXAsIGluY2x1ZGU9RkFMU0V9CmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkKaW1wb3J0IHBhbmRhcyBhcyBwZAoKY291bnRyaWVzID0gcGQucmVhZF9jc3YoJy9ob21lL2NsYS9Eb2N1bWVudG9zL1ZpdG9yL0RhdGFDYW1wL0RhdGEtU2NpZW50aXN0LXdpdGgtUHl0aG9uL0RhdGFzZXRzL2NvdW50cmllcy1vZi10aGUtd29ybGQuY3N2JykKY291bnRyaWVzID0gY291bnRyaWVzLnJlcGxhY2UodG9fcmVwbGFjZSA9ICcsJywgdmFsdWUgPSAnLicsIHJlZ2V4ID0gVHJ1ZSkKY291bnRyaWVzWydQaG9uZXMgKHBlciAxMDAwKSddID0gY291bnRyaWVzWydQaG9uZXMgKHBlciAxMDAwKSddLmFzdHlwZShmbG9hdCwgZXJyb3JzID0gJ3JhaXNlJykKY291bnRyaWVzWydMaXRlcmFjeSAoJSknXSA9IGNvdW50cmllc1snTGl0ZXJhY3kgKCUpJ10uYXN0eXBlKGZsb2F0LCBlcnJvcnMgPSAncmFpc2UnKQpnZHAgPSBsaXN0KGNvdW50cmllc1snR0RQICgkIHBlciBjYXBpdGEpJ10pCnBob25lcyA9IGxpc3QoY291bnRyaWVzWydQaG9uZXMgKHBlciAxMDAwKSddKQpwZXJjZW50X2xpdGVyYXRlID0gbGlzdChjb3VudHJpZXNbJ0xpdGVyYWN5ICglKSddKQpyZWdpb24gPSBsaXN0KGNvdW50cmllcy5SZWdpb24pCmNzdl9maWxlcGF0aCA9ICcvaG9tZS9jbGEvRG9jdW1lbnRvcy9WaXRvci9EYXRhQ2FtcC9EYXRhLVNjaWVudGlzdC13aXRoLVB5dGhvbi9EYXRhc2V0cy95b3VuZy1wZW9wbGUtc3VydmV5LXJlc3BvbnNlcy5jc3YnCnN0dWRlbnRfZGF0YSA9IHBkLnJlYWRfY3N2KCcvaG9tZS9jbGEvRG9jdW1lbnRvcy9WaXRvci9EYXRhQ2FtcC9EYXRhLVNjaWVudGlzdC13aXRoLVB5dGhvbi9EYXRhc2V0cy9zdHVkZW50LWFsY29ob2wtY29uc3VtcHRpb24uY3N2JykKYGBgCgojIyAqKkNvdW50IHBsb3RzIGFuZCBiYXIgcGxvdHMqKgoKIyMgKipDb3VudCBwbG90cyoqCgoKYGBge3B5dGhvbn0KCmBgYAoKIyMgKipCYXIgcGxvdHMgd2l0aCBwZXJjZW50YWdlcyoqCgoKYGBge3B5dGhvbn0KCmBgYAoKIyMgKipDdXN0b21pemluZyBiYXIgcGxvdHMqKgoKCmBgYHtweXRob259CgpgYGAKCiMjICoqQm94IHBsb3RzKioKCiMjICoqQ3JlYXRlIGFuZCBpbnRlcnByZXQgYSBib3ggcGxvdCoqCgpgYGB7cHl0aG9ufQoKYGBgCgojIyAqKk9pbXR0aW5nIG91dGxpZXJzKioKCgpgYGB7cHl0aG9ufQoKYGBgCgojIyAqKkFkanVzdGluZyB0aGUgd2hpc2tlcnMqKgoKCmBgYHtweXRob259CgpgYGAKCiMjICoqUG9pbnQgcGxvdHMqKgoKIyMgKipDdXN0b21pemluZyBwb2ludCBwbG90cyoqCgpgYGB7cHl0aG9ufQoKYGBgCgojIyAqKlBvaW50IHBsb3RzIHdpdGggc3VicGxvdHMqKgoKCgpgYGB7cHl0aG9ufQoKYGBgCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDMgLSBWaXN1YWxpemluZyBhIGNhdGVnb3JpY2FsIGFuZCBxdWFudGl0YXRpdmUgdmFyaWFibGUiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCmBgYHtweXRob24gc2V0dXAsIGluY2x1ZGU9RkFMU0V9CmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkKaW1wb3J0IHBhbmRhcyBhcyBwZAoKY291bnRyaWVzID0gcGQucmVhZF9jc3YoJy9ob21lL2NsYS9Eb2N1bWVudG9zL1ZpdG9yL0RhdGFDYW1wL0RhdGEtU2NpZW50aXN0LXdpdGgtUHl0aG9uL0RhdGFzZXRzL2NvdW50cmllcy1vZi10aGUtd29ybGQuY3N2JykKY291bnRyaWVzID0gY291bnRyaWVzLnJlcGxhY2UodG9fcmVwbGFjZSA9ICcsJywgdmFsdWUgPSAnLicsIHJlZ2V4ID0gVHJ1ZSkKY291bnRyaWVzWydQaG9uZXMgKHBlciAxMDAwKSddID0gY291bnRyaWVzWydQaG9uZXMgKHBlciAxMDAwKSddLmFzdHlwZShmbG9hdCwgZXJyb3JzID0gJ3JhaXNlJykKY291bnRyaWVzWydMaXRlcmFjeSAoJSknXSA9IGNvdW50cmllc1snTGl0ZXJhY3kgKCUpJ10uYXN0eXBlKGZsb2F0LCBlcnJvcnMgPSAncmFpc2UnKQpnZHAgPSBsaXN0KGNvdW50cmllc1snR0RQICgkIHBlciBjYXBpdGEpJ10pCnBob25lcyA9IGxpc3QoY291bnRyaWVzWydQaG9uZXMgKHBlciAxMDAwKSddKQpwZXJjZW50X2xpdGVyYXRlID0gbGlzdChjb3VudHJpZXNbJ0xpdGVyYWN5ICglKSddKQpyZWdpb24gPSBsaXN0KGNvdW50cmllcy5SZWdpb24pCmNzdl9maWxlcGF0aCA9ICcvaG9tZS9jbGEvRG9jdW1lbnRvcy9WaXRvci9EYXRhQ2FtcC9EYXRhLVNjaWVudGlzdC13aXRoLVB5dGhvbi9EYXRhc2V0cy95b3VuZy1wZW9wbGUtc3VydmV5LXJlc3BvbnNlcy5jc3YnCnN0dWRlbnRfZGF0YSA9IHBkLnJlYWRfY3N2KCcvaG9tZS9jbGEvRG9jdW1lbnRvcy9WaXRvci9EYXRhQ2FtcC9EYXRhLVNjaWVudGlzdC13aXRoLVB5dGhvbi9EYXRhc2V0cy9zdHVkZW50LWFsY29ob2wtY29uc3VtcHRpb24uY3N2JykKdGlwcyA9IHNucy5sb2FkX2RhdGFzZXQoJ3RpcHMnKQptcGcgPSBzbnMubG9hZF9kYXRhc2V0KCdtcGcnKQpgYGAKCiMjICoqQ291bnQgcGxvdHMgYW5kIGJhciBwbG90cyoqCgoqKjEuIENvdW50IHBsb3RzIGFuZCBiYXIgcGxvdHMqKgoKV2VsY29tZSB0byBDaGFwdGVyIDMhIEluIHRoaXMgY2hhcHRlciwgd2UnbGwgZm9jdXMgb24gdmlzdWFsaXphdGlvbnMgdGhhdCBpbnZvbHZlIGNhdGVnb3JpY2FsIHZhcmlhYmxlcy4gVGhlIGZpcnN0IHR3byBwbG90cyB3ZSdsbCBsb29rIGF0IGFyZSBjb3VudCBwbG90cyBhbmQgYmFyIHBsb3RzLgoKKioyLiBDYXRlZ29yaWNhbCBwbG90cyoqCgpDb3VudCBwbG90cyBhbmQgYmFyIHBsb3RzIGFyZSB0d28gdHlwZXMgb2YgdmlzdWFsaXphdGlvbnMgdGhhdCBTZWFib3JuIGNhbGxzICJjYXRlZ29yaWNhbCBwbG90cyIuIENhdGVnb3JpY2FsIHBsb3RzIGludm9sdmUgYSBjYXRlZ29yaWNhbCB2YXJpYWJsZSwgd2hpY2ggaXMgYSB2YXJpYWJsZSB0aGF0IGNvbnNpc3RzIG9mIGEgZml4ZWQsIHR5cGljYWxseSBzbWFsbCBudW1iZXIgb2YgcG9zc2libGUgdmFsdWVzLCBvciBjYXRlZ29yaWVzLiBUaGVzZSB0eXBlcyBvZiBwbG90cyBhcmUgY29tbW9ubHkgdXNlZCB3aGVuIHdlIHdhbnQgdG8gbWFrZSBjb21wYXJpc29ucyBiZXR3ZWVuIGRpZmZlcmVudCBncm91cHMuIFdlIGJlZ2FuIHRvIGV4cGxvcmUgY2F0ZWdvcmljYWwgcGxvdHMgaW4gQ2hhcHRlciAxIHdpdGggY291bnQgcGxvdHMuIEFzIGEgcmVtaW5kZXIsIGEgY291bnQgcGxvdCBkaXNwbGF5cyB0aGUgbnVtYmVyIG9mIG9ic2VydmF0aW9ucyBpbiBlYWNoIGNhdGVnb3J5LiBXZSBzYXcgc2V2ZXJhbCBleGFtcGxlcyBvZiBjb3VudCBwbG90cyBpbiBlYXJsaWVyIGNoYXB0ZXJzLCBsaWtlIHRoZSBudW1iZXIgb2YgbWVuIHJlcG9ydGluZyB0aGF0IHRoZXkgZmVlbCBtYXNjdWxpbmUuIE1vc3QgbWVuIHN1cnZleWVkIGhlcmUgZmVlbCAic29tZXdoYXQiIG9yICJ2ZXJ5IiBtYXNjdWxpbmUuCgoqKjMuIGNhdHBsb3QoKSoqCgpKdXN0IGxpa2Ugd2UgdXNlZCAicmVscGxvdCgpIiB0byBjcmVhdGUgZGlmZmVyZW50IHR5cGVzIG9mIHJlbGF0aW9uYWwgcGxvdHMsIGluIHRoaXMgY2hhcHRlciB3ZSdsbCBiZSB1c2luZyAiY2F0cGxvdCgpIiB0byBjcmVhdGUgZGlmZmVyZW50IHR5cGVzIG9mIGNhdGVnb3JpY2FsIHBsb3RzLiAiY2F0cGxvdCgpIiBvZmZlcnMgdGhlIHNhbWUgZmxleGliaWxpdHkgdGhhdCAicmVscGxvdCgpIiBkb2VzLCB3aGljaCBtZWFucyBpdCB3aWxsIGJlIGVhc3kgdG8gY3JlYXRlIHN1YnBsb3RzIGlmIHdlIG5lZWQgdG8gdXNpbmcgdGhlIHNhbWUgImNvbCIgYW5kICJyb3ciIHBhcmFtZXRlcnMuCgoqKjQuIGNvdW50cGxvdCgpIHZzLiBjYXRwbG90KCkqKgoKVG8gc2VlIGhvdyAiY2F0cGxvdCgpIiB3b3JrcywgbGV0J3MgcmV0dXJuIHRvIHRoZSBtYXNjdWxpbml0eSBjb3VudCBwbG90LiBPbiB0aGUgbGVmdCwgd2Ugc2VlIGhvdyB3ZSBvcmlnaW5hbGx5IGNyZWF0ZWQgYSBjb3VudCBwbG90IHdpdGggdGhlICJjb3VudHBsb3QoKSIgZnVuY3Rpb24uCgoqKjUuIGNvdW50cGxvdCgpIHZzLiBjYXRwbG90KCkqKgoKVG8gbWFrZSB0aGlzIHBsb3Qgd2l0aCAiY2F0cGxvdCgpIiBpbnN0ZWFkLCB3ZSBjaGFuZ2UgdGhlIGZ1bmN0aW9uIG5hbWUgdG8gImNhdHBsb3QoKSIgYW5kIHVzZSB0aGUgImtpbmQiIHBhcmFtZXRlciB0byBzcGVjaWZ5IHdoYXQga2luZCBvZiBjYXRlZ29yaWNhbCBwbG90IHRvIHVzZS4gSW4gdGhpcyBjYXNlLCB3ZSdsbCBzZXQga2luZCBlcXVhbCB0byB0aGUgd29yZCAiY291bnQiLgoKKio2LiBDaGFuZ2luZyB0aGUgb3JkZXIqKgoKU29tZXRpbWVzIHRoZXJlIGlzIGEgc3BlY2lmaWMgb3JkZXJpbmcgb2YgY2F0ZWdvcmllcyB0aGF0IG1ha2VzIHNlbnNlIGZvciB0aGVzZSBwbG90cy4gSW4gdGhpcyBjYXNlLCBpdCBtYWtlcyBtb3JlIHNlbnNlIGZvciB0aGUgY2F0ZWdvcmllcyB0byBiZSBpbiBvcmRlciBmcm9tIG5vdCBtYXNjdWxpbmUgdG8gdmVyeSBtYXNjdWxpbmUuIFRvIGNoYW5nZSB0aGUgb3JkZXIgb2YgdGhlIGNhdGVnb3JpZXMsIGNyZWF0ZSBhIGxpc3Qgb2YgY2F0ZWdvcnkgdmFsdWVzIGluIHRoZSBvcmRlciB0aGF0IHlvdSB3YW50IHRoZW0gdG8gYXBwZWFyLCBhbmQgdGhlbiB1c2UgdGhlICJvcmRlciIgcGFyYW1ldGVyLiBUaGlzIHdvcmtzIGZvciBhbGwgdHlwZXMgb2YgY2F0ZWdvcmljYWwgcGxvdHMsIG5vdCBqdXN0IGNvdW50IHBsb3RzLgoKKio3LiBCYXIgcGxvdHMqKgpCYXIgcGxvdHMgbG9vayBzaW1pbGFyIHRvIGNvdW50IHBsb3RzLCBidXQgaW5zdGVhZCBvZiB0aGUgY291bnQgb2Ygb2JzZXJ2YXRpb25zIGluIGVhY2ggY2F0ZWdvcnksIHRoZXkgc2hvdyB0aGUgbWVhbiBvZiBhIHF1YW50aXRhdGl2ZSB2YXJpYWJsZSBhbW9uZyBvYnNlcnZhdGlvbnMgaW4gZWFjaCBjYXRlZ29yeS4gVGhpcyBiYXIgcGxvdCB1c2VzIHRoZSB0aXBzIGRhdGFzZXQgYW5kIHNob3dzIHRoZSBhdmVyYWdlIGJpbGwgcGFpZCBhbW9uZyBwZW9wbGUgd2hvIHZpc2l0ZWQgdGhlIHJlc3RhdXJhbnQgb24gZWFjaCBkYXkgb2YgdGhlIHdlZWsuIEZyb20gdGhpcywgd2UgY2FuIHNlZSB0aGF0IHRoZSBhdmVyYWdlIGJpbGwgaXMgc2xpZ2h0bHkgaGlnaGVyIG9uIHRoZSB3ZWVrZW5kcy4gVG8gY3JlYXRlIHRoaXMgYmFyIHBsb3QsIHdlIHVzZSAiY2F0cGxvdCIuIFNwZWNpZnkgdGhlIGNhdGVnb3JpY2FsIHZhcmlhYmxlICJkYXkiIG9uIHRoZSB4LWF4aXMsIHRoZSBxdWFudGl0YXRpdmUgdmFyaWFibGUgInRvdGFsIGJpbGwiIG9uIHRoZSB5LWF4aXMsIGFuZCBzZXQgdGhlICJraW5kIiBwYXJhbWV0ZXIgZXF1YWwgdG8gImJhciIuCgoqKjguIENvbmZpZGVuY2UgaW50ZXJ2YWxzKioKCk5vdGljZSBhbHNvIHRoYXQgU2VhYm9ybiBhdXRvbWF0aWNhbGx5IHNob3dzIDk1JSBjb25maWRlbmNlIGludGVydmFscyBmb3IgdGhlc2UgbWVhbnMuIEp1c3QgbGlrZSB3aXRoIGxpbmUgcGxvdHMsIHRoZXNlIGNvbmZpZGVuY2UgaW50ZXJ2YWxzIHNob3cgdXMgdGhlIGxldmVsIG9mIHVuY2VydGFpbnR5IHdlIGhhdmUgYWJvdXQgdGhlc2UgZXN0aW1hdGVzLiBBc3N1bWluZyBvdXIgZGF0YSBpcyBhIHJhbmRvbSBzYW1wbGUgb2Ygc29tZSBwb3B1bGF0aW9uLCB3ZSBjYW4gYmUgOTUlIHN1cmUgdGhhdCB0aGUgdHJ1ZSBwb3B1bGF0aW9uIG1lYW4gaW4gZWFjaCBncm91cCBsaWVzIHdpdGhpbiB0aGUgY29uZmlkZW5jZSBpbnRlcnZhbCBzaG93bi4KCioqOS4gVHVybmluZyBvZmYgY29uZmlkZW5jZSBpbnRlcnZhbHMqKgoKSWYgd2Ugd2FudCB0byB0dXJuIG9mZiB0aGVzZSBjb25maWRlbmNlIGludGVydmFscywgd2UgY2FuIGRvIHRoaXMgYnkgc2V0dGluZyB0aGUgImNpIiBwYXJhbWV0ZXIgZXF1YWwgdG8gIk5vbmUiIC0ganVzdCBsaWtlIHdlIGRpZCB3aXRoIGxpbmUgcGxvdHMuCgoqKjEwLiBDaGFuZ2luZyB0aGUgb3JpZW50YXRpb24qKgoKRmluYWxseSwgeW91IGNhbiBhbHNvIGNoYW5nZSB0aGUgb3JpZW50YXRpb24gb2YgdGhlIGJhcnMgaW4gYmFyIHBsb3RzIGFuZCBjb3VudCBwbG90cyBieSBzd2l0Y2hpbmcgdGhlIHggYW5kIHkgcGFyYW1ldGVycy4gSG93ZXZlciwgaXQgaXMgZmFpcmx5IGNvbW1vbiBwcmFjdGljZSB0byBwdXQgdGhlIGNhdGVnb3JpY2FsIHZhcmlhYmxlIG9uIHRoZSB4LWF4aXMuCgoqKjExLiBMZXQncyBwcmFjdGljZSEqKgoKV2UnbGwgaW50cm9kdWNlIG1vcmUgdHlwZXMgb2YgY2F0ZWdvcmljYWwgcGxvdHMgbGF0ZXIgaW4gdGhlIGNoYXB0ZXIsIGJ1dCBmb3Igbm93LCBsZXQncyBwcmFjdGljZSB3aGF0IHdlJ3ZlIGxlYXJuZWQhCgojIyAqKkNvdW50IHBsb3RzKioKCkluIHRoaXMgZXhlcmNpc2UsIHdlJ2xsIHJldHVybiB0byBleHBsb3Jpbmcgb3VyIGRhdGFzZXQgdGhhdCBjb250YWlucyB0aGUgcmVzcG9uc2VzIHRvIGEgc3VydmV5IHNlbnQgb3V0IHRvIHlvdW5nIHBlb3BsZS4gV2UgbWlnaHQgc3VzcGVjdCB0aGF0IHlvdW5nIHBlb3BsZSBzcGVuZCBhIGxvdCBvZiB0aW1lIG9uIHRoZSBpbnRlcm5ldCwgYnV0IGhvdyBtdWNoIGRvIHRoZXkgcmVwb3J0IHVzaW5nIHRoZSBpbnRlcm5ldCBlYWNoIGRheT8gTGV0J3MgdXNlIGEgY291bnQgcGxvdCB0byBicmVhayBkb3duIHRoZSBudW1iZXIgb2Ygc3VydmV5IHJlc3BvbnNlcyBpbiBlYWNoIGNhdGVnb3J5IGFuZCB0aGVuIGV4cGxvcmUgd2hldGhlciBpdCBjaGFuZ2VzIGJhc2VkIG9uIGFnZS4KCkFzIGEgcmVtaW5kZXIsIHRvIGNyZWF0ZSBhIGNvdW50IHBsb3QsIHdlJ2xsIHVzZSB0aGUgY2F0cGxvdCgpIGZ1bmN0aW9uIGFuZCBzcGVjaWZ5IHRoZSBuYW1lIG9mIHRoZSBjYXRlZ29yaWNhbCB2YXJpYWJsZSB0byBjb3VudCAoeD1fX19fKSwgdGhlIFBhbmRhcyBEYXRhRnJhbWUgdG8gdXNlIChkYXRhPV9fX18pLCBhbmQgdGhlIHR5cGUgb2YgcGxvdCAoa2luZD0iY291bnQiKS4KClNlYWJvcm4gaGFzIGJlZW4gaW1wb3J0ZWQgYXMgc25zIGFuZCBtYXRwbG90bGliLnB5cGxvdCBoYXMgYmVlbiBpbXBvcnRlZCBhcyBwbHQuCgoqKkluc3RydWN0aW9ucyoqCgotIFVzZSBzbnMuY2F0cGxvdCgpIHRvIGNyZWF0ZSBhIGNvdW50IHBsb3QgdXNpbmcgdGhlIHN1cnZleV9kYXRhIERhdGFGcmFtZSB3aXRoICJJbnRlcm5ldCB1c2FnZSIgb24gdGhlIHgtYXhpcy4KLSAKYGBge3B5dGhvbn0KIyBDcmVhdGUgY291bnQgcGxvdCBvZiBpbnRlcm5ldCB1c2FnZQoKCgojIFNob3cgcGxvdApwbHQuc2hvdygpCmBgYAoKIyMgKipCYXIgcGxvdHMgd2l0aCBwZXJjZW50YWdlcyoqCgpMZXQncyBjb250aW51ZSBleHBsb3JpbmcgdGhlIHJlc3BvbnNlcyB0byBhIHN1cnZleSBzZW50IG91dCB0byB5b3VuZyBwZW9wbGUuIFRoZSB2YXJpYWJsZSAiSW50ZXJlc3RlZCBpbiBNYXRoIiBpcyBUcnVlIGlmIHRoZSBwZXJzb24gcmVwb3J0ZWQgYmVpbmcgaW50ZXJlc3RlZCBvciB2ZXJ5IGludGVyZXN0ZWQgaW4gbWF0aGVtYXRpY3MsIGFuZCBGYWxzZSBvdGhlcndpc2UuIFdoYXQgcGVyY2VudGFnZSBvZiB5b3VuZyBwZW9wbGUgcmVwb3J0IGJlaW5nIGludGVyZXN0ZWQgaW4gbWF0aCwgYW5kIGRvZXMgdGhpcyB2YXJ5IGJhc2VkIG9uIGdlbmRlcj8gTGV0J3MgdXNlIGEgYmFyIHBsb3QgdG8gZmluZCBvdXQuCgpBcyBhIHJlbWluZGVyLCB3ZSdsbCBjcmVhdGUgYSBiYXIgcGxvdCB1c2luZyB0aGUgY2F0cGxvdCgpIGZ1bmN0aW9uLCBwcm92aWRpbmcgdGhlIG5hbWUgb2YgY2F0ZWdvcmljYWwgdmFyaWFibGUgdG8gcHV0IG9uIHRoZSB4LWF4aXMgKHg9X19fXyksIHRoZSBuYW1lIG9mIHRoZSBxdWFudGl0YXRpdmUgdmFyaWFibGUgdG8gc3VtbWFyaXplIG9uIHRoZSB5LWF4aXMgKHk9X19fXyksIHRoZSBQYW5kYXMgRGF0YUZyYW1lIHRvIHVzZSAoZGF0YT1fX19fKSwgYW5kIHRoZSB0eXBlIG9mIGNhdGVnb3JpY2FsIHBsb3QgKGtpbmQ9ImJhciIpLgoKU2VhYm9ybiBoYXMgYmVlbiBpbXBvcnRlZCBhcyBzbnMgYW5kIG1hdHBsb3RsaWIucHlwbG90IGhhcyBiZWVuIGltcG9ydGVkIGFzIHBsdC4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gVXNlIHRoZSBzdXJ2ZXlfZGF0YSBEYXRhRnJhbWUgYW5kIHNucy5jYXRwbG90KCkgdG8gY3JlYXRlIGEgYmFyIHBsb3Qgd2l0aCAiR2VuZGVyIiBvbiB0aGUgeC1heGlzIGFuZCAiSW50ZXJlc3RlZCBpbiBNYXRoIiBvbiB0aGUgeS1heGlzLgpgYGB7cHl0aG9ufQojIENyZWF0ZSBhIGJhciBwbG90IG9mIGludGVyZXN0IGluIG1hdGgsIHNlcGFyYXRlZCBieSBnZW5kZXIKCgoKIyBTaG93IHBsb3QKcGx0LnNob3coKQpgYGAKCiMjICoqQ3VzdG9taXppbmcgYmFyIHBsb3RzKioKCkluIHRoaXMgZXhlcmNpc2UsIHdlJ2xsIGV4cGxvcmUgZGF0YSBmcm9tIHN0dWRlbnRzIGluIHNlY29uZGFyeSBzY2hvb2wuIFRoZSAic3R1ZHlfdGltZSIgdmFyaWFibGUgcmVjb3JkcyBlYWNoIHN0dWRlbnQncyByZXBvcnRlZCB3ZWVrbHkgc3R1ZHkgdGltZSBhcyBvbmUgb2YgdGhlIGZvbGxvd2luZyBjYXRlZ29yaWVzOiAiPDIgaG91cnMiLCAiMiB0byA1IGhvdXJzIiwgIjUgdG8gMTAgaG91cnMiLCBvciAiPjEwIGhvdXJzIi4gRG8gc3R1ZGVudHMgd2hvIHJlcG9ydCBoaWdoZXIgYW1vdW50cyBvZiBzdHVkeWluZyB0ZW5kIHRvIGdldCBiZXR0ZXIgZmluYWwgZ3JhZGVzPyBMZXQncyBjb21wYXJlIHRoZSBhdmVyYWdlIGZpbmFsIGdyYWRlIGFtb25nIHN0dWRlbnRzIGluIGVhY2ggY2F0ZWdvcnkgdXNpbmcgYSBiYXIgcGxvdC4KClNlYWJvcm4gaGFzIGJlZW4gaW1wb3J0ZWQgYXMgc25zIGFuZCBtYXRwbG90bGliLnB5cGxvdCBoYXMgYmVlbiBpbXBvcnRlZCBhcyBwbHQuCgoqKkluc3RydWN0aW9ucyoqCgotIFVzZSBzbnMuY2F0cGxvdCgpIHRvIGNyZWF0ZSBhIGJhciBwbG90IHdpdGggInN0dWR5X3RpbWUiIG9uIHRoZSB4LWF4aXMgYW5kIGZpbmFsIGdyYWRlICgiRzMiKSBvbiB0aGUgeS1heGlzLCB1c2luZyB0aGUgc3R1ZGVudF9kYXRhIERhdGFGcmFtZS4KCmBgYHtweXRob259CiMgQ3JlYXRlIGJhciBwbG90IG9mIGF2ZXJhZ2UgZmluYWwgZ3JhZGUgaW4gZWFjaCBzdHVkeSBjYXRlZ29yeQoKCgoKIyBTaG93IHBsb3QKcGx0LnNob3coKQpgYGAKCiMjICoqQm94IHBsb3RzKioKCgoqKjEuIENyZWF0aW5nIGEgYm94IHBsb3QqKgoKSGVsbG8hIEluIHRoaXMgdmlkZW8gd2UnbGwgbGVhcm4gaG93IHRvIGNyZWF0ZSBhIG5ldyB0eXBlIG9mIGNhdGVnb3JpY2FsIHBsb3Q6IHRoZSBib3ggcGxvdC4KCioqMi4gV2hhdCBpcyBhIGJveCBwbG90PyoqCgpBIGJveCBwbG90IHNob3dzIHRoZSBkaXN0cmlidXRpb24gb2YgcXVhbnRpdGF0aXZlIGRhdGEuIFRoZSBjb2xvcmVkIGJveCByZXByZXNlbnRzIHRoZSAyNXRoIHRvIDc1dGggcGVyY2VudGlsZSwgYW5kIHRoZSBsaW5lIGluIHRoZSBtaWRkbGUgb2YgdGhlIGJveCByZXByZXNlbnRzIHRoZSBtZWRpYW4uIFRoZSB3aGlza2VycyBnaXZlIGEgc2Vuc2Ugb2YgdGhlIHNwcmVhZCBvZiB0aGUgZGlzdHJpYnV0aW9uLCBhbmQgdGhlIGZsb2F0aW5nIHBvaW50cyByZXByZXNlbnQgb3V0bGllcnMuIEJveCBwbG90cyBhcmUgY29tbW9ubHkgdXNlZCBhcyBhIHdheSB0byBjb21wYXJlIHRoZSBkaXN0cmlidXRpb24gb2YgYSBxdWFudGl0YXRpdmUgdmFyaWFibGUgYWNyb3NzIGRpZmZlcmVudCBncm91cHMgb2YgYSBjYXRlZ29yaWNhbCB2YXJpYWJsZS4gVG8gc2VlIHRoaXMsIGxldCdzIGxvb2sgYXQgdGhpcyBleGFtcGxlLiBUaGUgYm94IHBsb3Qgc2hvd24gaGVyZSB1c2VzIHRoZSB0aXBzIGRhdGFzZXQgYW5kIGNvbXBhcmVzIHRoZSBkaXN0cmlidXRpb24gb2YgdGhlIHRvdGFsIGJpbGwgcGFpZCBwZXIgdGFibGUgYWNyb3NzIHRoZSBkaWZmZXJlbnQgZGF5cyBvZiB0aGUgd2Vlay4gRnJvbSB0aGlzIGJveCBwbG90IHdlIGNhbiBxdWlja2x5IHNlZSB0aGF0IHRoZSBtZWRpYW4gYmlsbCBpcyBoaWdoZXIgb24gU2F0dXJkYXkgYW5kIFN1bmRheSwgYnV0IHRoZSBzcHJlYWQgb2YgdGhlIGRpc3RyaWJ1dGlvbiBpcyBhbHNvIGxhcmdlci4gVGhpcyBjb21wYXJpc29uIHdvdWxkIGJlIG11Y2ggaGFyZGVyIHRvIGRvIHdpdGggb3RoZXIgdHlwZXMgb2YgdmlzdWFsaXphdGlvbnMuCgoqKjMuIEhvdyB0byBjcmVhdGUgYSBib3ggcGxvdCoqCgpOb3cgbGV0J3MgbG9vayBhdCBob3cgdG8gY3JlYXRlIGEgYm94IHBsb3QgaW4gU2VhYm9ybi4gV2hpbGUgU2VhYm9ybiBkb2VzIGhhdmUgYSAiYm94cGxvdCgpIiBmdW5jdGlvbiwgd2UnbGwgYmUgdXNpbmcgdGhlICJjYXRwbG90KCkiIGZ1bmN0aW9uIHRoYXQgd2UgaW50cm9kdWNlZCBpbiBhbiBlYXJsaWVyIGxlc3NvbiBiZWNhdXNlIGl0IG1ha2VzIGl0IGVhc3kgdG8gY3JlYXRlIHN1YnBsb3RzIHVzaW5nIHRoZSAiY29sIiBhbmQgInJvdyIgcGFyYW1ldGVycy4gV2UnbGwgcHV0IHRoZSBjYXRlZ29yaWNhbCB2YXJpYWJsZSAidGltZSIgb24gdGhlIHgtYXhpcyBhbmQgdGhlIHF1YW50aXRhdGl2ZSB2YXJpYWJsZSAidG90YWwgYmlsbCIgb24gdGhlIHktYXhpcy4gSGVyZSwgd2Ugd2FudCBib3ggcGxvdHMsIHNvIHdlJ2xsIHNwZWNpZnkga2luZD0iYm94Ii4gVGhhdCdzIGl0ISBXZSBoYXZlIGEgbmljZSBsb29raW5nIGJveCBwbG90LiBOZXh0LCB3ZSdsbCBsb29rIGF0IGRpZmZlcmVudCB3YXlzIHRvIGN1c3RvbWl6ZSB0aGlzIHBsb3QuCgoqKjQuIENoYW5nZSB0aGUgb3JkZXIgb2YgY2F0ZWdvcmllcyoqCgpBcyBhIHJlbWluZGVyLCAiY2F0cGxvdCIgYWxsb3dzIHlvdSB0byBjaGFuZ2UgdGhlIG9yZGVyIG9mIHRoZSBjYXRlZ29yaWVzIHVzaW5nIHRoZSAib3JkZXIiIHBhcmFtZXRlci4gSGVyZSwgd2Ugc3BlY2lmaWVkIHRoYXQgImRpbm5lciIgc2hvdWxkIGJlIHNob3duIGJlZm9yZSAibHVuY2giLgoKKio1LiBPbWl0dGluZyB0aGUgb3V0bGllcnMgdXNpbmcgYHN5bWAqKgoKT2NjYXNpb25hbGx5LCB5b3UgbWF5IHdhbnQgdG8gb21pdCB0aGUgb3V0bGllcnMgZnJvbSB5b3VyIGJveCBwbG90LiBZb3UgY2FuIGRvIHRoaXMgdXNpbmcgdGhlICJzeW0iIHBhcmFtZXRlci4gSWYgeW91IHBhc3MgYW4gZW1wdHkgc3RyaW5nIGludG8gInN5bSIsIGl0IHdpbGwgb21pdCB0aGUgb3V0bGllcnMgZnJvbSB5b3VyIHBsb3QgYWx0b2dldGhlci4gIlN5bSIgY2FuIGFsc28gYmUgdXNlZCB0byBjaGFuZ2UgdGhlIGFwcGVhcmFuY2Ugb2YgdGhlIG91dGxpZXJzIGluc3RlYWQgb2Ygb21pdHRpbmcgdGhlbS4KCioqNi4gQ2hhbmdpbmcgdGhlIHdoaXNrZXJzIHVzaW5nIGB3aGlzYCoqCgpCeSBkZWZhdWx0LCB0aGUgd2hpc2tlcnMgZXh0ZW5kIHRvIDEgcG9pbnQgNSB0aW1lcyB0aGUgaW50ZXJxdWFydGlsZSByYW5nZSwgb3IgIklRUiIuIFRoZSBJUVIgaXMgdGhlIDI1dGggdG8gdGhlIDc1dGggcGVyY2VudGlsZSBvZiBhIGRpc3RyaWJ1dGlvbiBvZiBkYXRhLiBJZiB5b3Ugd2FudCB0byBjaGFuZ2UgdGhlIHdheSB0aGUgd2hpc2tlcnMgaW4geW91ciBib3ggcGxvdCBhcmUgZGVmaW5lZCwgeW91IGNhbiBkbyB0aGlzIHVzaW5nIHRoZSAid2hpcyIgcGFyYW1ldGVyLiBUaGVyZSBhcmUgc2V2ZXJhbCBvcHRpb25zIGZvciBjaGFuZ2luZyB0aGUgd2hpc2tlcnMuIFlvdSBjYW4gY2hhbmdlIHRoZSByYW5nZSBvZiB0aGUgd2hpc2tlcnMgZnJvbSAxIHBvaW50IDUgdGltZXMgdGhlIElRUiAod2hpY2ggaXMgdGhlIGRlZmF1bHQpIHRvIDIgdGltZXMgdGhlIElRUiBieSBzZXR0aW5nICJ3aGlzIiBlcXVhbCB0byAyIHBvaW50IDAuIEFsdGVybmF0aXZlbHksIHlvdSBjYW4gaGF2ZSB0aGUgd2hpc2tlcnMgZGVmaW5lIHNwZWNpZmljIGxvd2VyIGFuZCB1cHBlciBwZXJjZW50aWxlcyBieSBwYXNzaW5nIGluIGEgbGlzdCBvZiB0aGUgbG93ZXIgYW5kIHVwcGVyIHZhbHVlcy4gSW4gdGhpcyBleGFtcGxlLCBwYXNzaW5nIGluICJbNSwgOTVdIiB3aWxsIHJlc3VsdCBpbiB0aGUgbG93ZXIgd2hpc2tlciBiZWluZyBkcmF3biBhdCB0aGUgNXRoIHBlcmNlbnRpbGUgYW5kIHRoZSB1cHBlciB3aGlza2VyIGJlaW5nIGRyYXduIGF0IHRoZSA5NXRoIHBlcmNlbnRpbGUuIEZpbmFsbHksIHlvdSBtYXkganVzdCB3YW50IHRvIGRyYXcgdGhlIHdoaXNrZXJzIGF0IHRoZSBtaW4gYW5kIG1heCB2YWx1ZXMuIFlvdSBjYW4gZG8gdGhpcyBieSBzcGVjaWZ5aW5nIHRoZSBsb3dlciBwZXJjZW50aWxlIGFzIDAgYW5kIHRoZSB1cHBlciBwZXJjZW50aWxlIGFzIDEwMC4KCioqNy4gQ2hhbmdpbmcgdGhlIHdoaXNrZXJzIHVzaW5nIGB3aGlzYCoqCgpIZXJlJ3MgYW4gZXhhbXBsZSB3aGVyZSB0aGUgd2hpc2tlcnMgYXJlIHNldCB0byB0aGUgbWluIGFuZCBtYXggdmFsdWVzLiBOb3RlIHRoYXQgdGhlcmUgYXJlIG5vIG91dGxpZXJzLCBiZWNhdXNlIHRoZSBib3ggYW5kIHdoaXNrZXJzIGNvdmVyIHRoZSBlbnRpcmUgcmFuZ2Ugb2YgdGhlIGRhdGEuCgoqKjguIExldCdzIHByYWN0aWNlISoqCgpMZXQncyBub3cgcHJhY3RpY2UgY3JlYXRpbmcgYW5kIGN1c3RvbWl6aW5nIGJveCBwbG90cyEKCiMjICoqQ3JlYXRlIGFuZCBpbnRlcnByZXQgYSBib3ggcGxvdCoqCgpMZXQncyBjb250aW51ZSB1c2luZyB0aGUgc3R1ZGVudF9kYXRhIGRhdGFzZXQuIEluIGFuIGVhcmxpZXIgZXhlcmNpc2UsIHdlIGV4cGxvcmVkIHRoZSByZWxhdGlvbnNoaXAgYmV0d2VlbiBzdHVkeWluZyBhbmQgZmluYWwgZ3JhZGUgYnkgdXNpbmcgYSBiYXIgcGxvdCB0byBjb21wYXJlIHRoZSBhdmVyYWdlIGZpbmFsIGdyYWRlICgiRzMiKSBhbW9uZyBzdHVkZW50cyBpbiBkaWZmZXJlbnQgY2F0ZWdvcmllcyBvZiAic3R1ZHlfdGltZSIuCgpJbiB0aGlzIGV4ZXJjaXNlLCB3ZSdsbCB0cnkgdXNpbmcgYSBib3ggcGxvdCBsb29rIGF0IHRoaXMgcmVsYXRpb25zaGlwIGluc3RlYWQuIEFzIGEgcmVtaW5kZXIsIHRvIGNyZWF0ZSBhIGJveCBwbG90IHlvdSdsbCBuZWVkIHRvIHVzZSB0aGUgY2F0cGxvdCgpIGZ1bmN0aW9uIGFuZCBzcGVjaWZ5IHRoZSBuYW1lIG9mIHRoZSBjYXRlZ29yaWNhbCB2YXJpYWJsZSB0byBwdXQgb24gdGhlIHgtYXhpcyAoeD1fX19fKSwgdGhlIG5hbWUgb2YgdGhlIHF1YW50aXRhdGl2ZSB2YXJpYWJsZSB0byBzdW1tYXJpemUgb24gdGhlIHktYXhpcyAoeT1fX19fKSwgdGhlIFBhbmRhcyBEYXRhRnJhbWUgdG8gdXNlIChkYXRhPV9fX18pLCBhbmQgdGhlIHR5cGUgb2YgcGxvdCAoa2luZD0iYm94IikuCgpXZSBoYXZlIGFscmVhZHkgaW1wb3J0ZWQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0IGFuZCBzZWFib3JuIGFzIHNucy4KCioqSW5zdHJ1Y3Rpb25zKioKClVzZSBzbnMuY2F0cGxvdCgpIGFuZCB0aGUgc3R1ZGVudF9kYXRhIERhdGFGcmFtZSB0byBjcmVhdGUgYSBib3ggcGxvdCB3aXRoICJzdHVkeV90aW1lIiBvbiB0aGUgeC1heGlzIGFuZCAiRzMiIG9uIHRoZSB5LWF4aXMuIFNldCB0aGUgb3JkZXJpbmcgb2YgdGhlIGNhdGVnb3JpZXMgdG8gc3R1ZHlfdGltZV9vcmRlci4KCmBgYHtweXRob259CiMgU3BlY2lmeSB0aGUgY2F0ZWdvcnkgb3JkZXJpbmcKc3R1ZHlfdGltZV9vcmRlciA9IFsiPDIgaG91cnMiLCAiMiB0byA1IGhvdXJzIiwgCiAgICAgICAgICAgICAgICAgICAgIjUgdG8gMTAgaG91cnMiLCAiPjEwIGhvdXJzIl0KCiMgQ3JlYXRlIGEgYm94IHBsb3QgYW5kIHNldCB0aGUgb3JkZXIgb2YgdGhlIGNhdGVnb3JpZXMKCgoKCgojIFNob3cgcGxvdApwbHQuc2hvdygpCmBgYAoKIyMgKipPaW10dGluZyBvdXRsaWVycyoqCgpOb3cgbGV0J3MgdXNlIHRoZSBzdHVkZW50X2RhdGEgZGF0YXNldCB0byBjb21wYXJlIHRoZSBkaXN0cmlidXRpb24gb2YgZmluYWwgZ3JhZGVzICgiRzMiKSBiZXR3ZWVuIHN0dWRlbnRzIHdobyBoYXZlIGludGVybmV0IGFjY2VzcyBhdCBob21lIGFuZCB0aG9zZSB3aG8gZG9uJ3QuIFRvIGRvIHRoaXMsIHdlJ2xsIHVzZSB0aGUgImludGVybmV0IiB2YXJpYWJsZSwgd2hpY2ggaXMgYSBiaW5hcnkgKHllcy9ubykgaW5kaWNhdG9yIG9mIHdoZXRoZXIgdGhlIHN0dWRlbnQgaGFzIGludGVybmV0IGFjY2VzcyBhdCBob21lLgoKU2luY2UgaW50ZXJuZXQgbWF5IGJlIGxlc3MgYWNjZXNzaWJsZSBpbiBydXJhbCBhcmVhcywgd2UnbGwgYWRkIHN1Ymdyb3VwcyBiYXNlZCBvbiB3aGVyZSB0aGUgc3R1ZGVudCBsaXZlcy4gRm9yIHRoaXMsIHdlIGNhbiB1c2UgdGhlICJsb2NhdGlvbiIgdmFyaWFibGUsIHdoaWNoIGlzIGFuIGluZGljYXRvciBvZiB3aGV0aGVyIGEgc3R1ZGVudCBsaXZlcyBpbiBhbiB1cmJhbiAoIlVyYmFuIikgb3IgcnVyYWwgKCJSdXJhbCIpIGxvY2F0aW9uLgoKU2VhYm9ybiBoYXMgYWxyZWFkeSBiZWVuIGltcG9ydGVkIGFzIHNucyBhbmQgbWF0cGxvdGxpYi5weXBsb3QgaGFzIGJlZW4gaW1wb3J0ZWQgYXMgcGx0LiBBcyBhIHJlbWluZGVyLCB5b3UgY2FuIG9taXQgb3V0bGllcnMgaW4gYm94IHBsb3RzIGJ5IHNldHRpbmcgdGhlIHN5bSBwYXJhbWV0ZXIgZXF1YWwgdG8gYW4gZW1wdHkgc3RyaW5nICgiIikuCgoqKkluc3RydWN0aW9ucyoqCgotIFVzZSBzbnMuY2F0cGxvdCgpIHRvIGNyZWF0ZSBhIGJveCBwbG90IHdpdGggdGhlIHN0dWRlbnRfZGF0YSBEYXRhRnJhbWUsIHB1dHRpbmcgImludGVybmV0IiBvbiB0aGUgeC1heGlzIGFuZCAiRzMiIG9uIHRoZSB5LWF4aXMuCi0gQWRkIHN1Ymdyb3VwcyBzbyBlYWNoIGJveCBwbG90IGlzIGNvbG9yZWQgYmFzZWQgb24gImxvY2F0aW9uIi4KLSBEbyBub3QgZGlzcGxheSB0aGUgb3V0bGllcnMuCgpgYGB7cHl0aG9ufQojIENyZWF0ZSBhIGJveCBwbG90IHdpdGggc3ViZ3JvdXBzIGFuZCBvbWl0IHRoZSBvdXRsaWVycwoKCgoKCgojIFNob3cgcGxvdApwbHQuc2hvdygpCmBgYAoKIyMgKipBZGp1c3RpbmcgdGhlIHdoaXNrZXJzKioKCkluIHRoZSBsZXNzb24gd2Ugc2F3IHRoYXQgdGhlcmUgYXJlIG11bHRpcGxlIHdheXMgdG8gZGVmaW5lIHRoZSB3aGlza2VycyBpbiBhIGJveCBwbG90LiBJbiB0aGlzIHNldCBvZiBleGVyY2lzZXMsIHdlJ2xsIGNvbnRpbnVlIHRvIHVzZSB0aGUgc3R1ZGVudF9kYXRhIGRhdGFzZXQgdG8gY29tcGFyZSB0aGUgZGlzdHJpYnV0aW9uIG9mIGZpbmFsIGdyYWRlcyAoIkczIikgYmV0d2VlbiBzdHVkZW50cyB3aG8gYXJlIGluIGEgcm9tYW50aWMgcmVsYXRpb25zaGlwIGFuZCB0aG9zZSB0aGF0IGFyZSBub3QuIFdlJ2xsIHVzZSB0aGUgInJvbWFudGljIiB2YXJpYWJsZSwgd2hpY2ggaXMgYSB5ZXMvbm8gaW5kaWNhdG9yIG9mIHdoZXRoZXIgdGhlIHN0dWRlbnQgaXMgaW4gYSByb21hbnRpYyByZWxhdGlvbnNoaXAuCgpMZXQncyBjcmVhdGUgYSBib3ggcGxvdCB0byBsb29rIGF0IHRoaXMgcmVsYXRpb25zaGlwIGFuZCB0cnkgZGlmZmVyZW50IHdheXMgdG8gZGVmaW5lIHRoZSB3aGlza2Vycy4KCldlJ3ZlIGFscmVhZHkgaW1wb3J0ZWQgU2VhYm9ybiBhcyBzbnMgYW5kIG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdC4KCioqSW5zdHJ1Y3Rpb25zKioKCjEuIEFkanVzdCB0aGUgY29kZSB0byBtYWtlIHRoZSBib3ggcGxvdCB3aGlza2VycyB0byBleHRlbmQgdG8gMC41ICogSVFSLiBSZWNhbGw6IHRoZSBJUVIgaXMgdGhlIGludGVycXVhcnRpbGUgcmFuZ2UuCjIuIENoYW5nZSB0aGUgY29kZSB0byBzZXQgdGhlIHdoaXNrZXJzIHRvIGV4dGVuZCB0byB0aGUgNXRoIGFuZCA5NXRoIHBlcmNlbnRpbGVzLgozLiBDaGFuZ2UgdGhlIGNvZGUgdG8gc2V0IHRoZSB3aGlza2VycyB0byBleHRlbmQgdG8gdGhlIG1pbiBhbmQgbWF4IHZhbHVlcy4KYGBge3B5dGhvbn0KIyBTZXQgdGhlIHdoaXNrZXJzIHRvIDAuNSAqIElRUgpzbnMuY2F0cGxvdCh4PSJyb21hbnRpYyIsIHk9IkczIiwKICAgICAgICAgICAgZGF0YT1zdHVkZW50X2RhdGEsCiAgICAgICAgICAgIGtpbmQ9ImJveCIpCgojIFNob3cgcGxvdApwbHQuc2hvdygpCmBgYAoKIyMgKipQb2ludCBwbG90cyoqCgoKKioxLiBQb2ludCBwbG90cyoqCgpXZWxjb21lISBTbyBmYXIgd2UndmUgc2VlbiBzZXZlcmFsIHR5cGVzIG9mIGNhdGVnb3JpY2FsIHBsb3RzIGluY2x1ZGluZyBjb3VudCBwbG90cywgYmFyIHBsb3RzLCBhbmQgYm94IHBsb3RzLiBJbiB0aGlzIGxlc3Nvbiwgd2UnbGwgc2VlIG9uZSBmaW5hbCBjYXRlZ29yaWNhbCBwbG90OiBwb2ludCBwbG90cy4KCioqMi4gV2hhdCBhcmUgcG9pbnQgcGxvdHM/KioKClBvaW50IHBsb3RzIHNob3cgdGhlIG1lYW4gb2YgYSBxdWFudGl0YXRpdmUgdmFyaWFibGUgZm9yIHRoZSBvYnNlcnZhdGlvbnMgaW4gZWFjaCBjYXRlZ29yeSwgcGxvdHRlZCBhcyBhIHNpbmdsZSBwb2ludC4gVGhpcyBwb2ludCBwbG90IHVzZXMgdGhlIHRpcHMgZGF0YXNldCBhbmQgc2hvd3MgdGhlIGF2ZXJhZ2UgYmlsbCBhbW9uZyBzbW9rZXJzIHZlcnN1cyBub24tc21va2Vycy4gVGhlIHZlcnRpY2FsIGJhcnMgZXh0ZW5kaW5nIGFib3ZlIGFuZCBiZWxvdyB0aGUgbWVhbiByZXByZXNlbnQgdGhlIDk1JSBjb25maWRlbmNlIGludGVydmFscyBmb3IgdGhhdCBtZWFuLiBKdXN0IGxpa2UgdGhlIGNvbmZpZGVuY2UgaW50ZXJ2YWxzIHdlIHNhdyBpbiBsaW5lIHBsb3RzIGFuZCBiYXIgcGxvdHMsIHRoZXNlIGNvbmZpZGVuY2UgaW50ZXJ2YWxzIHNob3cgdXMgdGhlIGxldmVsIG9mIHVuY2VydGFpbnR5IHdlIGhhdmUgYWJvdXQgdGhlc2UgbWVhbiBlc3RpbWF0ZXMuIEFzc3VtaW5nIG91ciBkYXRhIGlzIGEgcmFuZG9tIHNhbXBsZSBvZiBzb21lIHBvcHVsYXRpb24sIHdlIGNhbiBiZSA5NSUgc3VyZSB0aGF0IHRoZSB0cnVlIHBvcHVsYXRpb24gbWVhbiBpbiBlYWNoIGdyb3VwIGxpZXMgd2l0aGluIHRoZSBjb25maWRlbmNlIGludGVydmFsIHNob3duLgoKKiozLiBQb2ludCBwbG90cyB2cy4gbGluZSBwbG90cyoqCgpZb3UgbWF5IGJlIHRoaW5raW5nOiBwb2ludCBwbG90cyBsb29rIGEgbG90IGxpa2UgbGluZSBwbG90cy4gV2hhdCdzIHRoZSBkaWZmZXJlbmNlPwoKKio0LiBQb2ludCBwbG90cyB2cy4gbGluZSBwbG90cyoqCgpCb3RoIGxpbmUgcGxvdHMgYW5kIHBvaW50IHBsb3RzIHNob3cgdGhlIG1lYW4gb2YgYSBxdWFudGl0YXRpdmUgdmFyaWFibGUgYW5kIDk1JSBjb25maWRlbmNlIGludGVydmFscyBmb3IgdGhlIG1lYW4uIEhvd2V2ZXIsIHRoZXJlIGlzIGEga2V5IGRpZmZlcmVuY2UuIExpbmUgcGxvdHMgYXJlIHJlbGF0aW9uYWwgcGxvdHMsIHNvIGJvdGggdGhlIHgtIGFuZCB5LWF4aXMgYXJlIHF1YW50aXRhdGl2ZSB2YXJpYWJsZXMuIEluIGEgcG9pbnQgcGxvdCwgb25lIGF4aXMgLSB1c3VhbGx5IHRoZSB4LWF4aXMgLSBpcyBhIGNhdGVnb3JpY2FsIHZhcmlhYmxlLCBtYWtpbmcgaXQgYSBjYXRlZ29yaWNhbCBwbG90LgoKKio1LiBQb2ludCBwbG90cyB2cy4gYmFyIHBsb3RzKioKCllvdSBtYXkgYWxzbyBiZSB0aGlua2luZzogcG9pbnQgcGxvdHMgc2VlbSB0byBzaG93IHRoZSBzYW1lIGluZm9ybWF0aW9uIGFzIGJhciBwbG90cy4gRm9yIGVhY2ggY2F0ZWdvcnksIGJvdGggc2hvdyB0aGUgbWVhbiBvZiBhIHF1YW50aXRhdGl2ZSB2YXJpYWJsZSBhbmQgdGhlIGNvbmZpZGVuY2UgaW50ZXJ2YWxzIGZvciB0aG9zZSBtZWFucy4gV2hlbiBzaG91bGQgd2UgdXNlIG9uZSBvdmVyIHRoZSBvdGhlcj8gTGV0J3MgbG9vayBhdCBhbiBleGFtcGxlIHVzaW5nIGRhdGEgZnJvbSB0aGUgbWFzY3VsaW5pdHkgc3VydmV5IHRoYXQgd2UndmUgc2VlbiBpbiBwcmlvciBsZXNzb25zLgoKKio2LiBQb2ludCBwbG90cyB2cy4gYmFyIHBsb3RzKioKClRoaXMgaXMgYSBiYXIgcGxvdCBvZiB0aGUgcGVyY2VudCBvZiBtZW4gcGVyIGFnZSBncm91cCBzdXJ2ZXllZCB3aG8gcmVwb3J0IHRoaW5raW5nIHRoYXQgaXQncyBpbXBvcnRhbnQgdGhhdCBvdGhlcnMgc2VlIHRoZW0gYXMgbWFzY3VsaW5lLCB3aXRoIHN1Ymdyb3VwcyBiYXNlZCBvbiB3aGV0aGVyIHRoZXkgcmVwb3J0IGZlZWxpbmcgbWFzY3VsaW5lIG9yIG5vdC4gVGhpcyBpcyB0aGUgc2FtZSBpbmZvcm1hdGlvbiwgcmVwcmVzZW50ZWQgYXMgYSBwb2ludCBwbG90LiBJbiB0aGUgcG9pbnQgcGxvdCwgaXQncyBlYXNpZXIgdG8gY29tcGFyZSB0aGUgaGVpZ2h0cyBvZiB0aGUgc3ViZ3JvdXAgcG9pbnRzIHdoZW4gdGhleSdyZSBzdGFja2VkIGFib3ZlIGVhY2ggb3RoZXIuIEluIHRoZSBwb2ludCBwbG90LCBpdCdzIGFsc28gZWFzaWVyIHRvIGxvb2sgYXQgdGhlIGRpZmZlcmVuY2VzIGluIHNsb3BlIGJldHdlZW4gdGhlIGNhdGVnb3JpZXMgdGhhbiBpdCBpcyB0byBjb21wYXJlIHRoZSBoZWlnaHRzIG9mIHRoZSBiYXJzIGJldHdlZW4gdGhlbS4KCioqNy4gQ3JlYXRpbmcgYSBwb2ludCBwbG90KioKCkhlcmUncyB0aGUgY29kZSB0byBjcmVhdGUgdGhlIHBvaW50IHBsb3Qgd2UganVzdCBzYXcuIFNpbmNlIHRoaXMgaXMgYSBjYXRlZ29yaWNhbCBwbG90LCB3ZSB1c2UgImNhdHBsb3QiIGFuZCBzZXQgImtpbmQiIGVxdWFsIHRvICJwb2ludCIuCgoqKjguIERpc2Nvbm5lY3RpbmcgdGhlIHBvaW50cyoqCgpTb21ldGltZXMgd2UgbWF5IHdhbnQgdG8gcmVtb3ZlIHRoZSBsaW5lcyBjb25uZWN0aW5nIGVhY2ggcG9pbnQsIHBlcmhhcHMgYmVjYXVzZSB3ZSBvbmx5IHdpc2ggdG8gY29tcGFyZSB3aXRoaW4gYSBjYXRlZ29yeSBncm91cCBhbmQgbm90IGJldHdlZW4gdGhlbS4gVG8gZG8gdGhpcywgc2V0IHRoZSAiam9pbiIgcGFyYW1ldGVyIGVxdWFsIHRvIEZhbHNlLgoKKio5LiBEaXNwbGF5aW5nIHRoZSBtZWRpYW4qKgoKTGV0J3MgcmV0dXJuIHRvIHRoZSBwb2ludCBwbG90IHVzaW5nIHRoZSB0aXBzIGRhdGFzZXQgYW5kIGdvIG92ZXIgYSBmZXcgbW9yZSB3YXlzIHRvIGN1c3RvbWl6ZSB5b3VyIHBvaW50IHBsb3RzLiBIZXJlIGlzIHRoZSBwb2ludCBwbG90IG9mIGF2ZXJhZ2UgYmlsbCBjb21wYXJpbmcgc21va2VycyB0byBub24tc21va2Vycy4KCioqMTAuIERpc3BsYXlpbmcgdGhlIG1lZGlhbioqCgpUbyBoYXZlIHRoZSBwb2ludHMgYW5kIGNvbmZpZGVuY2UgaW50ZXJ2YWxzIGJlIGNhbGN1bGF0ZWQgZm9yIHRoZSBtZWRpYW4gaW5zdGVhZCBvZiB0aGUgbWVhbiwgaW1wb3J0IHRoZSBtZWRpYW4gZnVuY3Rpb24gZnJvbSB0aGUgbnVtcHkgbGlicmFyeSBhbmQgc2V0ICJlc3RpbWF0b3IiIGVxdWFsIHRvIHRoZSBudW1weSBtZWRpYW4gZnVuY3Rpb24uIFdoeSBtaWdodCB5b3Ugd2FudCB0byB1c2UgdGhlIG1lZGlhbiBpbnN0ZWFkIG9mIHRoZSBtZWFuPyBUaGUgbWVkaWFuIGlzIG1vcmUgcm9idXN0IHRvIG91dGxpZXJzLCBzbyBpZiB5b3VyIGRhdGFzZXQgaGFzIGEgbG90IG9mIG91dGxpZXJzLCB0aGUgbWVkaWFuIG1heSBiZSBhIGJldHRlciBzdGF0aXN0aWMgdG8gdXNlLgoKKioxMS4gQ3VzdG9taXppbmcgdGhlIGNvbmZpZGVuY2UgaW50ZXJ2YWxzKioKCllvdSBjYW4gYWxzbyBjdXN0b21pemUgdGhlIHdheSB0aGF0IHRoZSBjb25maWRlbmNlIGludGVydmFscyBhcmUgZGlzcGxheWVkLiBUbyBhZGQg4oCcY2Fwc+KAnSB0byB0aGUgZW5kIG9mIHRoZSBjb25maWRlbmNlIGludGVydmFscywgc2V0IHRoZSDigJxjYXBzaXpl4oCdIHBhcmFtZXRlciBlcXVhbCB0byB0aGUgZGVzaXJlZCB3aWR0aCBvZiB0aGUgY2Fwcy4gSW4gdGhpcyBjYXNlLCB3ZSBjaG9zZSBhIHdpZHRoIG9mIDAuMi4KCioqMTIuIFR1cm5pbmcgb2ZmIGNvbmZpZGVuY2UgaW50ZXJ2YWxzKioKCkZpbmFsbHksIGxpa2Ugd2Ugc2F3IHdpdGggbGluZSBwbG90cyBhbmQgYmFyIHBsb3RzLCB5b3UgY2FuIHR1cm4gdGhlIGNvbmZpZGVuY2UgaW50ZXJ2YWxzIG9mZiBieSBzZXR0aW5nIHRoZSAiY2kiIHBhcmFtZXRlciBlcXVhbCB0byBOb25lLgoKKioxMy4gTGV0J3MgcHJhY3RpY2UhKioKCkFscmlnaHQhIE5vdyB0aGF0IHdlJ3ZlIGNvdmVyZWQgaG93IHRvIGludGVycHJldCBhbmQgY3VzdG9taXplIHBvaW50IHBsb3RzLCBsZXQncyBwcmFjdGljZSB3aGF0IHdlJ3ZlIGxlYXJuZWQhCgojIyAqKkN1c3RvbWl6aW5nIHBvaW50IHBsb3RzKioKCkxldCdzIGNvbnRpbnVlIHRvIGxvb2sgYXQgZGF0YSBmcm9tIHN0dWRlbnRzIGluIHNlY29uZGFyeSBzY2hvb2wsIHRoaXMgdGltZSB1c2luZyBhIHBvaW50IHBsb3QgdG8gYW5zd2VyIHRoZSBxdWVzdGlvbjogZG9lcyB0aGUgcXVhbGl0eSBvZiB0aGUgc3R1ZGVudCdzIGZhbWlseSByZWxhdGlvbnNoaXAgaW5mbHVlbmNlIHRoZSBudW1iZXIgb2YgYWJzZW5jZXMgdGhlIHN0dWRlbnQgaGFzIGluIHNjaG9vbD8gSGVyZSwgd2UnbGwgdXNlIHRoZSAiZmFtcmVsIiB2YXJpYWJsZSwgd2hpY2ggZGVzY3JpYmVzIHRoZSBxdWFsaXR5IG9mIGEgc3R1ZGVudCdzIGZhbWlseSByZWxhdGlvbnNoaXAgZnJvbSAxICh2ZXJ5IGJhZCkgdG8gNSAodmVyeSBnb29kKS4KCkFzIGEgcmVtaW5kZXIsIHRvIGNyZWF0ZSBhIHBvaW50IHBsb3QsIHVzZSB0aGUgY2F0cGxvdCgpIGZ1bmN0aW9uIGFuZCBzcGVjaWZ5IHRoZSBuYW1lIG9mIHRoZSBjYXRlZ29yaWNhbCB2YXJpYWJsZSB0byBwdXQgb24gdGhlIHgtYXhpcyAoeD1fX19fKSwgdGhlIG5hbWUgb2YgdGhlIHF1YW50aXRhdGl2ZSB2YXJpYWJsZSB0byBzdW1tYXJpemUgb24gdGhlIHktYXhpcyAoeT1fX19fKSwgdGhlIFBhbmRhcyBEYXRhRnJhbWUgdG8gdXNlIChkYXRhPV9fX18pLCBhbmQgdGhlIHR5cGUgb2YgY2F0ZWdvcmljYWwgcGxvdCAoa2luZD0icG9pbnQiKS4KCldlJ3ZlIGFscmVhZHkgaW1wb3J0ZWQgU2VhYm9ybiBhcyBzbnMgYW5kIG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdC4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gVXNlIHNucy5jYXRwbG90KCkgYW5kIHRoZSBzdHVkZW50X2RhdGEgRGF0YUZyYW1lIHRvIGNyZWF0ZSBhIHBvaW50IHBsb3Qgd2l0aCAiZmFtcmVsIiBvbiB0aGUgeC1heGlzIGFuZCBudW1iZXIgb2YgYWJzZW5jZXMgKCJhYnNlbmNlcyIpIG9uIHRoZSB5LWF4aXMuCgpgYGB7cHl0aG9ufQojIENyZWF0ZSBhIHBvaW50IHBsb3Qgb2YgZmFtaWx5IHJlbGF0aW9uc2hpcCB2cy4gYWJzZW5jZXMKCgoKICAgICAgICAgICAgCiMgU2hvdyBwbG90CnBsdC5zaG93KCkKYGBgCgojIyAqKlBvaW50IHBsb3RzIHdpdGggc3VicGxvdHMqKgoKTGV0J3MgY29udGludWUgZXhwbG9yaW5nIHRoZSBkYXRhc2V0IG9mIHN0dWRlbnRzIGluIHNlY29uZGFyeSBzY2hvb2wuIFRoaXMgdGltZSwgd2UnbGwgYXNrIHRoZSBxdWVzdGlvbjogaXMgYmVpbmcgaW4gYSByb21hbnRpYyByZWxhdGlvbnNoaXAgYXNzb2NpYXRlZCB3aXRoIGhpZ2hlciBvciBsb3dlciBzY2hvb2wgYXR0ZW5kYW5jZT8gQW5kIGRvZXMgdGhpcyBhc3NvY2lhdGlvbiBkaWZmZXIgYnkgd2hpY2ggc2Nob29sIHRoZSBzdHVkZW50cyBhdHRlbmQ/IExldCdzIGZpbmQgb3V0IHVzaW5nIGEgcG9pbnQgcGxvdC4KCldlJ3ZlIGFscmVhZHkgaW1wb3J0ZWQgU2VhYm9ybiBhcyBzbnMgYW5kIG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdC4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gVXNlIHNucy5jYXRwbG90KCkgYW5kIHRoZSBzdHVkZW50X2RhdGEgRGF0YUZyYW1lIHRvIGNyZWF0ZSBhIHBvaW50IHBsb3Qgd2l0aCByZWxhdGlvbnNoaXAgc3RhdHVzICgicm9tYW50aWMiKSBvbiB0aGUgeC1heGlzIGFuZCBudW1iZXIgb2YgYWJzZW5jZXMgKCJhYnNlbmNlcyIpIG9uIHRoZSB5LWF4aXMuIENyZWF0ZSBzdWJncm91cHMgYmFzZWQgb24gdGhlIHNjaG9vbCB0aGF0IHRoZXkgYXR0ZW5kICgic2Nob29sIikuCgpgYGB7cHl0aG9ufQojIENyZWF0ZSBhIHBvaW50IHBsb3Qgd2l0aCBzdWJncm91cHMKCgoKCiMgU2hvdyBwbG90CnBsdC5zaG93KCkKYGBgCgoK</div>
 
 
 
