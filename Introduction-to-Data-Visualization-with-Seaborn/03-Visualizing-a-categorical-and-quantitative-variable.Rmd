@@ -6,6 +6,7 @@ output: html_notebook
 ```{python setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 import pandas as pd
+import numpy as np
 
 countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
 countries = countries.replace(to_replace = ',', value = '.', regex = True)
@@ -15,7 +16,18 @@ gdp = list(countries['GDP ($ per capita)'])
 phones = list(countries['Phones (per 1000)'])
 percent_literate = list(countries['Literacy (%)'])
 region = list(countries.Region)
-csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv'
+survey_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv')
+conditions = [survey_data.Age >= 21,
+               survey_data.Age < 21]
+outputs = ['21+',
+           'Less than 21']
+age_category = np.select(conditions, outputs, '21+')
+survey_data['Age Category'] = pd.Series(age_category)
+conditions = [survey_data.Mathematics >= 4,
+              survey_data.Mathematics < 4]
+outputs = [True, False]
+math = np.select(conditions, outputs)
+survey_data['Interested in Math'] = pd.Series(math)
 student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
 tips = sns.load_dataset('tips')
 mpg = sns.load_dataset('mpg')
@@ -31,37 +43,140 @@ Welcome to Chapter 3! In this chapter, we'll focus on visualizations that involv
 
 Count plots and bar plots are two types of visualizations that Seaborn calls "categorical plots". Categorical plots involve a categorical variable, which is a variable that consists of a fixed, typically small number of possible values, or categories. These types of plots are commonly used when we want to make comparisons between different groups. We began to explore categorical plots in Chapter 1 with count plots. As a reminder, a count plot displays the number of observations in each category. We saw several examples of count plots in earlier chapters, like the number of men reporting that they feel masculine. Most men surveyed here feel "somewhat" or "very" masculine.
 
+```{python, eval = False}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+fig, ax = plt.subplots()
+
+# Create a count plot with "Spiders" on the x-axis
+_ = sns.countplot(x = 'how_masculine', 
+                  orient = 'v', 
+                  data = masculinity_data)
+
+# Display the plot
+plt.show()
+```
+
 **3. catplot()**
 
-Just like we used "relplot()" to create different types of relational plots, in this chapter we'll be using "catplot()" to create different types of categorical plots. "catplot()" offers the same flexibility that "relplot()" does, which means it will be easy to create subplots if we need to using the same "col" and "row" parameters.
+Just like we used `"relplot()"` to create different types of relational plots, in this chapter we'll be using `"catplot()"` to create different types of categorical plots. `"catplot()"` offers the same flexibility that `"relplot()"` does, which means it will be easy to create subplots if we need to using the same `"col"` and `"row"` parameters.
 
 **4. countplot() vs. catplot()**
 
-To see how "catplot()" works, let's return to the masculinity count plot. On the left, we see how we originally created a count plot with the "countplot()" function.
+To see how `"catplot()"` works, let's return to the masculinity count plot. On the left, we see how we originally created a count plot with the `"countplot()"` function.
 
 **5. countplot() vs. catplot()**
 
 To make this plot with "catplot()" instead, we change the function name to "catplot()" and use the "kind" parameter to specify what kind of categorical plot to use. In this case, we'll set kind equal to the word "count".
 
+```{python, eval = False}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+fig, ax = plt.subplots()
+
+# Create a count plot with "Spiders" on the x-axis
+_ = sns.catplot(x = 'how_masculine', 
+                  orient = 'v', 
+                  data = masculinity_data, 
+                  kind = 'count')
+
+# Display the plot
+plt.show()
+```
+
 **6. Changing the order**
 
 Sometimes there is a specific ordering of categories that makes sense for these plots. In this case, it makes more sense for the categories to be in order from not masculine to very masculine. To change the order of the categories, create a list of category values in the order that you want them to appear, and then use the "order" parameter. This works for all types of categorical plots, not just count plots.
 
-**7. Bar plots**
-Bar plots look similar to count plots, but instead of the count of observations in each category, they show the mean of a quantitative variable among observations in each category. This bar plot uses the tips dataset and shows the average bill paid among people who visited the restaurant on each day of the week. From this, we can see that the average bill is slightly higher on the weekends. To create this bar plot, we use "catplot". Specify the categorical variable "day" on the x-axis, the quantitative variable "total bill" on the y-axis, and set the "kind" parameter equal to "bar".
+```{python, eval = False}
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+category_order = ['No answer', 'Not at all', 
+                  'Not very', 'Somewhat',
+                  'Very']
+                  
+fig, ax = plt.subplots()
+
+# Create a count plot with "Spiders" on the x-axis
+_ = sns.catplot(x = 'how_masculine', 
+                  orient = 'v', 
+                  data = masculinity_data,
+                  kind = 'count',
+                  order = category_order)
+
+# Display the plot
+plt.show()
+```
+
+**7. Bar plots**
+
+Bar plots look similar to count plots, but instead of the count of observations in each category, they show the mean of a quantitative variable among observations in each category. This bar plot uses the `tips` dataset and shows the average bill paid among people who visited the restaurant on each day of the week. From this, we can see that the average bill is slightly higher on the weekends. To create this bar plot, we use `"catplot"`. Specify the categorical variable `"day"` on the x-axis, the quantitative variable `"total bill"` on the y-axis, and set the `"kind"` parameter equal to `"bar"`.
+
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+fig, ax = plt.subplots()
+
+# Create a count plot with "Spiders" on the x-axis
+_ = sns.catplot(x = 'day',
+                  y = 'total_bill', 
+                  data = tips,
+                  kind = 'bar',
+                  height = 2.6)
+
+# Display the plot
+plt.show()
+```
 **8. Confidence intervals**
 
 Notice also that Seaborn automatically shows 95% confidence intervals for these means. Just like with line plots, these confidence intervals show us the level of uncertainty we have about these estimates. Assuming our data is a random sample of some population, we can be 95% sure that the true population mean in each group lies within the confidence interval shown.
 
 **9. Turning off confidence intervals**
 
-If we want to turn off these confidence intervals, we can do this by setting the "ci" parameter equal to "None" - just like we did with line plots.
+If we want to turn off these confidence intervals, we can do this by setting the `"ci"` parameter equal to `"None"` - just like we did with line plots.
+
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+fig, ax = plt.subplots()
+
+# Create a count plot with "Spiders" on the x-axis
+_ = sns.catplot(x = 'day',
+                  y = 'total_bill', 
+                  data = tips,
+                  kind = 'bar',
+                  ci = None,
+                  height = 2.6)
+
+# Display the plot
+plt.show()
+```
 
 **10. Changing the orientation**
 
 Finally, you can also change the orientation of the bars in bar plots and count plots by switching the x and y parameters. However, it is fairly common practice to put the categorical variable on the x-axis.
 
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+fig, ax = plt.subplots()
+
+# Create a count plot with "Spiders" on the x-axis
+_ = sns.catplot(x = 'total_bill',
+                  y = 'day', 
+                  data = tips,
+                  kind = 'bar',
+                  height = 2.6)
+
+# Display the plot
+plt.show()
+```
 **11. Let's practice!**
 
 We'll introduce more types of categorical plots later in the chapter, but for now, let's practice what we've learned!
@@ -70,62 +185,136 @@ We'll introduce more types of categorical plots later in the chapter, but for no
 
 In this exercise, we'll return to exploring our dataset that contains the responses to a survey sent out to young people. We might suspect that young people spend a lot of time on the internet, but how much do they report using the internet each day? Let's use a count plot to break down the number of survey responses in each category and then explore whether it changes based on age.
 
-As a reminder, to create a count plot, we'll use the catplot() function and specify the name of the categorical variable to count (x=____), the Pandas DataFrame to use (data=____), and the type of plot (kind="count").
+As a reminder, to create a count plot, we'll use the `catplot()` function and specify the name of the categorical variable to count `(x = ____)`, the Pandas DataFrame to use `(data = ____)`, and the type of plot `(kind = "count")`.
 
-Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.
+Seaborn has been imported as `sns` and `matplotlib.pyplot` has been imported as `plt`.
 
 **Instructions**
 
-- Use sns.catplot() to create a count plot using the survey_data DataFrame with "Internet usage" on the x-axis.
-- 
+- Use `sns.catplot()` to create a count plot using the `survey_data` DataFrame with `"Internet usage"` on the x-axis.
+- Make the bars horizontal instead of vertical.
+- Create column subplots based on _"Age Category"_ , which separates respondents into those that are younger than 21 vs. 21 and older.
+
 ```{python}
+fig, ax = plt.subplots()
+
 # Create count plot of internet usage
+_ = sns.catplot(x = 'Internet usage',
+                data = survey_data,
+                kind = 'count',
+                height = 2.6)
 
+# Show plot
+plt.show()
 
+fig, ax = plt.subplots()
+
+# Change the orientation of the plot
+_ = sns.catplot(y = 'Internet usage',
+                data = survey_data,
+                kind = 'count',
+                height = 1)
+# Show plot
+plt.show()
+
+fig, ax = plt.subplots()
+
+# Create column subplots based on age category
+_ = sns.catplot(y = 'Internet usage',
+                data = survey_data,
+                row = 'Age Category',
+                kind = 'count',
+                height = 1)
 
 # Show plot
 plt.show()
 ```
+
+It looks like most young people use the internet for a few hours every day, regardless of their age.
 
 ## **Bar plots with percentages**
 
-Let's continue exploring the responses to a survey sent out to young people. The variable "Interested in Math" is True if the person reported being interested or very interested in mathematics, and False otherwise. What percentage of young people report being interested in math, and does this vary based on gender? Let's use a bar plot to find out.
+Let's continue exploring the responses to a survey sent out to young people. The variable `"Interested in Math"` is `True` if the person reported being interested or very interested in mathematics, and `False` otherwise. What percentage of young people report being interested in math, and does this vary based on gender? Let's use a bar plot to find out.
 
-As a reminder, we'll create a bar plot using the catplot() function, providing the name of categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of categorical plot (kind="bar").
+As a reminder, we'll create a bar plot using the `catplot()` function, providing the name of categorical variable to put on the x-axis `(x = ____)`, the name of the quantitative variable to summarize on the y-axis `(y = ____)`, the Pandas DataFrame to use `(data = ____)`, and the type of categorical plot `(kind = "bar")`.
 
-Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.
+Seaborn has been imported as `sns` and `matplotlib.pyplot` has been imported as `plt`.
 
 **Instructions**
 
-- Use the survey_data DataFrame and sns.catplot() to create a bar plot with "Gender" on the x-axis and "Interested in Math" on the y-axis.
+- Use the `survey_data` DataFrame and `sns.catplot()` to create a bar plot with `"Gender"` on the x-axis and `"Interested in Math"` on the y-axis.
 ```{python}
+fig, ax = plt.subplots()
+
 # Create a bar plot of interest in math, separated by gender
-
-
+_ = sns.catplot(x = 'Gender',
+                 y = 'Interested in Math',
+                 data = survey_data,
+                 kind = 'bar',
+                 height = 2.6)
 
 # Show plot
 plt.show()
 ```
+
+When the y-variable is True/False, bar plots will show the percentage of responses reporting True. This plot shows us that males report a much higher interest in math compared to females.
 
 ## **Customizing bar plots**
 
-In this exercise, we'll explore data from students in secondary school. The "study_time" variable records each student's reported weekly study time as one of the following categories: "<2 hours", "2 to 5 hours", "5 to 10 hours", or ">10 hours". Do students who report higher amounts of studying tend to get better final grades? Let's compare the average final grade among students in each category using a bar plot.
+In this exercise, we'll explore data from students in secondary school. The `"study_time"` variable records each student's reported weekly study time as one of the following categories: `"<2 hours"`, `"2 to 5 hours"`, `"5 to 10 hours"`, or `">10 hours"`. Do students who report higher amounts of studying tend to get better final grades? Let's compare the average final grade among students in each category using a bar plot.
 
-Seaborn has been imported as sns and matplotlib.pyplot has been imported as plt.
+Seaborn has been imported as `sns` and `matplotlib.pyplot` has been imported as `plt`.
 
 **Instructions**
 
-- Use sns.catplot() to create a bar plot with "study_time" on the x-axis and final grade ("G3") on the y-axis, using the student_data DataFrame.
+- Use `sns.catplot()` to create a bar plot with `"study_time"` on the x-axis and final grade (`"G3"`) on the y-axis, using the `student_data` DataFrame.
+- Using the `order` parameter, rearrange the categories so that they are in order from lowest study time to highest.
+- Update the plot so that it no longer displays confidence intervals.
 
 ```{python}
+fig, ax = plt.subplots()
+
 # Create bar plot of average final grade in each study category
+_ = sns.catplot(x = 'study_time',
+                y = 'G3',
+                data = student_data,
+                kind = 'bar', 
+                height = 2.6)
 
+# Show plot
+plt.show()
 
+fig, ax = plt.subplots()
 
+# Rearrange the categories
+_ = sns.catplot(x = 'study_time',
+                y = 'G3',
+                data = student_data,
+                kind = 'bar', 
+                order = ['<2 hours', '2 to 5 hours',
+                         '5 to 10 hours', '>10 hours'],
+                height = 2.6)
+
+# Show plot
+plt.show()
+
+fig, ax = plt.subplots()
+
+# Turn off the confidence intervals
+_ = sns.catplot(x = 'study_time',
+                y = 'G3',
+                data = student_data,
+                kind = 'bar', 
+                order = ['<2 hours', '2 to 5 hours',
+                         '5 to 10 hours', '>10 hours'],
+                ci = None,
+                height = 2.6)
 
 # Show plot
 plt.show()
 ```
+
+Students in our sample who studied more have a slightly higher average grade, but it's not a strong relationship.
 
 ## **Box plots**
 
