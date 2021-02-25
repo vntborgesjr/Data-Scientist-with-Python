@@ -21,8 +21,6 @@ csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/D
 student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
 tips = sns.load_dataset('tips')
 mpg = sns.load_dataset('mpg')
-stock = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/S&P500.csv')
-
 ```
 
 ## **Introduction to relational plots and subplots**
