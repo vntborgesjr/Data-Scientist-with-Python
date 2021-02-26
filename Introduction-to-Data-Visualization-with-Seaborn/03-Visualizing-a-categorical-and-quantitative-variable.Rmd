@@ -7,6 +7,7 @@ output: html_notebook
 knitr::opts_chunk$set(echo = TRUE)
 import pandas as pd
 import numpy as np
+import seaborn as sns
 
 countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
 countries = countries.replace(to_replace = ',', value = '.', regex = True)
@@ -327,41 +328,129 @@ Hello! In this video we'll learn how to create a new type of categorical plot: t
 
 A box plot shows the distribution of quantitative data. The colored box represents the 25th to 75th percentile, and the line in the middle of the box represents the median. The whiskers give a sense of the spread of the distribution, and the floating points represent outliers. Box plots are commonly used as a way to compare the distribution of a quantitative variable across different groups of a categorical variable. To see this, let's look at this example. The box plot shown here uses the tips dataset and compares the distribution of the total bill paid per table across the different days of the week. From this box plot we can quickly see that the median bill is higher on Saturday and Sunday, but the spread of the distribution is also larger. This comparison would be much harder to do with other types of visualizations.
 
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+_ = sns.catplot(x = 'day',
+                y = 'total_bill', 
+                data = tips,
+                kind = 'box',
+                height = 2.6)
+                
+plt.show()
+```
+
 **3. How to create a box plot**
 
-Now let's look at how to create a box plot in Seaborn. While Seaborn does have a "boxplot()" function, we'll be using the "catplot()" function that we introduced in an earlier lesson because it makes it easy to create subplots using the "col" and "row" parameters. We'll put the categorical variable "time" on the x-axis and the quantitative variable "total bill" on the y-axis. Here, we want box plots, so we'll specify kind="box". That's it! We have a nice looking box plot. Next, we'll look at different ways to customize this plot.
+Now let's look at how to create a box plot in Seaborn. While Seaborn does have a `"boxplot()"` function, we'll be using the `"catplot()"` function that we introduced in an earlier lesson because it makes it easy to create subplots using the `"col"` and `"row"` parameters. We'll put the categorical variable `"time"` on the x-axis and the quantitative variable `"total bill"` on the y-axis. Here, we want box plots, so we'll specify `kind="box"`. That's it! We have a nice looking box plot. Next, we'll look at different ways to customize this plot.
+
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+g = sns.catplot(x = 'time',
+                y = 'total_bill', 
+                data = tips,
+                kind = 'box',
+                height = 2.6)
+                
+plt.show()
+```
 
 **4. Change the order of categories**
 
-As a reminder, "catplot" allows you to change the order of the categories using the "order" parameter. Here, we specified that "dinner" should be shown before "lunch".
+As a reminder, `"catplot"` allows you to change the order of the categories using the `"order"` parameter. Here, we specified that `"dinner"` should be shown before `"lunch"`.
+
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+g = sns.catplot(x = 'time',
+                y = 'total_bill', 
+                data = tips,
+                kind = 'box',
+                order = ['Dinner', 
+                         'Lunch'],
+                height = 2.6)
+                
+plt.show()
+
+```
 
 **5. Omitting the outliers using `sym`**
 
-Occasionally, you may want to omit the outliers from your box plot. You can do this using the "sym" parameter. If you pass an empty string into "sym", it will omit the outliers from your plot altogether. "Sym" can also be used to change the appearance of the outliers instead of omitting them.
+Occasionally, you may want to omit the outliers from your box plot. You can do this using the `"sym"` parameter. If you pass an empty string into `"sym"`, it will omit the outliers from your plot altogether. `"Sym"` can also be used to change the appearance of the outliers instead of omitting them.
 
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+g = sns.catplot(x = 'time',
+                y = 'total_bill', 
+                data = tips,
+                kind = 'box',
+                order = ['Dinner', 
+                         'Lunch'],
+                         sym = '',
+                height = 2.6)
+                
+plt.show()
+```
 **6. Changing the whiskers using `whis`**
 
-By default, the whiskers extend to 1 point 5 times the interquartile range, or "IQR". The IQR is the 25th to the 75th percentile of a distribution of data. If you want to change the way the whiskers in your box plot are defined, you can do this using the "whis" parameter. There are several options for changing the whiskers. You can change the range of the whiskers from 1 point 5 times the IQR (which is the default) to 2 times the IQR by setting "whis" equal to 2 point 0. Alternatively, you can have the whiskers define specific lower and upper percentiles by passing in a list of the lower and upper values. In this example, passing in "[5, 95]" will result in the lower whisker being drawn at the 5th percentile and the upper whisker being drawn at the 95th percentile. Finally, you may just want to draw the whiskers at the min and max values. You can do this by specifying the lower percentile as 0 and the upper percentile as 100.
+By default, the whiskers extend to 1 point 5 times the interquartile range, or `"IQR"`. The IQR is the 25th to the 75th percentile of a distribution of data. If you want to change the way the whiskers in your box plot are defined, you can do this using the `"whis"` parameter. There are several options for changing the whiskers. You can change the range of the whiskers from 1.5 times the IQR (which is the default) to 2 times the IQR by setting `"whis"` equal to `2.0`. Alternatively, you can have the whiskers define specific lower and upper percentiles by passing in a list of the lower and upper values. In this example, passing in `"[5, 95]"` will result in the lower whisker being drawn at the 5th percentile and the upper whisker being drawn at the 95th percentile. Finally, you may just want to draw the whiskers at the min and max values. You can do this by specifying the lower percentile as 0 and the upper percentile as 100.
 
-**7. Changing the whiskers using `whis`**
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+g = sns.catplot(x = 'time',
+                y = 'total_bill', 
+                data = tips,
+                kind = 'box',
+                order = ['Dinner', 
+                         'Lunch'],
+                         sym = '',
+                         whis = [5, 95],
+                height = 2.6)
+                
+plt.show()
+```
 
 Here's an example where the whiskers are set to the min and max values. Note that there are no outliers, because the box and whiskers cover the entire range of the data.
 
-**8. Let's practice!**
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+g = sns.catplot(x = 'time',
+                y = 'total_bill', 
+                data = tips,
+                kind = 'box',
+                order = ['Dinner', 
+                         'Lunch'],
+                         sym = '',
+                         whis = [0, 100],
+                height = 2.6)
+                
+plt.show()
+```
+**7. Let's practice!**
 
 Let's now practice creating and customizing box plots!
 
 ## **Create and interpret a box plot**
 
-Let's continue using the student_data dataset. In an earlier exercise, we explored the relationship between studying and final grade by using a bar plot to compare the average final grade ("G3") among students in different categories of "study_time".
+Let's continue using the `student_data` dataset. In an earlier exercise, we explored the relationship between studying and final grade by using a bar plot to compare the average final grade (`"G3"`) among students in different categories of `"study_time"`.
 
-In this exercise, we'll try using a box plot look at this relationship instead. As a reminder, to create a box plot you'll need to use the catplot() function and specify the name of the categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of plot (kind="box").
+In this exercise, we'll try using a box plot look at this relationship instead. As a reminder, to create a box plot you'll need to use the `catplot()` function and specify the name of the categorical variable to put on the x-axis `(x = ____)`, the name of the quantitative variable to summarize on the y-axis `(y = ____)`, the Pandas DataFrame to use `(data = ____)`, and the type of plot `(kind = "box")`.
 
-We have already imported matplotlib.pyplot as plt and seaborn as sns.
+We have already imported `matplotlib.pyplot` as `plt` and `seaborn` as `sns`.
 
 **Instructions**
 
-Use sns.catplot() and the student_data DataFrame to create a box plot with "study_time" on the x-axis and "G3" on the y-axis. Set the ordering of the categories to study_time_order.
+Use `sns.catplot()` and the `student_data` DataFrame to create a box plot with `"study_time"` on the x-axis and `"G3"` on the y-axis. Set the ordering of the categories to `study_time_order`.
 
 ```{python}
 # Specify the category ordering
@@ -369,10 +458,12 @@ study_time_order = ["<2 hours", "2 to 5 hours",
                     "5 to 10 hours", ">10 hours"]
 
 # Create a box plot and set the order of the categories
-
-
-
-
+_ = sns.catplot(x = 'study_time',
+                y = 'G3',
+                data = student_data,
+                kind = 'box',
+                order = study_time_order, 
+                height = 2.6)
 
 # Show plot
 plt.show()
@@ -380,37 +471,41 @@ plt.show()
 
 ## **Oimtting outliers**
 
-Now let's use the student_data dataset to compare the distribution of final grades ("G3") between students who have internet access at home and those who don't. To do this, we'll use the "internet" variable, which is a binary (yes/no) indicator of whether the student has internet access at home.
+Now let's use the `student_data` dataset to compare the distribution of final grades (`"G3"`) between students who have internet access at home and those who don't. To do this, we'll use the `"internet"` variable, which is a binary (yes/no) indicator of whether the student has internet access at home.
 
-Since internet may be less accessible in rural areas, we'll add subgroups based on where the student lives. For this, we can use the "location" variable, which is an indicator of whether a student lives in an urban ("Urban") or rural ("Rural") location.
+Since internet may be less accessible in rural areas, we'll add subgroups based on where the student lives. For this, we can use the `"location"` variable, which is an indicator of whether a student lives in an urban ("Urban") or rural ("Rural") location.
 
-Seaborn has already been imported as sns and matplotlib.pyplot has been imported as plt. As a reminder, you can omit outliers in box plots by setting the sym parameter equal to an empty string ("").
+Seaborn has already been imported as `sns` and `matplotlib.pyplot` has been imported as `plt`. As a reminder, you can omit outliers in box plots by setting the `sym` parameter equal to an empty string (`""`).
 
 **Instructions**
 
-- Use sns.catplot() to create a box plot with the student_data DataFrame, putting "internet" on the x-axis and "G3" on the y-axis.
-- Add subgroups so each box plot is colored based on "location".
+- Use `sns.catplot()` to create a box plot with the `student_data` DataFrame, putting `"internet"` on the x-axis and `"G3"` on the y-axis.
+- Add subgroups so each box plot is colored based on `"location"`.
 - Do not display the outliers.
 
 ```{python}
 # Create a box plot with subgroups and omit the outliers
-
-
-
-
-
+_ = sns.catplot(x = 'internet',
+                y = 'G3',
+                data = student_data,
+                kind = 'box',
+                hue = 'location',
+                sym = '',
+                height = 2.6)
 
 # Show plot
 plt.show()
 ```
 
+The median grades are quite similar between each group, but the spread of the distribution looks larger among students who have internet access.
+
 ## **Adjusting the whiskers**
 
-In the lesson we saw that there are multiple ways to define the whiskers in a box plot. In this set of exercises, we'll continue to use the student_data dataset to compare the distribution of final grades ("G3") between students who are in a romantic relationship and those that are not. We'll use the "romantic" variable, which is a yes/no indicator of whether the student is in a romantic relationship.
+In the lesson we saw that there are multiple ways to define the whiskers in a box plot. In this set of exercises, we'll continue to use the `student_data` dataset to compare the distribution of final grades (`"G3"`) between students who are in a romantic relationship and those that are not. We'll use the `"romantic"` variable, which is a yes/no indicator of whether the student is in a romantic relationship.
 
 Let's create a box plot to look at this relationship and try different ways to define the whiskers.
 
-We've already imported Seaborn as sns and matplotlib.pyplot as plt.
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
 
 **Instructions**
 
@@ -419,16 +514,39 @@ We've already imported Seaborn as sns and matplotlib.pyplot as plt.
 3. Change the code to set the whiskers to extend to the min and max values.
 ```{python}
 # Set the whiskers to 0.5 * IQR
-sns.catplot(x="romantic", y="G3",
-            data=student_data,
-            kind="box")
+_ = sns.catplot(x = "romantic", y = "G3",
+            data = student_data,
+            kind = "box",
+            whis = 0.5,
+            height = 2.6)
+
+# Show plot
+plt.show()
+
+# Extend the whiskers to the 5th and 95th percentile
+_ = sns.catplot(x = "romantic", y = "G3",
+            data = student_data,
+            kind = "box",
+            whis = [5, 95],
+            height = 2.6)
+
+# Show plot
+plt.show()
+
+# Set the whiskers at the min and max values
+_ = sns.catplot(x = "romantic", y = "G3",
+            data = student_data,
+            kind = "box",
+            whis = [0, 100],
+            height = 2.6)
 
 # Show plot
 plt.show()
 ```
 
-## **Point plots**
+The median grade is the same between these two groups, but the max grade is higher among students who are not in a romantic relationship.
 
+## **Point plots**
 
 **1. Point plots**
 
@@ -436,92 +554,233 @@ Welcome! So far we've seen several types of categorical plots including count pl
 
 **2. What are point plots?**
 
-Point plots show the mean of a quantitative variable for the observations in each category, plotted as a single point. This point plot uses the tips dataset and shows the average bill among smokers versus non-smokers. The vertical bars extending above and below the mean represent the 95% confidence intervals for that mean. Just like the confidence intervals we saw in line plots and bar plots, these confidence intervals show us the level of uncertainty we have about these mean estimates. Assuming our data is a random sample of some population, we can be 95% sure that the true population mean in each group lies within the confidence interval shown.
+Point plots show the mean of a quantitative variable for the observations in each category, plotted as a single point. This point plot uses the `tips` dataset and shows the average bill among smokers versus non-smokers. The vertical bars extending above and below the mean represent the 95% confidence intervals for that mean. Just like the confidence intervals we saw in line plots and bar plots, these confidence intervals show us the level of uncertainty we have about these mean estimates. Assuming our data is a random sample of some population, we can be 95% sure that the true population mean in each group lies within the confidence interval shown.
+
+```{python, echo = False}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+_ = sns.catplot(x = 'smoker',
+                y = 'total_bill',
+                data = tips,
+                kind = 'point',
+                height = 2.6)
+
+_ = plt.ylim(0, 25)
+plt.show()
+```
 
 **3. Point plots vs. line plots**
 
 You may be thinking: point plots look a lot like line plots. What's the difference?
 
-**4. Point plots vs. line plots**
-
 Both line plots and point plots show the mean of a quantitative variable and 95% confidence intervals for the mean. However, there is a key difference. Line plots are relational plots, so both the x- and y-axis are quantitative variables. In a point plot, one axis - usually the x-axis - is a categorical variable, making it a categorical plot.
 
-**5. Point plots vs. bar plots**
+**4. Point plots vs. bar plots**
 
 You may also be thinking: point plots seem to show the same information as bar plots. For each category, both show the mean of a quantitative variable and the confidence intervals for those means. When should we use one over the other? Let's look at an example using data from the masculinity survey that we've seen in prior lessons.
 
-**6. Point plots vs. bar plots**
-
 This is a bar plot of the percent of men per age group surveyed who report thinking that it's important that others see them as masculine, with subgroups based on whether they report feeling masculine or not. This is the same information, represented as a point plot. In the point plot, it's easier to compare the heights of the subgroup points when they're stacked above each other. In the point plot, it's also easier to look at the differences in slope between the categories than it is to compare the heights of the bars between them.
 
-**7. Creating a point plot**
+**5. Creating a point plot**
 
 Here's the code to create the point plot we just saw. Since this is a categorical plot, we use "catplot" and set "kind" equal to "point".
 
-**8. Disconnecting the points**
+```{python, eval = False}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+_ = catplot(x = 'age',
+            y = 'maxculinity_important',
+            data = masculiniity_data,
+            kind = 'point')
+            
+plt.show()            
+```
+
+**6. Disconnecting the points**
 
 Sometimes we may want to remove the lines connecting each point, perhaps because we only wish to compare within a category group and not between them. To do this, set the "join" parameter equal to False.
 
-**9. Displaying the median**
+```{python, eval = False}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+_ = catplot(x = 'age',
+            y = 'maxculinity_important',
+            data = masculiniity_data,
+            kind = 'point',
+            join = False)
+            
+plt.show()            
+```
+
+**7. Displaying the median**
 
 Let's return to the point plot using the tips dataset and go over a few more ways to customize your point plots. Here is the point plot of average bill comparing smokers to non-smokers.
 
-**10. Displaying the median**
-
 To have the points and confidence intervals be calculated for the median instead of the mean, import the median function from the numpy library and set "estimator" equal to the numpy median function. Why might you want to use the median instead of the mean? The median is more robust to outliers, so if your dataset has a lot of outliers, the median may be a better statistic to use.
 
-**11. Customizing the confidence intervals**
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+from numpy import median
+
+_ = sns.catplot(x = 'smoker',
+                y = 'total_bill',
+                data = tips,
+                kind = 'point',
+                estimator = median,
+                height = 2.6)
+
+_ = plt.ylim(0, 25)
+plt.show()
+```
+
+**8. Customizing the confidence intervals**
 
 You can also customize the way that the confidence intervals are displayed. To add “caps” to the end of the confidence intervals, set the “capsize” parameter equal to the desired width of the caps. In this case, we chose a width of 0.2.
 
-**12. Turning off confidence intervals**
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+_ = sns.catplot(x = 'smoker',
+                y = 'total_bill',
+                data = tips,
+                kind = 'point',
+                capsize = 0.2,
+                height = 2.6)
+
+_ = plt.ylim(0, 25)
+plt.show()
+```
+
+**9. Turning off confidence intervals**
 
 Finally, like we saw with line plots and bar plots, you can turn the confidence intervals off by setting the "ci" parameter equal to None.
 
-**13. Let's practice!**
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+_ = sns.catplot(x = 'smoker',
+                y = 'total_bill',
+                data = tips,
+                kind = 'point',
+                ci = None,
+                height = 2.6)
+
+_ = plt.ylim(0, 25)
+plt.show()
+```
+**10. Let's practice!**
 
 Alright! Now that we've covered how to interpret and customize point plots, let's practice what we've learned!
 
 ## **Customizing point plots**
 
-Let's continue to look at data from students in secondary school, this time using a point plot to answer the question: does the quality of the student's family relationship influence the number of absences the student has in school? Here, we'll use the "famrel" variable, which describes the quality of a student's family relationship from 1 (very bad) to 5 (very good).
+Let's continue to look at data from students in secondary school, this time using a point plot to answer the question: does the quality of the student's family relationship influence the number of absences the student has in school? Here, we'll use the `"famrel"` variable, which describes the quality of a student's family relationship from 1 (very bad) to 5 (very good).
 
-As a reminder, to create a point plot, use the catplot() function and specify the name of the categorical variable to put on the x-axis (x=____), the name of the quantitative variable to summarize on the y-axis (y=____), the Pandas DataFrame to use (data=____), and the type of categorical plot (kind="point").
+As a reminder, to create a point plot, use the `catplot()` function and specify the name of the categorical variable to put on the x-axis `(x = ____)`, the name of the quantitative variable to summarize on the y-axis `(y = ____)`, the Pandas DataFrame to use `(data = ____)`, and the type of categorical plot `(kind = "point")`.
 
-We've already imported Seaborn as sns and matplotlib.pyplot as plt.
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
 
 **Instructions**
 
-- Use sns.catplot() and the student_data DataFrame to create a point plot with "famrel" on the x-axis and number of absences ("absences") on the y-axis.
+- Use `sns.catplot()` and the `student_data` DataFrame to create a point plot with `"famrel"` on the x-axis and number of absences (`"absences"`) on the y-axis.
+- Add `"caps"` to the end of the confidence intervals with size `0.2`.
+- Remove the lines joining the points in each category.
 
 ```{python}
 # Create a point plot of family relationship vs. absences
+_ = sns.catplot(x = 'famrel',
+                y = 'absences',
+                data = student_data,
+                kind = 'point',
+                height = 2.6)
 
+# Show plot
+plt.show()
 
+# Add caps to the confidence interval
+_ = sns.catplot(x = 'famrel',
+                y = 'absences',
+                data = student_data,
+                kind = 'point',
+                capsize = 0.2,
+                height = 2.6)
 
-            
+# Show plot
+plt.show()
+
+# Remove the lines joining the points
+_ = sns.catplot(x = 'famrel',
+                y = 'absences',
+                data = student_data,
+                kind = 'point',
+                capsize = 0.2,
+                join = '', 
+                height = 2.6)
+
 # Show plot
 plt.show()
 ```
+
+While the average number of absences is slightly smaller among students with higher-quality family relationships, the large confidence intervals tell us that we can't be sure there is an actual association here.
 
 ## **Point plots with subplots**
 
 Let's continue exploring the dataset of students in secondary school. This time, we'll ask the question: is being in a romantic relationship associated with higher or lower school attendance? And does this association differ by which school the students attend? Let's find out using a point plot.
 
-We've already imported Seaborn as sns and matplotlib.pyplot as plt.
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
 
 **Instructions**
 
-- Use sns.catplot() and the student_data DataFrame to create a point plot with relationship status ("romantic") on the x-axis and number of absences ("absences") on the y-axis. Create subgroups based on the school that they attend ("school").
+- Use `sns.catplot()` and the `student_data` DataFrame to create a point plot with relationship status (`"romantic"`) on the x-axis and number of absences (`"absences"`) on the y-axis. Create subgroups based on the school that they attend (`"school"`).
+- Turn off the confidence intervals for the plot.
+- Since there may be outliers of students with many absences, import the `median` function from `numpy` and display the median number of absences instead of the average.
 
 ```{python}
 # Create a point plot with subgroups
+_ = sns.catplot(x = 'romantic',
+                y = 'absences',
+                data = student_data,
+                kind = 'point',
+                hue = 'school',
+                height = 2.6)
 
+# Show plot
+plt.show()
 
+# Turn off the confidence intervals for this plot
+_ = sns.catplot(x = 'romantic',
+                y = 'absences',
+                data = student_data,
+                kind = 'point',
+                hue = 'school',
+                ci = None,
+                height = 2.6)
 
+# Show plot
+plt.show()
 
+# Import median function from numpy
+from numpy import median
+
+# Plot the median number of absences instead of the mean
+_ = sns.catplot(x = 'romantic',
+                y = 'absences',
+                data = student_data,
+                kind = 'point',
+                hue = 'school',
+                ci = None,
+                estimator = median,
+                height = 2.6)
+
+_ = plt.ylim(0, 5.1)
 # Show plot
 plt.show()
 ```
 
-
+It looks like students in romantic relationships have a higher average and median number of absences in the GP school, but this association does not hold for the MS school.
