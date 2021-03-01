@@ -6,6 +6,9 @@ output: html_notebook
 ```{python setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
 
 countries = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/countries-of-the-world.csv')
 countries = countries.replace(to_replace = ',', value = '.', regex = True)
@@ -15,8 +18,56 @@ gdp = list(countries['GDP ($ per capita)'])
 phones = list(countries['Phones (per 1000)'])
 percent_literate = list(countries['Literacy (%)'])
 region = list(countries.Region)
-csv_filepath = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv'
+survey_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/young-people-survey-responses.csv')
+conditions = [survey_data.Age >= 21,
+               survey_data.Age < 21]
+outputs = ['21+',
+           'Less than 21']
+age_category = np.select(conditions, outputs, '21+')
+survey_data['Age Category'] = pd.Series(age_category)
+conditions = [survey_data.Mathematics >= 4,
+              survey_data.Mathematics < 4]
+outputs = [True, False]
+math = np.select(conditions, outputs)
+survey_data['Interested in Math'] = pd.Series(math)
+conditions = [survey_data["Parents' advice"] == 1,
+              survey_data["Parents' advice"] == 2,
+              survey_data["Parents' advice"] == 3,
+              survey_data["Parents' advice"] == 4,
+              survey_data["Parents' advice"] == 5]
+outputs = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always']
+advice = np.select(conditions, outputs)
+survey_data["Parents Advice"] = pd.Series(advice)
+conditions = [survey_data.Loneliness <= 3, 
+              survey_data.Loneliness > 3]
+outputs = [False, True]
+lone = np.select(conditions, outputs)
+survey_data['Feels Lonely'] = pd.Series(lone)
+conditions = [survey_data.Siblings == 0.0,
+              survey_data.Siblings <= 2.0, 
+              survey_data.Siblings >= 3.0]
+outputs = ['0', '1 - 2', '3+']
+sib = np.select(conditions, outputs)
+survey_data['Number of Siblings'] = pd.Series(sib)
+conditions = [survey_data.Pets <= 3.0,
+              survey_data.Pets > 3.0]
+outputs = ['No', 'Yes']
+pets = np.select(conditions, outputs)
+survey_data['Interested in Pets'] = pd.Series(pets)
+conditions = [survey_data.Techno <= 3.0,
+              survey_data.Techno > 3.0]
+outputs = [False, True]
+techno = np.select(conditions, outputs)
+survey_data['Likes Techno'] = pd.Series(techno)
 student_data = pd.read_csv('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/student-alcohol-consumption.csv')
+tips = sns.load_dataset('tips')
+mpg = sns.load_dataset('mpg')
+mpg_mean = pd.pivot_table(data = mpg, 
+                          values = 'mpg',
+                          index = ['model_year', 'origin'],
+                          aggfunc = np.mean,
+                          margin = True,
+                          margins_name = 'mpg_mean')
 ```
 
 ## **Change plot style and color**
@@ -31,27 +82,85 @@ By default, Seaborn plots are pleasing to look at, but there are several reasons
 
 **3. Changing the figure style**
 
-Seaborn has five preset figure styles which change the background and axes of the plot. You can refer to them by name: "white", "dark", "whitegrid", "darkgrid", and "ticks". To set one of these as the global style for all of your plots, use the "set style" function.
+Seaborn has five preset figure styles which change the background and axes of the plot. You can refer to them by name: "white", "dark", "whitegrid", "darkgrid", and "ticks". To set one of these as the global style for all of your plots, use the `set_style()` function.
 
 **4. Default figure style ("white")**
 
 This is a plot we've seen before, showing the percentage of men reporting that masculinity was important to them, stratified by their age and whether or not they feel masculine. The default style is called "white" and provides clean axes with a solid white background. If we only care about the comparisons between groups or the general trend across age groups instead of the specific values, this is a good choice.
 
+```{python, eval = False}
+sns.catplot(x = 'age',
+            y = 'masculinity_important',
+            data = masculinity_data,
+            hue = 'fell_masculine',
+            kind = 'point')
+            
+plt.show()
+```
+
 **5. Figure style: "whitegrid"**
 
 Changing the style to "whitegrid" will add a gray grid in the background. This is useful if you want your audience to be able to determine the specific values of the plotted points instead of making higher level observations.
+
+```{python, eval = False}
+sns.set_style('whitegride')
+
+sns.catplot(x = 'age',
+            y = 'masculinity_important',
+            data = masculinity_data,
+            hue = 'fell_masculine',
+            kind = 'point')
+            
+plt.show()
+```
 
 **6. Other styles**
 
 The other styles are variants on these. "ticks" is similar to "white", but adds small tick marks to the x- and y-axes.
 
+```{python, eval = False}
+sns.set_style('ticks')
+
+sns.catplot(x = 'age',
+            y = 'masculinity_important',
+            data = masculinity_data,
+            hue = 'fell_masculine',
+            kind = 'point')
+            
+plt.show()
+```
+
 **7. Other styles**
 
 "dark" provides a gray background,
 
+```{python, eval = False}
+sns.set_style('dark')
+
+sns.catplot(x = 'age',
+            y = 'masculinity_important',
+            data = masculinity_data,
+            hue = 'fell_masculine',
+            kind = 'point')
+            
+plt.show()
+```
+
 **8. Other styles**
 
 and "darkgrid" provides a gray background with a white grid.
+
+```{python, eval = False}
+sns.set_style('darkgrid')
+
+sns.catplot(x = 'age',
+            y = 'masculinity_important',
+            data = masculinity_data,
+            hue = 'fell_masculine',
+            kind = 'point')
+            
+plt.show()
+```
 
 **9. Changing the palette**
 
@@ -65,30 +174,88 @@ Seaborn has a group of preset palettes called diverging palettes that are great 
 
 To see this in action, let's return to a count plot we've seen before of the responses of men reporting how masculine they feel.
 
+```{python, eval = False}
+sns.set_style('ticks')
+
+category_order = ['No answer', 'Not at all', 'Not very',
+                  'Somewhat', 'Very']
+
+sns.catplot(x = 'how_masculine',
+            kind = 'count',
+            oder = category_order)
+            
+plt.show()
+```
+
 **12. Example (diverging palette)**
 
 Setting this plot's palette to red/blue diverging provides a clearer contrast between the men who do not feel masculine and the men who do.
+
+```{python, eval = False}
+sns.set_style('ticks')
+
+sns.set_palette('RdBu')
+
+category_order = ['No answer', 'Not at all', 'Not very',
+                  'Somewhat', 'Very']
+
+sns.catplot(x = 'how_masculine',
+            kind = 'count',
+            oder = category_order)
+            
+plt.show()
+```
 
 **13. Sequential palettes**
 
 Another group of palettes are called sequential palettes. These are a single color (or two colors blended) moving from light to dark values.
 
+
 **14. Sequential palette example**
 
 Sequential palettes are great for emphasizing a variable on a continuous scale. One example is this plot depicting the relationship between a car's horsepower and its miles per gallon, where points grow larger and darker when the car has more cylinders.
+
+```{python}
+_ = sns.set_style('ticks')
+
+_ = sns.set_context('paper')
+
+_ = sns.set_palette('PuRd')
+
+_ = sns.relplot(x = 'horsepower',
+                y = 'mpg',
+                hue = 'cylinders',
+                data = mpg,
+                height = 2.6)
+
+plt.show()
+```
 
 **15. Custom palettes**
 
 You can also create your own custom palettes by passing in a list of color names...
 
+```{python, eval = False}
+custom_palette = ['red', 'green', 'orange', 'blue',
+                  'yellow', 'purple']
+                  
+_ = sns.set_palette(custom_palette)
+```
+
 **16. Custom palettes**
 
 or a list of hex color codes.
 
+```{python, eval = False}
+custom_palette = ['#FBB4AE', '#B3CDE3', '#CCEBC5',                           '#DECBE4', '#FED9A6', '#FFFFCC',                           '#E5D8BD', '#FDDAEC', '#F2F2F2']
+                  
+_ = sns.set_palette(custom_palette)
+```
+
 **17. Changing the scale**
 
 Finally, you can change the scale of your plot by using the "set context" function. The scale options from smallest to largest are "paper", "notebook", "talk", and "poster".
-
+  
 **18. Default context: "paper"**
 
 The default context is "paper".
@@ -97,81 +264,589 @@ The default context is "paper".
 
 You'll want to choose a larger scale like "talk" for posters or presentations where the audience is further away from the plot.
 
+```{python, eval = False}
+_ = sns.set_context('talk')
+
+_ = sns.catplot(x = 'age',
+                y = 'masculitnity',
+                data = masculinity_data,
+                hue = 'fell_masculine',
+                kind = 'point')
+                
+plt.show()
+```
+
 **20. Let's practice!**
 
 Now that we've seen how to change the plot style, palette, and scale, let's practice!
 
 ## **Change style and palette**
 
+Let's return to our dataset containing the results of a survey given to young people about their habits and preferences. We've provided the code to create a count plot of their responses to the question "How often do you listen to your parents' advice?". Now let's change the style and palette to make this plot easier to interpret.
+
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+1. Set the style to `"whitegrid"` to help the audience determine the number of responses in each category.
+2. Set the color palette to the sequential palette named `"Purples"`.
+3. Change the color palette to the diverging palette named "RdBu".
 
 ```{python}
+# Set the style to "whitegrid"
+_ = sns.set_style('whitegrid')
 
+# Set the color palette to "Purples"
+#_ = sns.set_palette('Purples')
+
+# Change the color palette to "RdBu"
+_ = sns.set_palette('RdBu')
+# Create a count plot of survey responses
+category_order = ["Never", "Rarely", "Sometimes", 
+                  "Often", "Always"]
+
+_ = sns.catplot(x = "Parents Advice", 
+            data = survey_data, 
+            kind = "count", 
+            order = category_order,
+            height = 2.6)
+
+# Show plot
+plt.show()
 ```
+
+This style and diverging color palette best highlights the difference between the number of young people who usually listen to their parents' advice versus those who don't.
 
 ## **Changing the scale**
 
+In this exercise, we'll continue to look at the dataset containing responses from a survey of young people. Does the percentage of people reporting that they feel lonely vary depending on how many siblings they have? Let's find out using a bar plot, while also exploring Seaborn's four different plot scales ("contexts").
+
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+1. Set the scale ("context") to `"paper"`, which is the smallest of the scale options.
+
+2. Change the context to `"notebook"` to increase the scale.
+
+3. Change the context to `"talk"` to increase the scale.
+
+4. Change the context to `"poster"`, which is the largest scale available.
 
 ```{python}
+_ = sns.set_palette('tab10')
+_ = sns.set_style('ticks')
 
+# Set the context to "paper"
+# _ = sns.set_context('paper')
+
+# Change the context to "notebook"
+#_ = sns.set_context("notebook")
+
+# Change the context to "talk"
+#_ = sns.set_context("talk")
+
+# Change the context to "poster"
+_ = sns.set_context("poster")
+
+# Create bar plot
+_ = sns.catplot(x = "Number of Siblings", 
+                y = "Feels Lonely",
+                data = survey_data, 
+                kind = "bar", 
+                order = ['0', '1 - 2', '3+'],
+                height = 2.6)
+
+# Show plot
+plt.show()
 ```
+
+Each context name gives Seaborn's suggestion on when to use a given plot scale (in a paper, in an iPython notebook, in a talk/presentation, or in a poster session).
 
 ## **Using a custom palette**
 
+So far, we've looked at several things in the dataset of survey responses from young people, including their internet usage, how often they listen to their parents, and how many of them report feeling lonely. However, one thing we haven't done is a basic summary of the type of people answering this survey, including their age and gender. Providing these basic summaries is always a good practice when dealing with an unfamiliar dataset.
+
+The code provided will create a box plot showing the distribution of ages for male versus female respondents. Let's adjust the code to customize the appearance, this time using a custom color palette.
+
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+- Set the style to `"darkgrid"`.
+- Set a custom color palette with the hex color codes `"#39A7D0"` and `"#36ADA4"`.
 
 ```{python}
+_ = sns.set_context('paper')
 
+# Set the style to "darkgrid"
+_ = sns.set_style('darkgrid')
+
+# Set a custom color palette
+_ = sns.set_palette(['#39A7D0', '#36ADA4'])
+
+# Create the box plot of age distribution by gender
+_ = sns.catplot(x = "Gender", y = "Age", 
+            data = survey_data, kind = "box", 
+            height = 2.6)
+
+# Show plot
+plt.show()
 ```
+
+It looks like the median age is the same for males and females, but distribution of females skews younger than the males.
 
 ## **Adding titles and lables: part 1**
 
-## **FacetGrids vs. AxesSubplots**
+**1. Adding titles and labels: Part 1**
 
+Welcome! In the next two lessons, we'll go over one of the most important parts of any data visualization: plot titles and axis labels.
 
+**2. Creating informative visualizations**
+
+We create data visualizations to communicate information, and we can't do that effectively without a clear title and informative axis labels. To see this, let's compare two versions of the same visualization. On the left, we see box plots showing the distribution of birth rates for countries in each of 11 regions. On the right, we see the same visualization with three key modifications to make it easier to understand. A title is added, which immediately orients the audience to what they're looking at. The axis labels are more informative, making it clearer that birth rate is measured per one thousand people and birth rates are measured per country in each region. Finally, the x-axis tick labels are rotated to make it clear what each region is called. Let's learn how to make these changes.
 
 ```{python}
 
 ```
+
+**3. FacetGrid vs. AxesSubplot objects**
+
+Before we go into the details of adding a title, we need to understand an underlying mechanism in Seaborn. Seaborn's plot functions create two different types of objects: `FacetGrids` and `AxesSubplots`. To figure out which type of object you're working with, first assign the plot output to a variable. In the documentation, the variable is often named "g", so we'll do that here as well. Write "type" "g" to return the object type. This scatter plot is an AxesSubplot.
+
+```{python, eval = False}
+g = sns.scatterplot(x = 'height', y = 'weight', data = df)
+type(g)
+```
+
+**4. An Empty FacetGrid**
+
+A FacetGrid consists of one or more AxesSubplots, which is how it supports subplots.
+
+**5. FacetGrid vs. AxesSubplot objects**
+
+Recall that "relplot()" and "catplot()" both support making subplots. This means that they are creating FacetGrid objects. In contrast, single-type plot functions like "scatterplot()" and "countplot()" return a single AxesSubplot object.
+
+**6. Adding a title to FacetGrid**
+
+Let's return to our messy plot from the beginning. Recall that "catplot()" enables subplots, so it returns a FacetGrid object. To add a title to a FacetGrid object, first assign the plot to the variable "g". After you assign the plot to "g", you can set the title using "g dot fig dot suptitle". This tells Seaborn you want to set a title for the figure as a whole.
+
+```{python, eval = False}
+g = sns.catplot(x = 'Region',
+                y = 'Birthrate',
+                data = gdp_data,
+                kind = 'box)
+
+plt.show()
+```
+
+**7. Adjusting height of title in FacetGrid**
+
+Note that by default, the figure title might be a little low. To adjust the height of the title, you can use the "y" parameter. The default value is 1, so setting it to 1 point 03 will make it a little higher than the default.
+
+```{python, eval = False}
+g = sns.catplot(x = 'Region',
+                y = 'Birthrate',
+                data = gdp_data,
+                kind = 'box)
+                
+g.fig.suptitle('New Title', 
+                y = 1.03)
+                
+plt.show()
+```
+
+**8. Let's practice!**
+
+We'll learn how to add a title to an AxesSubplot object in the next lesson. For now, let's pause and practice what you just learned!
+
+## **FacetGrids vs. AxesSubplots**
+
+In the recent lesson, we learned that Seaborn plot functions create two different types of objects: `FacetGrid` objects and `AxesSubplot` objects. The method for adding a title to your plot will differ depending on the type of object it is.
+
+In the code provided, we've used `relplot()` with the miles per gallon dataset to create a scatter plot showing the relationship between a car's weight and its horsepower. This scatter plot is assigned to the variable name `g`. Let's identify which type of object it is.
+
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+- Identify what type of object plot `g` is and assign it to the variable `type_of_g`.
+
+```{python}
+# Create scatter plot
+g = sns.relplot(x = "weight", 
+                y = "horsepower", 
+                data = mpg,
+                kind = "scatter",
+                height = 2.6)
+
+# Identify plot type
+type_of_g = type(g)
+
+# Print type
+print(type_of_g)
+```
+`catplot()` supports creating subplots, so it creates a FacetGrid object too.
 
 ## **Adding a title to a FacetGrid object**
 
+In the previous exercise, we used relplot() with the miles per gallon dataset to create a scatter plot showing the relationship between a car's weight and its horsepower. This created a `FacetGrid` object. Now that we know what type of object it is, let's add a title to this plot.
+
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+- Add the following title to this plot: `"Car Weight vs. Horsepower"`.
 
 ```{python}
+_ = sns.set_style('ticks')
 
+# Create scatter plot
+g = sns.relplot(x = "weight", 
+                y = "horsepower", 
+                data = mpg,
+                kind = "scatter",
+                height = 2.6)
+
+# Add a title "Car Weight vs. Horsepower"
+_ = g.fig.suptitle('Car Weight vs. Horsepower')
+
+# Show plot
+plt.show()
 ```
+
+It looks like a car's weight is positively correlated with its horsepower.
 
 ## **Adding titles and labels:part 2**
 
+**1. Adding titles and labels: Part 2**
+
+Hello! In this lesson, we'll continue learning how to customize plot titles and axis labels.
+
+**2. Adding a title to AxesSubplot**
+
+In the last lesson, we learned how to add a title to a FacetGrid object using "g dot fig dot suptitle". To add a title to an AxesSubplot object like that from the "box plot" function, assign the plot to a variable and use “g dot set_title”. You can also use the “y” parameter here to adjust the height of the title.
+
+```{python, eval = False}
+g = sns.catplot(x = 'Region',
+                y = 'Birthrate',
+                data = gdp_data,
+                kind = 'box')
+                
+g.fig.suptitle('New Title', 
+                y = 1.03)
+
+g = sns.boxplot(x = 'Region',
+                y = 'Birthrate',
+                data = gdp_data)
+                
+g.set_title('New Title', 
+                y = 1.03)
+```
+**3. Titles for subplots**
+
+Now let's look at what happens if the figure has subplots. Let's say we've divided countries into two groups - group one and group two - and we've set "col" equal to "Group" to create a subplot for each group. Since g is a FacetGrid object, using "g dot fig dot suptitle" will add a title to the figure as a whole.
+
+To alter the subplot titles, use "g dot set_titles" to set the titles for each AxesSubplot. If you want to use the variable name in the title, you can use "col name" in braces to reference the column value. Here, we've created subplot titles that display as "this is group 2" and "this is group 1".
+
+```{python, eval = False}
+g = sns.catplot(x = 'Region',
+                y = 'Birthrate',
+                data = gdp_data,
+                kind = 'box',
+                col = 'Group' )
+                
+g.fig.suptitle('New Title', 
+                y = 1.03) 
+
+g.set_title('New Title {col_name}')
+```
+
+**4. Adding axis labels**
+
+To add axis labels, assign the plot to a variable and then call the "set" function. Set the parameters "x label" and "y label" to set the desired x-axis and y-axis labels, respectively. This works with both FacetGrid and AxesSubplot objects.
+
+```{python, eval = False}
+g = sns.catplot(x = 'Region',
+                y = 'Birthrate',
+                data = gdp_data,
+                kind = 'box')
+                
+g.set(xlabel = 'New X label', 
+      ylabel = 'New y label') 
+```
+
+**5. Rotating x-axis tick labels**
+
+Sometimes, like in the example we've seen in this lesson, your tick labels may overlap, making it hard to interpret the plot. One way to address this is by rotating the tick labels. To do this, we don't call a function on the plot object itself. Instead, after we create the plot, we call the matplotlib function "plt dot xticks" and set "rotation" equal to 90 degrees. This works with both FacetGrid and AxesSubplot objects.
+
+```{python, eval = False}
+g = sns.catplot(x = 'Region',
+                y = 'Birthrate',
+                data = gdp_data,
+                kind = 'box')
+                
+_ = plt.xticks(rotation = 90)
+plt.show()
+```
+**8. Let's practice!**
+
+And that's it! Now it's time to create some clear and informative visualizations!
+
 ## **Adding a title and axis lables**
 
+Let's continue to look at the miles per gallon dataset. This time we'll create a line plot to answer the question: How does the average miles per gallon achieved by cars change over time for each of the three places of origin? To improve the readability of this plot, we'll add a title and more informative axis labels.
 
+In the code provided, we create the line plot using the `lineplot()` function. Note that `lineplot()` does not support the creation of subplots, so it returns an `AxesSubplot` object instead of an `FacetGrid` object.
+
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+1. Add the following title to the plot: `"Average MPG Over Time"`.
+2. Label the x-axis as "Car Model Year" and the y-axis as "Average MPG".
 
 ```{python}
+# Create line plot
+g = sns.lineplot(x = "model_year", 
+                 y = "mpg_mean", 
+                 data = mpg_mean,
+                 hue = "origin")
 
+# Add a title "Average MPG Over Time"
+_ = g.set_title('Average MGP Over Time', y = 0.97)
+
+# Add x-axis and y-axis labels
+_ = g.set(xlabel = 'Car Model Year',
+          ylabel = 'Average MPG')
+# Show plot
+plt.show()
 ```
+
+The average miles per gallon achieved is increasing over time for all three places of origin, but the USA is always lower than Europe and Japan.
 
 ## **Rotating x-tick labels**
 
+In this exercise, we'll continue looking at the miles per gallon dataset. In the code provided, we create a point plot that displays the average acceleration for cars in each of the three places of origin. Note that the `"acceleration"` variable is the time to accelerate from 0 to 60 miles per hour, in seconds. Higher values indicate slower acceleration.
 
+Let's use this plot to practice rotating the x-tick labels. Recall that the function to rotate x-tick labels is a standalone Matplotlib function and not a function applied to the plot object itself.
+
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+- Rotate the x-tick labels 90 degrees.
 
 ```{python}
+# Create point plot
+_ = sns.catplot(x = "origin", 
+            y = "acceleration", 
+            data = mpg, 
+            kind = "point", 
+            join = False, 
+            capsize = 0.1,
+            height = 2.0)
 
+# Rotate x-tick labels
+_ = plt.xticks(rotation = 90)
+
+# Show plot
+plt.show()
 ```
+
+ince higher values indicate slower acceleration, it looks like cars from Japan and Europe have significantly slower acceleration compares to the USA.
 
 ## **Putting it all together**
 
-## **Box plot with subgroups**
+**1. Putting it all together**
 
+In this course, we've learned a great deal about how to create effective data visualizations in Seaborn. In this lesson, we'll review what we've learned and connect the pieces together to form a cohesive picture of how to use Seaborn for future projects.
 
+**2. Getting started**
+
+The first thing to recall is simply how to import Seaborn and its related library, Matplotlib. To do this, write "import seaborn as sns" and "import matplotlib dot pyplot as plt". Recall also that at the end of your data visualization code, you'll call "plt dot show" to show the visualization.
+
+```{python, eval = False}
+import seaborn as sns
+import matplotlib.pyplot as plt
+plt.show()
+```
+
+**3. Relational plots**
+
+After you've imported the appropriate libraries, the next thing to do is to choose what type of plot you want to create. Relational plots are plots that show the relationship between two quantitative variables. Examples of relational plots that we've seen in this course are scatter plots and line plots. You can create a relational plot using "relplot()" and providing it with the x-axis variable name, y-axis variable name, the Pandas tidy DataFrame, and the type of plot (either scatter or line).
+
+```{python, eval = False}
+_ = sns.relplot(x = 'x_variable_name',
+            y = 'y_variable_name',
+            data = pandas_df,
+            kind = 'scatter')
+```
+
+**4. Categorical plots**
+
+Categorical plots are another type of plot. These describe the distribution of a quantitative variable within categories given by a categorical variable. Examples of categorical plots we've seen are bar plots, count plots, box plots, and point plots. You can create a categorical plot using "catplot()" and providing it with the x-axis variable name, y-axis variable name (if applicable), the Pandas tidy DataFrame, and the type of plot (either bar, count, box, or point).
+
+```{python, eval = False}
+_ = sns.catplot(x = 'x_variable_name',
+            y = 'y_variable_name',
+            data = pandas_df,
+            kind = 'bar')
+```
+
+**5. Adding a third variable (hue)**
+
+If we want to add a third dimension to our plots, we can do this in one of two ways. Setting the "hue" parameter to a variable name will create a single plot but will show subgroups that are different colors based on that variable's values.
 
 ```{python}
-
+_ = sns.relplot(x = 'total_bill',
+             y = 'tip',
+             data = tips,
+             hue = 'smoker',
+             height = 2.6)
+             
+plt.show()
 ```
+
+**6. Adding a third variable (row/col)**
+
+Alternatively, you can use "relplot()" and "catplot()"’s "col" and "row" parameters to graph each subgroup on a separate subplot in the figure.
+
+```{python}
+_ = sns.relplot(x = 'total_bill', 
+                y = 'tip',
+                data = tips,
+                col = 'smoker',
+                height = 2.1)
+                
+plt.show()
+```
+
+**7. Customization**
+
+Once you have the basic plot created, you might want to customize the plot's appearance to improve its readability. You can change the background of the plot using "set_style", the color of the main elements using "set_palette", and the scale of the plot using "set_context".
+
+**8. Adding a title**
+
+Finally, every plot should be given an informative title and axis labels. Recall the two types of plot objects - FacetGrids and AxesSubplots - and the way to add a title to each of them.
+
+```{python, eval = False}
+g.fig.suptitle()
+g.set_title()
+```
+
+**9. Final touches**
+
+Also recall how to use the "set" function with the "xlabel" and "ylabel" parameters to provide custom x- and y-axis labels, and how to use "plt.xticks" with the "rotation" parameter to rotate the x-tick labels.
+
+```{python, eval = False}
+g.set(xlabel = 'new x-axis name',
+      ylabel = 'new y-axis name')
+      
+plt.xticks(rotation = 90)
+```
+
+**10. Let's practice!**
+
+And that's it! You're now equipped to make impressive and effective data visualizations with Seaborn. Let's practice putting all of these steps together in the final exercises of this course.
+
+## **Box plot with subgroups**
+
+In this exercise, we'll look at the dataset containing responses from a survey given to young people. One of the questions asked of the young people was: "Are you interested in having pets?" Let's explore whether the distribution of ages of those answering "yes" tends to be higher or lower than those answering "no", controlling for gender.
+
+**Instructions**
+
+Set the color palette to `"Blues"`.
+Add subgroups to color the box plots based on `"Interested in Pets"`.
+Set the title of the `FacetGrid` object `g` to "Age of Those Interested in Pets vs. Not".
+- Make the plot display using a Matplotlib function.
+
+```{python}
+# Set palette to "Blues"
+_ = sns.set_palette('Blues')
+
+# Adjust to add subgroups based on "Interested in Pets"
+g = sns.catplot(x = "Gender",
+                y = "Age", 
+                data = survey_data, 
+                kind = "box", 
+                hue = 'Interested in Pets',
+                height = 2.6)
+
+# Set title to "Age of Those Interested in Pets vs. Not"
+_ = g.fig.suptitle('Age of Those Interested in Pets vs. Not')
+
+# Show plot
+plt.show()
+```
+After controlling for gender, it looks like the age distributions of people who are interested in pets are similar than those who aren't.
 
 ## **Bar plots with subgroups and subplots**
 
+In this exercise, we'll return to our young people survey dataset and investigate whether the proportion of people who like techno music (`"Likes Techno"`) varies by their gender (`"Gender"`) or where they live (`"Village - town"`). This exercise will give us an opportunity to practice the many things we've learned throughout this course!
 
+We've already imported Seaborn as `sns` and `matplotlib.pyplot` as `plt`.
+
+**Instructions**
+
+Set the figure style to `"dark"`.
+Adjust the bar plot code to add subplots based on `"Gender"`, arranged in columns.
+Add the title "Percentage of Young People Who Like Techno" to this `FacetGrid` plot.
+Label the x-axis "Location of Residence" and y-axis "% Who Like Techno".
 
 ```{python}
+_ = sns.set_palette('tab10')
 
+# Set the figure style to "dark"
+_ = sns.set_style('dark')
+
+# Adjust to add subplots per gender
+g = sns.catplot(x = "Village - town", 
+                y = "Likes Techno", 
+                data = survey_data, 
+                kind = "bar",
+                col = 'Gender',
+                height = 2.0)
+
+# Add title and axis labels
+_ = g.fig.suptitle("Percentage of Young People Who Like Techno", y = 1.0)
+_ = g.set(xlabel = "Location of Residence", 
+      ylabel = "% Who Like Techno")
+
+# Show plot
+plt.show()
 ```
 
+## **Final thoughts**
+
+**1. Well done! What's next?**
+
+Congratulations on completing this introduction to Seaborn! Let's discuss the next steps you can take to build upon the skills that you've learned in this course.
+
+**2. Where does Seaborn fit in?**
+
+Seaborn is a powerful data visualization tool that allows you to create attractive and informative visualizations with just a few lines of code. Let's return to this diagram of the data analysis workflow to see where Seaborn fits in.
+
+**3. Where does Seaborn fit in?**
+
+As we've seen in our examples, Seaborn is great for both the initial exploration of your data and communicating the results at the end of your data analysis.
+
+**4. Next Steps: Explore and communicate results**
+
+In this course, we've covered the most common data visualizations used for data exploration. DataCamp has other visualization courses if you want to learn even more. For example, Seaborn also supports more advanced visualizations and analyses like linear regressions. We also learned that Seaborn was built on top of Matplotlib and practiced how to use some Matplotlib functions to customize Seaborn plots. Here, too, there are many more customizations that Matplotlib supports if you wish to learn more.
+
+**5. Next steps: Gather data**
+
+You can also learn more about the other steps of the data analysis workflow. If you wish to learn more about how to gather your data, explore courses on importing data in Python and SQL.
+
+**6. Next steps: Transform and clean**
+
+In this course, we learned that Seaborn works extremely well with tidy Pandas DataFrames. There is more to learn here about how to get your data into Pandas DataFrames, clean it, and transform it into a tidy format.
+
+**7. Next steps: Analyze and build models**
+
+Finally, I encourage you to learn more about statistical analysis. For example, for bar plots, Seaborn automatically calculates confidence intervals for each bar value. There is a lot to learn here about how these confidence intervals are calculated and how to interpret them.
+
+**8. Congratulations!**
+
+Though there is always more to learn, we've covered a great deal in this introduction to Seaborn. Congratulations on completing the course! I hope you enjoyed it and feel confident using Seaborn in the future for your data visualization needs.
