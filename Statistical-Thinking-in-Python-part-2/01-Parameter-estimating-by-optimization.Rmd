@@ -1,0 +1,14 @@
+---
+title: "01 - Parameter estimating by optimization"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    code_folding: hide
+---
+
+```{python}
+
+```
+
