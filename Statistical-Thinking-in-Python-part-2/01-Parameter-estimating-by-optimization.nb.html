@@ -213,15 +213,435 @@ pre code {
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#optimal-parameters"><strong>Optimal parameters</strong></a>
+<ul>
+<li><a href="#how-often-do-we-get-no-hitters"><strong>How often do we get no-hitters?</strong></a></li>
+<li><a href="#do-the-data-follow-our-story"><strong>Do the data follow our story?</strong></a></li>
+</ul></li>
+<li><a href="#how-is-this-parameter-optimal"><strong>How is this parameter optimal?</strong></a></li>
+<li><a href="#linear-regression-by-least-squares"><strong>Linear regression by least squares</strong></a>
+<ul>
+<li><a href="#eda-of-literacyfertility-data"><strong>EDA of literacy/fertility data</strong></a></li>
+<li><a href="#linear-regression"><strong>Linear regression</strong></a></li>
+<li><a href="#how-is-it-optimal"><strong>How is it optimal?</strong></a></li>
+</ul></li>
+<li><a href="#the-imporatnce-eda-anscombes-quartet"><strong>The imporatnce EDA: Anscombe’s quartet</strong></a>
+<ul>
+<li><a href="#the-importance-of-eda">**The importance of EDA</a></li>
+<li><a href="#linear-regression-on-appropriate-anscombe-data"><strong>Linear regression on appropriate Anscombe data</strong></a></li>
+<li><a href="#linear-regression-on-all-anscombe-data"><strong>Linear regression on all Anscombe data</strong></a></li>
+</ul></li>
+</ul>
+</div>
 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="optimal-parameters" class="section level2">
+<h2><strong>Optimal parameters</strong></h2>
+<p><strong>1. Optimal parameters</strong></p>
+<p>After completing the prequel to this course, you are now beginning to think probabilistically. Outcomes of measurements follow probability distributions defined by the story of how the data came to be. When we looked at Michelson’s speed of light in air measurements, we assumed that the results were Normally distributed.</p>
+<p><strong>2. Histogram of Michelson’s measurements</strong></p>
+<p>We verified that both by looking at the PDF and</p>
+<p>1 Data: Michelson, 1880</p>
+<p><strong>3. CDF of Michelson’s measurements</strong></p>
+<p>the CDF, which was more effective because there is no binning bias. To compute and plot the CDF, we needed our old friends</p>
+<p>1 Data: Michelson, 1880</p>
+<p><strong>4. Checking Normality of Michelson data</strong></p>
+<p>Numpy and matplotlib dot pyplot, so the first step was to import them with their traditional aliases. To compute the theoretical CDF by sampling, we passed two parameters into np dot random dot normal, the mean and standard deviation. The values we chose for these parameters were in fact the mean and standard deviation we calculated directly from the data.</p>
+<p><strong>5. CDF of Michelson’s measurements</strong></p>
+<p>The result was that the theoretical CDF overlayed beautifully with the empirical CDF. How did we know that the mean and standard deviation calculated from the data were the appropriate values for the Normal parameters? We could have chosen others.</p>
+<p>1 Data: Michelson, 1880</p>
+<p><strong>6. CDF with bad estimate of st. dev.</strong></p>
+<p>What if the standard deviation differs by 50%? The CDFs no longer match. Or if the mean</p>
+<p>1 Data: Michelson, 1880</p>
+<p><strong>7. CDF with bad estimate of mean</strong></p>
+<p>varies by just point-01%. So, if we believe that the process that generates our data gives Normally distributed results,</p>
+<p>1 Data: Michelson, 1880</p>
+<p><strong>8. Optimal parameters</strong></p>
+<p>the set of parameters that brings the model, in this case a Normal distribution, in closest agreement with the data uses the mean and standard deviation computed directly from the data. These are the optimal parameters. Remember though, the parameters are only optimal for</p>
+<p><strong>9. Mass of MA large mouth bass</strong></p>
+<p>the model you chose for your data. When your model is wrong, the optimal parameters are not really meaningful. Finding the optimal parameters is not always as easy as just computing the mean and standard deviation from the data. We will encounter this later in this chapter when we do linear regressions and we rely on built-in NumPy functions to find the optimal parameters for us. I pause to note that</p>
+<p>1 Source: Mass. Dept. of Environmental Protection</p>
+<p><strong>10. Packages to do statistical inference</strong></p>
+<p>there are great tools in the Python ecosystem for doing statistical inference, including by optimization, scipy dot stats and</p>
+<p><strong>11. Packages to do statistical inference</strong></p>
+<p>statsmodels being two good examples. In this course, however,</p>
+<p><strong>12. Packages to do statistical inference</strong></p>
+<p>we focus on hacker statistics because the technique is like a Swiss Army knife; the same simple principle is applicable to a wide variety of statistical problems.</p>
+<p>1 Knife image: D 2 M Commons, CC BY 3 SA 3.0</p>
+<p><strong>13. Let’s practice!</strong></p>
+<p>Now it’s time for you to do some exercises to demonstrate how choosing optimal parameters results in best agreement between the theoretical model distribution and your data.</p>
+<div id="how-often-do-we-get-no-hitters" class="section level3">
+<h3><strong>How often do we get no-hitters?</strong></h3>
+<p>The number of games played between each no-hitter in the modern era (1901-2015) of Major League Baseball is stored in the array <code>nohitter_times</code>.</p>
+<p>If you assume that no-hitters are described as a Poisson process, then the time between no-hitters is Exponentially distributed. As you have seen, the Exponential distribution has a single parameter, which we will call <span class="math inline">\(\tau\)</span>, the typical interval time. The value of the parameter <span class="math inline">\(\tau\)</span> that makes the exponential distribution best match the data is the mean interval time (where time is in units of number of games) between no-hitters.</p>
+<p>Compute the value of this parameter from the data. Then, use <code>np.random.exponential()</code> to “repeat” the history of Major League Baseball by drawing inter-no-hitter times from an exponential distribution with the <span class="math inline">\(\tau\)</span> you found and plot the histogram as an approximation to the PDF.</p>
+<p>NumPy, pandas, matlotlib.pyplot, and seaborn have been imported for you as <code>np</code>, <code>pd</code>, <code>plt</code>, and <code>sns</code>, respectively.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Seed the random number generator with <code>42</code>.</li>
+<li>Compute the mean time (in units of number of games) between no-hitters.</li>
+<li>Draw 100,000 samples from an Exponential distribution with the parameter you computed from the mean of the inter-no-hitter times. Plot the theoretical PDF using <code>plt.hist()</code>. Remember to use keyword arguments <code>bins=50</code>, <code>normed=True</code>, and <code>histtype=&#39;step&#39;</code>. Be sure to label your axes.</li>
+<li>Show your plot.</li>
+</ul>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFNlZWQgcmFuZG9tIG51bWJlciBnZW5lcmF0b3Jcbl9fX19cblxuIyBDb21wdXRlIG1lYW4gbm8taGl0dGVyIHRpbWU6IHRhdVxudGF1ID0gX19fX1xuXG4jIERyYXcgb3V0IG9mIGFuIGV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbiB3aXRoIHBhcmFtZXRlciB0YXU6IGludGVyX25vaGl0dGVyX3RpbWVcbmludGVyX25vaGl0dGVyX3RpbWUgPSBfX19fKF9fX18sIDEwMDAwMClcblxuIyBQbG90IHRoZSBQREYgYW5kIGxhYmVsIGF4ZXNcbl8gPSBfX19fKGludGVyX25vaGl0dGVyX3RpbWUsXG4gICAgICAgICAgICAgX19fXywgX19fXywgX19fXylcbl8gPSBwbHQueGxhYmVsKCdHYW1lcyBiZXR3ZWVuIG5vLWhpdHRlcnMnKVxuXyA9IHBsdC55bGFiZWwoJ1BERicpXG5cbiMgU2hvdyB0aGUgcGxvdFxucGx0LnNob3coKVxuXG5gYGAifQ== -->
+<pre class="python"><code># Seed random number generator
+____
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDEgLSBQYXJhbWV0ZXIgZXN0aW1hdGluZyBieSBvcHRpbWl6YXRpb24iCm91dHB1dDogCiAgaHRtbF9ub3RlYm9vazoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiBmYWxzZQogICAgdG9jX2RlcHRoOiA0CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKLS0tCgpgYGB7cHl0aG9ufQoKYGBgCgo=</div>
+# Compute mean no-hitter time: tau
+tau = ____
+
+# Draw out of an exponential distribution with parameter tau: inter_nohitter_time
+inter_nohitter_time = ____(____, 100000)
+
+# Plot the PDF and label axes
+_ = ____(inter_nohitter_time,
+             ____, ____, ____)
+_ = plt.xlabel(&#39;Games between no-hitters&#39;)
+_ = plt.ylabel(&#39;PDF&#39;)
+
+# Show the plot
+plt.show()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="do-the-data-follow-our-story" class="section level3">
+<h3><strong>Do the data follow our story?</strong></h3>
+<p>You have modeled no-hitters using an Exponential distribution. Create an ECDF of the real data. Overlay the theoretical CDF with the ECDF from the data. This helps you to verify that the Exponential distribution describes the observed data.</p>
+<p>It may be helpful to remind yourself of the <a href="https://campus.datacamp.com/courses/statistical-thinking-in-python-part-1/graphical-exploratory-data-analysis?ex=12">function you created in the previous course</a> to compute the ECDF, as well as the code you wrote to <a href="https://campus.datacamp.com/courses/statistical-thinking-in-python-part-1/graphical-exploratory-data-analysis?ex=13">plot it</a>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Compute an ECDF from the actual time between no-hitters (<code>nohitter_times</code>). Use the <code>ecdf()</code> function you wrote in the prequel course.</li>
+<li>Create a CDF from the theoretical samples you took in the last exercise (<code>inter_nohitter_time</code>).</li>
+<li>Plot <code>x_theor</code> and <code>y_theor</code> as a line using <code>plt.plot()</code>. Then overlay the ECDF of the real data <code>x</code> and <code>y</code> as points. To do this, you have to specify the keyword arguments <code>marker = &#39;.&#39;</code> and <code>linestyle = &#39;none&#39;</code> in addition to <code>x</code> and <code>y</code> inside <code>plt.plot()</code>.</li>
+<li>Set a 2% margin on the plot.</li>
+<li>Show the plot.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBhbiBFQ0RGIGZyb20gcmVhbCBkYXRhOiB4LCB5XG54LCB5ID0gX19fX1xuXG4jIENyZWF0ZSBhIENERiBmcm9tIHRoZW9yZXRpY2FsIHNhbXBsZXM6IHhfdGhlb3IsIHlfdGhlb3JcbnhfdGhlb3IsIHlfdGhlb3IgPSBfX19fXG5cbiMgT3ZlcmxheSB0aGUgcGxvdHNcbnBsdC5wbG90KF9fX18sIF9fX18pXG5wbHQucGxvdChfX19fLCBfX19fLCBtYXJrZXI9X19fXywgbGluZXN0eWxlPV9fX18pXG5cbiMgTWFyZ2lucyBhbmQgYXhpcyBsYWJlbHNcbnBsdC5tYXJnaW5zKF9fX18pXG5wbHQueGxhYmVsKCdHYW1lcyBiZXR3ZWVuIG5vLWhpdHRlcnMnKVxucGx0LnlsYWJlbCgnQ0RGJylcblxuIyBTaG93IHRoZSBwbG90XG5wbHQuc2hvdygpXG5cbmBgYCJ9 -->
+<pre class="python"><code># Create an ECDF from real data: x, y
+x, y = ____
+
+# Create a CDF from theoretical samples: x_theor, y_theor
+x_theor, y_theor = ____
+
+# Overlay the plots
+plt.plot(____, ____)
+plt.plot(____, ____, marker=____, linestyle=____)
+
+# Margins and axis labels
+plt.margins(____)
+plt.xlabel(&#39;Games between no-hitters&#39;)
+plt.ylabel(&#39;CDF&#39;)
+
+# Show the plot
+plt.show()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="how-is-this-parameter-optimal" class="section level2">
+<h2><strong>How is this parameter optimal?</strong></h2>
+<p>Now sample out of an exponential distribution with <span class="math inline">\(\tau\)</span> being twice as large as the optimal <span class="math inline">\(\tau\)</span>. Do it again for <span class="math inline">\(\tau\)</span> half as large. Make CDFs of these samples and overlay them with your data. You can see that they do not reproduce the data as well. Thus, the <span class="math inline">\(\tau\)</span> you computed from the mean inter-no-hitter times is optimal in that it best reproduces the data.</p>
+<p><em>Note</em>: In this and all subsequent exercises, the random number generator is pre-seeded for you to save you some typing.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Take <code>10000</code> samples out of an Exponential distribution with parameter <span class="math inline">\(\tau_{1/2}\)</span>= <code>tau/2</code>.</li>
+<li>Take <code>10000</code> samples out of an Exponential distribution with parameter <span class="math inline">\(\tau_{2}\)</span>= <code>2*tau</code>.</li>
+<li>Generate CDFs from these two sets of samples using your <code>ecdf()</code> function.</li>
+<li>Add these two CDFs as lines to your plot. This has been done for you, so hit ‘Submit Answer’ to view the plot!</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFBsb3QgdGhlIHRoZW9yZXRpY2FsIENERnNcbnBsdC5wbG90KHhfdGhlb3IsIHlfdGhlb3IpXG5wbHQucGxvdCh4LCB5LCBtYXJrZXI9Jy4nLCBsaW5lc3R5bGU9J25vbmUnKVxucGx0Lm1hcmdpbnMoMC4wMilcbnBsdC54bGFiZWwoJ0dhbWVzIGJldHdlZW4gbm8taGl0dGVycycpXG5wbHQueWxhYmVsKCdDREYnKVxuXG4jIFRha2Ugc2FtcGxlcyB3aXRoIGhhbGYgdGF1OiBzYW1wbGVzX2hhbGZcbnNhbXBsZXNfaGFsZiA9IF9fX19cblxuIyBUYWtlIHNhbXBsZXMgd2l0aCBkb3VibGUgdGF1OiBzYW1wbGVzX2RvdWJsZVxuc2FtcGxlc19kb3VibGUgPSBfX19fXG5cbiMgR2VuZXJhdGUgQ0RGcyBmcm9tIHRoZXNlIHNhbXBsZXNcbnhfaGFsZiwgeV9oYWxmID0gX19fX1xueF9kb3VibGUsIHlfZG91YmxlID0gX19fX1xuXG4jIFBsb3QgdGhlc2UgQ0RGcyBhcyBsaW5lc1xuXyA9IHBsdC5wbG90KHhfaGFsZiwgeV9oYWxmKVxuXyA9IHBsdC5wbG90KHhfZG91YmxlLCB5X2RvdWJsZSlcblxuIyBTaG93IHRoZSBwbG90XG5wbHQuc2hvdygpXG5gYGAifQ== -->
+<pre class="python"><code># Plot the theoretical CDFs
+plt.plot(x_theor, y_theor)
+plt.plot(x, y, marker=&#39;.&#39;, linestyle=&#39;none&#39;)
+plt.margins(0.02)
+plt.xlabel(&#39;Games between no-hitters&#39;)
+plt.ylabel(&#39;CDF&#39;)
+
+# Take samples with half tau: samples_half
+samples_half = ____
+
+# Take samples with double tau: samples_double
+samples_double = ____
+
+# Generate CDFs from these samples
+x_half, y_half = ____
+x_double, y_double = ____
+
+# Plot these CDFs as lines
+_ = plt.plot(x_half, y_half)
+_ = plt.plot(x_double, y_double)
+
+# Show the plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="linear-regression-by-least-squares" class="section level2">
+<h2><strong>Linear regression by least squares</strong></h2>
+<p><strong>1. Linear regression by least squares</strong></p>
+<p>Sometimes two variables are related. You may recall from the prequel to this course that we computed the Pearson correlation coefficient between</p>
+<p><strong>2. 2008 US swing state election results</strong></p>
+<p>Obama’s vote share in each county in swings states and the total vote count of the respective counties. The Pearson correlation coefficient is important to compute, but we might like to get a fuller understanding of how the data are related to each other. Specifically, we might suspect some underlying function gives the data its shape.</p>
+<p>1 Data retrieved from Data.gov (<a href="https://www.data.gov/" class="uri">https://www.data.gov/</a>)</p>
+<p><strong>3. 2008 US swing state election results</strong></p>
+<p>Often times a linear function is appropriate to describe the data, and this is what we will focus on in this course. The parameters of the function are</p>
+<p>1 Data retrieved from Data.gov (<a href="https://www.data.gov/" class="uri">https://www.data.gov/</a>)</p>
+<p><strong>4. 2008 US swing state election results</strong></p>
+<p>the slope and intercept. The slope sets how steep the line is, and the intercept sets where the line crosses the y-axis. How do we figure out which slope and intercept best describe the data? A simple answer is that we want to choose the slope and intercept such that the data points collectively lie as close as possible to the line. This is easiest to think about by first considering one data point,</p>
+<p>1 Data retrieved from Data.gov (<a href="https://www.data.gov/" class="uri">https://www.data.gov/</a>)</p>
+<p><strong>5. 2008 US swing state election results</strong></p>
+<p>say this one. The vertical distance between the data point and the line is called</p>
+<p>1 Data retrieved from Data.gov (<a href="https://www.data.gov/" class="uri">https://www.data.gov/</a>)</p>
+<p><strong>6. Residuals</strong></p>
+<p>the residual. In this case, the residual has a negative value because the data point lies below the line. Each data point has a residual associated with it.</p>
+<p>1 Data retrieved from Data.gov (<a href="https://www.data.gov/" class="uri">https://www.data.gov/</a>)</p>
+<p><strong>7. Least squares</strong></p>
+<p>We define the line that is closest to the data to be the line for which the sum of the squares of all of the residuals is minimal. This process, finding the parameters for which the sum of the squares of the residuals is minimal, is called “least squares”. There are many algorithms to do this in practice.</p>
+<p><strong>8. Least squares with np.polyfit()</strong></p>
+<p>We will use the Numpy function polyfit, which performs least squares analysis with polynomial functions. We can use it because a linear function is a first degree polynomial. The first two arguments to this function are the x and y data. The third argument is the degree of the polynomial you wish to fit; for linear functions, we enter one. The function returns the slope and intercept of the best fit line. The slope tells us that we get about 4 more percent votes for Obama for every 100,000 additional voters in a county. Now that you know how to perform a linear regression,</p>
+<p><strong>9. Let’s practice!</strong></p>
+<p>let’s do it with some real data in the exercises!</p>
+<div id="eda-of-literacyfertility-data" class="section level3">
+<h3><strong>EDA of literacy/fertility data</strong></h3>
+<p>In the next few exercises, we will look at the correlation between female literacy and fertility (defined as the average number of children born per woman) throughout the world. For ease of analysis and interpretation, we will work with the <code>illiteracy</code> rate.</p>
+<p>It is always a good idea to do some EDA ahead of our analysis. To this end, plot the fertility versus illiteracy and compute the Pearson correlation coefficient. The Numpy array <code>illiteracy</code> has the illiteracy rate among females for most of the world’s nations. The array <code>fertility</code> has the corresponding fertility data.</p>
+<p>Here, it may be useful to refer back to the <a href="https://campus.datacamp.com/courses/statistical-thinking-in-python-part-1/quantitative-exploratory-data-analysis?ex=15">function you wrote in the previous course</a> to compute the Pearson correlation coefficient.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Plot <code>fertility</code> (y-axis) versus <code>illiteracy</code> (x-axis) as a scatter plot.</li>
+<li>Set a 2% margin.</li>
+<li>Compute and print the Pearson correlation coefficient between <code>illiteracy</code> and <code>fertility.</code></li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFBsb3QgdGhlIGlsbGl0ZXJhY3kgcmF0ZSB2ZXJzdXMgZmVydGlsaXR5XG5fID0gcGx0LnBsb3QoX19fXywgX19fXywgX19fXz0nLicsIF9fX189J25vbmUnKVxuXG4jIFNldCB0aGUgbWFyZ2lucyBhbmQgbGFiZWwgYXhlc1xucGx0Lm1hcmdpbnMoX19fXylcbl8gPSBwbHQueGxhYmVsKCdwZXJjZW50IGlsbGl0ZXJhdGUnKVxuXyA9IHBsdC55bGFiZWwoJ2ZlcnRpbGl0eScpXG5cbiMgU2hvdyB0aGUgcGxvdFxucGx0LnNob3coKVxuXG4jIFNob3cgdGhlIFBlYXJzb24gY29ycmVsYXRpb24gY29lZmZpY2llbnRcbnByaW50KHBlYXJzb25fcihfX19fLCBfX19fKSlcblxuYGBgIn0= -->
+<pre class="python"><code># Plot the illiteracy rate versus fertility
+_ = plt.plot(____, ____, ____=&#39;.&#39;, ____=&#39;none&#39;)
+
+# Set the margins and label axes
+plt.margins(____)
+_ = plt.xlabel(&#39;percent illiterate&#39;)
+_ = plt.ylabel(&#39;fertility&#39;)
+
+# Show the plot
+plt.show()
+
+# Show the Pearson correlation coefficient
+print(pearson_r(____, ____))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="linear-regression" class="section level3">
+<h3><strong>Linear regression</strong></h3>
+<p>We will assume that fertility is a linear function of the female illiteracy rate. That is, <span class="math inline">\(f = ai + b\)</span>, where <span class="math inline">\(a\)</span> is the slope and <span class="math inline">\(b\)</span> is the intercept. We can think of the intercept as the minimal fertility rate, probably somewhere between one and two. The slope tells us how the fertility rate varies with illiteracy. We can find the best fit line using <code>np.polyfit()</code>.</p>
+<p>Plot the data and the best fit line. Print out the slope and intercept. (Think: what are their units?)</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Compute the slope and intercept of the regression line using <code>np.polyfit()</code>. Remember, <code>fertility</code> is on the y-axis and <code>illiteracy</code> on the x-axis.</li>
+<li>Print out the slope and intercept from the linear regression.</li>
+<li>To plot the best fit line, create an array <code>x</code> that consists of 0 and 100 using <code>np.array()</code>. Then, compute the theoretical values of <code>y</code> based on your regression parameters. I.e., <code>y = a * x + b</code>. -Plot the data and the regression line on the same plot. Be sure to label your axes.</li>
+<li>Hit ‘Submit Answer’ to display your plot.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFBsb3QgdGhlIGlsbGl0ZXJhY3kgcmF0ZSB2ZXJzdXMgZmVydGlsaXR5XG5fID0gcGx0LnBsb3QoaWxsaXRlcmFjeSwgZmVydGlsaXR5LCBtYXJrZXI9Jy4nLCBsaW5lc3R5bGU9J25vbmUnKVxucGx0Lm1hcmdpbnMoMC4wMilcbl8gPSBwbHQueGxhYmVsKCdwZXJjZW50IGlsbGl0ZXJhdGUnKVxuXyA9IHBsdC55bGFiZWwoJ2ZlcnRpbGl0eScpXG5cbiMgUGVyZm9ybSBhIGxpbmVhciByZWdyZXNzaW9uIHVzaW5nIG5wLnBvbHlmaXQoKTogYSwgYlxuYSwgYiA9IF9fX19cblxuIyBQcmludCB0aGUgcmVzdWx0cyB0byB0aGUgc2NyZWVuXG5wcmludCgnc2xvcGUgPScsIGEsICdjaGlsZHJlbiBwZXIgd29tYW4gLyBwZXJjZW50IGlsbGl0ZXJhdGUnKVxucHJpbnQoJ2ludGVyY2VwdCA9JywgYiwgJ2NoaWxkcmVuIHBlciB3b21hbicpXG5cbiMgTWFrZSB0aGVvcmV0aWNhbCBsaW5lIHRvIHBsb3RcbnggPSBfX19fXG55ID0gX19fXyAqIF9fX18gKyBfX19fXG5cbiMgQWRkIHJlZ3Jlc3Npb24gbGluZSB0byB5b3VyIHBsb3Rcbl8gPSBwbHQucGxvdChfX19fLCBfX19fKVxuXG4jIERyYXcgdGhlIHBsb3RcbnBsdC5zaG93KClcblxuYGBgIn0= -->
+<pre class="python"><code># Plot the illiteracy rate versus fertility
+_ = plt.plot(illiteracy, fertility, marker=&#39;.&#39;, linestyle=&#39;none&#39;)
+plt.margins(0.02)
+_ = plt.xlabel(&#39;percent illiterate&#39;)
+_ = plt.ylabel(&#39;fertility&#39;)
+
+# Perform a linear regression using np.polyfit(): a, b
+a, b = ____
+
+# Print the results to the screen
+print(&#39;slope =&#39;, a, &#39;children per woman / percent illiterate&#39;)
+print(&#39;intercept =&#39;, b, &#39;children per woman&#39;)
+
+# Make theoretical line to plot
+x = ____
+y = ____ * ____ + ____
+
+# Add regression line to your plot
+_ = plt.plot(____, ____)
+
+# Draw the plot
+plt.show()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="how-is-it-optimal" class="section level3">
+<h3><strong>How is it optimal?</strong></h3>
+<p>The function <code>np.polyfit()</code> that you used to get your regression parameters finds the <em>optimal</em> slope and intercept. It is optimizing the sum of the squares of the residuals, also known as RSS (for residual sum of squares). In this exercise, you will plot the function that is being optimized, the RSS, versus the slope parameter <code>a</code>. To do this, fix the intercept to be what you found in the optimization. Then, plot the RSS vs. the slope. Where is it minimal?</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Specify the values of the slope to compute the RSS. Use <code>np.linspace()</code> to get <code>200</code> points in the range between <code>0</code> and <code>0.1</code>. For example, to get <code>100</code> points in the range between <code>0</code> and <code>0.5</code>, you could use <code>np.linspace()</code> like so: <code>np.linspace(0, 0.5, 100)</code>.</li>
+<li>Initialize an array, <code>rss</code>, to contain the RSS using <code>np.empty_like()</code> and the array you created above. The <code>empty_like()</code> function returns a new array with the same shape and type as a given array (in this case, <code>a_vals</code>).</li>
+<li>Write a <code>for</code> loop to compute the sum of RSS of the slope. Hint: the RSS is given by <code>np.sum((y_data - a * x_data - b)**2)</code>. The variable <code>b</code> you computed in the last exercise is already in your namespace. Here, <code>fertility</code> is the <code>y_data</code> and <code>illiteracy</code> the <code>x_data</code>.</li>
+<li>Plot the RSS (<code>rss</code>) versus slope (<code>a_vals</code>).</li>
+<li>Hit ‘Submit Answer’ to see the plot!</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFNwZWNpZnkgc2xvcGVzIHRvIGNvbnNpZGVyOiBhX3ZhbHNcbmFfdmFscyA9IF9fX19cblxuIyBJbml0aWFsaXplIHN1bSBvZiBzcXVhcmUgb2YgcmVzaWR1YWxzOiByc3NcbnJzcyA9IF9fX19cblxuIyBDb21wdXRlIHN1bSBvZiBzcXVhcmUgb2YgcmVzaWR1YWxzIGZvciBlYWNoIHZhbHVlIG9mIGFfdmFsc1xuZm9yIGksIGEgaW4gZW51bWVyYXRlKGFfdmFscyk6XG4gICAgcnNzW2ldID0gX19fXygoX19fXyAtIGEqX19fXyAtIGIpKioyKVxuXG4jIFBsb3QgdGhlIFJTU1xucGx0LnBsb3QoX19fXywgX19fXywgJy0nKVxucGx0LnhsYWJlbCgnc2xvcGUgKGNoaWxkcmVuIHBlciB3b21hbiAvIHBlcmNlbnQgaWxsaXRlcmF0ZSknKVxucGx0LnlsYWJlbCgnc3VtIG9mIHNxdWFyZSBvZiByZXNpZHVhbHMnKVxuXG5wbHQuc2hvdygpXG5cbmBgYCJ9 -->
+<pre class="python"><code># Specify slopes to consider: a_vals
+a_vals = ____
+
+# Initialize sum of square of residuals: rss
+rss = ____
+
+# Compute sum of square of residuals for each value of a_vals
+for i, a in enumerate(a_vals):
+    rss[i] = ____((____ - a*____ - b)**2)
+
+# Plot the RSS
+plt.plot(____, ____, &#39;-&#39;)
+plt.xlabel(&#39;slope (children per woman / percent illiterate)&#39;)
+plt.ylabel(&#39;sum of square of residuals&#39;)
+
+plt.show()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="the-imporatnce-eda-anscombes-quartet" class="section level2">
+<h2><strong>The imporatnce EDA: Anscombe’s quartet</strong></h2>
+<p><strong>1. The importance of EDA: Anscombe’s quartet</strong></p>
+<p>In 1973, statistician Francis Anscombe published a paper that contained</p>
+<p><strong>2. Anscombe’s quartet</strong></p>
+<p>four fictitious x-y data sets, plotted here. He uses these data sets to make an important point. That point becomes clear if we blindly go about doing parameter estimation on these data sets. First, let’s look at the average x-values of the four data sets.</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>3. Anscombe’s quartet</strong></p>
+<p>They are all the same. How about the average y-values?</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>4. Anscombe’s quartet</strong></p>
+<p>Again, all the same. And what if we do a linear regression on each of the data sets?</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>5. Anscombe’s quartet</strong></p>
+<p>They all have the same line! Surely some of the fits are less optimal than others. Let’s look at the sum of the squares of the residuals.</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>6. Anscombe’s quartet</strong></p>
+<p>Oh my, they are all basically the same as well. Of course, Anscombe constructed the data sets so that this would happen. The point he was making is very important. You already have some powerful tools for statistical inference. You can compute summary statistics and optimal parameters, including linear regression parameters, and by the end of the course, you will able to construct confidence intervals with quantify uncertainty about the parameter estimates. These are crucial skills for any data analysis, no doubt.</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>7. Look before you leap!</strong></p>
+<p>But look before you leap! This is a powerful reminder to do some graphic exploratory data analysis before you start computing and making judgments about your data. For example,</p>
+<p><strong>8. Anscombe’s quartet</strong></p>
+<p>this data set might be well modeled with a line, and the regression parameters will be meaningful. The same is true of</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>9. Anscombe’s quartet</strong></p>
+<p>this data set, but the outlier throws off the slope and intercept. After doing EDA, you should look into what is causing that outlier.</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>10. Anscombe’s quartet</strong></p>
+<p>This data set might also have a linear relationship between x and y, but from the plot, you can conclude that you should try to acquire more data for intermediate x values to make sure that it does.</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>11. Anscombe’s quartet</strong></p>
+<p>And this data set is definitely not linear, and you need to choose another model. Explore your data first. I’ll let you prove to yourself</p>
+<p>1 Data: Anscombe, The American Statistician, 1973</p>
+<p><strong>12. Let’s practice!</strong></p>
+<p>that these data sets give the same regression parameters. It will be good practice, and seeing is believing!</p>
+<div id="the-importance-of-eda" class="section level3">
+<h3>**The importance of EDA</h3>
+<p>Why should exploratory data analysis be the first step in an analysis of data (after getting your data imported and cleaned, of course)?</p>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>You can be protected from misinterpretation of the type demonstrated by Anscombe’s quartet.</p></li>
+<li><p>EDA provides a good starting point for planning the rest of your analysis.</p></li>
+<li><p>EDA is not really any more difficult than any of the subsequent analysis, so there is no excuse for not exploring the data.</p></li>
+<li><p>All of these reasons!</p></li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="linear-regression-on-appropriate-anscombe-data" class="section level3">
+<h3><strong>Linear regression on appropriate Anscombe data</strong></h3>
+<p>For practice, perform a linear regression on the data set from Anscombe’s quartet that is most reasonably interpreted with linear regression.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Compute the parameters for the slope and intercept using <code>np.polyfit()</code>. The Anscombe data are stored in the arrays <code>x</code> and <code>y</code>.</li>
+<li>Print the slope <code>a</code> and intercept <code>b</code>.</li>
+<li>Generate theoretical <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> data from the linear regression. Your <span class="math inline">\(x\)</span> array, which you can create with <code>np.array()</code>, should consist of <code>3</code> and <code>15</code>. To generate the <span class="math inline">\(y\)</span> data, multiply the slope by <code>x_theor</code> and add the intercept.</li>
+<li>Plot the Anscombe data as a scatter plot and then plot the theoretical line. Remember to include the <code>marker=&#39;.&#39;</code> and <code>linestyle=&#39;none&#39;</code> keyword arguments in addition to <code>x</code> and <code>y</code> when to plot the Anscombe data as a scatter plot. You do not need these arguments when plotting the theoretical line.</li>
+<li>Hit ‘Submit Answer’ to see the plot!</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFBlcmZvcm0gbGluZWFyIHJlZ3Jlc3Npb246IGEsIGJcbmEsIGIgPSBfX19fXG5cbiMgUHJpbnQgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHRcbnByaW50KF9fX18sIF9fX18pXG5cbiMgR2VuZXJhdGUgdGhlb3JldGljYWwgeCBhbmQgeSBkYXRhOiB4X3RoZW9yLCB5X3RoZW9yXG54X3RoZW9yID0gbnAuYXJyYXkoW19fX18sIF9fX19dKVxueV90aGVvciA9IF9fX18gKiBfX19fICsgX19fX1xuXG4jIFBsb3QgdGhlIEFuc2NvbWJlIGRhdGEgYW5kIHRoZW9yZXRpY2FsIGxpbmVcbl8gPSBfX19fXG5fID0gX19fX1xuXG4jIExhYmVsIHRoZSBheGVzXG5wbHQueGxhYmVsKCd4JylcbnBsdC55bGFiZWwoJ3knKVxuXG4jIFNob3cgdGhlIHBsb3RcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Perform linear regression: a, b
+a, b = ____
+
+# Print the slope and intercept
+print(____, ____)
+
+# Generate theoretical x and y data: x_theor, y_theor
+x_theor = np.array([____, ____])
+y_theor = ____ * ____ + ____
+
+# Plot the Anscombe data and theoretical line
+_ = ____
+_ = ____
+
+# Label the axes
+plt.xlabel(&#39;x&#39;)
+plt.ylabel(&#39;y&#39;)
+
+# Show the plot
+plt.show()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="linear-regression-on-all-anscombe-data" class="section level3">
+<h3><strong>Linear regression on all Anscombe data</strong></h3>
+<p>Now, to verify that all four of the Anscombe data sets have the same slope and intercept from a linear regression, you will compute the slope and intercept for each set. The data are stored in lists; <code>anscombe_x = [x1, x2, x3, x4]</code> and <code>anscombe_y = [y1, y2, y3, y4]</code>, where, for example, <code>x2</code> and <code>y2</code> are the <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> values for the second Anscombe data set.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Write a <code>for</code> loop to do the following for each Anscombe data set.
+<ul>
+<li>Compute the slope and intercept.</li>
+<li>Print the slope and intercept.</li>
+</ul></li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEl0ZXJhdGUgdGhyb3VnaCB4LHkgcGFpcnNcbmZvciB4LCB5IGluIHppcChfX19fLCBfX19fKTpcbiAgICAjIENvbXB1dGUgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHQ6IGEsIGJcbiAgICBhLCBiID0gX19fX1xuXG4gICAgIyBQcmludCB0aGUgcmVzdWx0XG4gICAgcHJpbnQoJ3Nsb3BlOicsIGEsICdpbnRlcmNlcHQ6JywgYilcblxuYGBgIn0= -->
+<pre class="python"><code># Iterate through x,y pairs
+for x, y in zip(____, ____):
+    # Compute the slope and intercept: a, b
+    a, b = ____
+
+    # Print the result
+    print(&#39;slope:&#39;, a, &#39;intercept:&#39;, b)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDEgLSBQYXJhbWV0ZXIgZXN0aW1hdGluZyBieSBvcHRpbWl6YXRpb24iCm91dHB1dDogCiAgaHRtbF9ub3RlYm9vazoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiBmYWxzZQogICAgdG9jX2RlcHRoOiA0CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKLS0tCgpgYGB7cHl0aG9ufQoKYGBgCgojIyAqKk9wdGltYWwgcGFyYW1ldGVycyoqCgoqKjEuIE9wdGltYWwgcGFyYW1ldGVycyoqCgpBZnRlciBjb21wbGV0aW5nIHRoZSBwcmVxdWVsIHRvIHRoaXMgY291cnNlLCB5b3UgYXJlIG5vdyBiZWdpbm5pbmcgdG8gdGhpbmsgcHJvYmFiaWxpc3RpY2FsbHkuIE91dGNvbWVzIG9mIG1lYXN1cmVtZW50cyBmb2xsb3cgcHJvYmFiaWxpdHkgZGlzdHJpYnV0aW9ucyBkZWZpbmVkIGJ5IHRoZSBzdG9yeSBvZiBob3cgdGhlIGRhdGEgY2FtZSB0byBiZS4gV2hlbiB3ZSBsb29rZWQgYXQgTWljaGVsc29uJ3Mgc3BlZWQgb2YgbGlnaHQgaW4gYWlyIG1lYXN1cmVtZW50cywgd2UgYXNzdW1lZCB0aGF0IHRoZSByZXN1bHRzIHdlcmUgTm9ybWFsbHkgZGlzdHJpYnV0ZWQuCgoqKjIuIEhpc3RvZ3JhbSBvZiBNaWNoZWxzb24ncyBtZWFzdXJlbWVudHMqKgoKV2UgdmVyaWZpZWQgdGhhdCBib3RoIGJ5IGxvb2tpbmcgYXQgdGhlIFBERiBhbmQKCjEgRGF0YTogTWljaGVsc29uLCAxODgwCgoqKjMuIENERiBvZiBNaWNoZWxzb24ncyBtZWFzdXJlbWVudHMqKgoKdGhlIENERiwgd2hpY2ggd2FzIG1vcmUgZWZmZWN0aXZlIGJlY2F1c2UgdGhlcmUgaXMgbm8gYmlubmluZyBiaWFzLiBUbyBjb21wdXRlIGFuZCBwbG90IHRoZSBDREYsIHdlIG5lZWRlZCBvdXIgb2xkIGZyaWVuZHMKCjEgRGF0YTogTWljaGVsc29uLCAxODgwCgoqKjQuIENoZWNraW5nIE5vcm1hbGl0eSBvZiBNaWNoZWxzb24gZGF0YSoqCgpOdW1weSBhbmQgbWF0cGxvdGxpYiBkb3QgcHlwbG90LCBzbyB0aGUgZmlyc3Qgc3RlcCB3YXMgdG8gaW1wb3J0IHRoZW0gd2l0aCB0aGVpciB0cmFkaXRpb25hbCBhbGlhc2VzLiBUbyBjb21wdXRlIHRoZSB0aGVvcmV0aWNhbCBDREYgYnkgc2FtcGxpbmcsIHdlIHBhc3NlZCB0d28gcGFyYW1ldGVycyBpbnRvIG5wIGRvdCByYW5kb20gZG90IG5vcm1hbCwgdGhlIG1lYW4gYW5kIHN0YW5kYXJkIGRldmlhdGlvbi4gVGhlIHZhbHVlcyB3ZSBjaG9zZSBmb3IgdGhlc2UgcGFyYW1ldGVycyB3ZXJlIGluIGZhY3QgdGhlIG1lYW4gYW5kIHN0YW5kYXJkIGRldmlhdGlvbiB3ZSBjYWxjdWxhdGVkIGRpcmVjdGx5IGZyb20gdGhlIGRhdGEuCgoqKjUuIENERiBvZiBNaWNoZWxzb24ncyBtZWFzdXJlbWVudHMqKgoKVGhlIHJlc3VsdCB3YXMgdGhhdCB0aGUgdGhlb3JldGljYWwgQ0RGIG92ZXJsYXllZCBiZWF1dGlmdWxseSB3aXRoIHRoZSBlbXBpcmljYWwgQ0RGLiBIb3cgZGlkIHdlIGtub3cgdGhhdCB0aGUgbWVhbiBhbmQgc3RhbmRhcmQgZGV2aWF0aW9uIGNhbGN1bGF0ZWQgZnJvbSB0aGUgZGF0YSB3ZXJlIHRoZSBhcHByb3ByaWF0ZSB2YWx1ZXMgZm9yIHRoZSBOb3JtYWwgcGFyYW1ldGVycz8gV2UgY291bGQgaGF2ZSBjaG9zZW4gb3RoZXJzLgoKMSBEYXRhOiBNaWNoZWxzb24sIDE4ODAKCioqNi4gQ0RGIHdpdGggYmFkIGVzdGltYXRlIG9mIHN0LiBkZXYuKioKCldoYXQgaWYgdGhlIHN0YW5kYXJkIGRldmlhdGlvbiBkaWZmZXJzIGJ5IDUwJT8gVGhlIENERnMgbm8gbG9uZ2VyIG1hdGNoLiBPciBpZiB0aGUgbWVhbgoKMSBEYXRhOiBNaWNoZWxzb24sIDE4ODAKCioqNy4gQ0RGIHdpdGggYmFkIGVzdGltYXRlIG9mIG1lYW4qKgoKdmFyaWVzIGJ5IGp1c3QgcG9pbnQtMDElLiBTbywgaWYgd2UgYmVsaWV2ZSB0aGF0IHRoZSBwcm9jZXNzIHRoYXQgZ2VuZXJhdGVzIG91ciBkYXRhIGdpdmVzIE5vcm1hbGx5IGRpc3RyaWJ1dGVkIHJlc3VsdHMsCgoxIERhdGE6IE1pY2hlbHNvbiwgMTg4MAoKKio4LiBPcHRpbWFsIHBhcmFtZXRlcnMqKgoKdGhlIHNldCBvZiBwYXJhbWV0ZXJzIHRoYXQgYnJpbmdzIHRoZSBtb2RlbCwgaW4gdGhpcyBjYXNlIGEgTm9ybWFsIGRpc3RyaWJ1dGlvbiwgaW4gY2xvc2VzdCBhZ3JlZW1lbnQgd2l0aCB0aGUgZGF0YSB1c2VzIHRoZSBtZWFuIGFuZCBzdGFuZGFyZCBkZXZpYXRpb24gY29tcHV0ZWQgZGlyZWN0bHkgZnJvbSB0aGUgZGF0YS4gVGhlc2UgYXJlIHRoZSBvcHRpbWFsIHBhcmFtZXRlcnMuIFJlbWVtYmVyIHRob3VnaCwgdGhlIHBhcmFtZXRlcnMgYXJlIG9ubHkgb3B0aW1hbCBmb3IKCioqOS4gTWFzcyBvZiBNQSBsYXJnZSBtb3V0aCBiYXNzKioKCnRoZSBtb2RlbCB5b3UgY2hvc2UgZm9yIHlvdXIgZGF0YS4gV2hlbiB5b3VyIG1vZGVsIGlzIHdyb25nLCB0aGUgb3B0aW1hbCBwYXJhbWV0ZXJzIGFyZSBub3QgcmVhbGx5IG1lYW5pbmdmdWwuIEZpbmRpbmcgdGhlIG9wdGltYWwgcGFyYW1ldGVycyBpcyBub3QgYWx3YXlzIGFzIGVhc3kgYXMganVzdCBjb21wdXRpbmcgdGhlIG1lYW4gYW5kIHN0YW5kYXJkIGRldmlhdGlvbiBmcm9tIHRoZSBkYXRhLiBXZSB3aWxsIGVuY291bnRlciB0aGlzIGxhdGVyIGluIHRoaXMgY2hhcHRlciB3aGVuIHdlIGRvIGxpbmVhciByZWdyZXNzaW9ucyBhbmQgd2UgcmVseSBvbiBidWlsdC1pbiBOdW1QeSBmdW5jdGlvbnMgdG8gZmluZCB0aGUgb3B0aW1hbCBwYXJhbWV0ZXJzIGZvciB1cy4gSSBwYXVzZSB0byBub3RlIHRoYXQKCjEgU291cmNlOiBNYXNzLiBEZXB0LiBvZiBFbnZpcm9ubWVudGFsIFByb3RlY3Rpb24KCioqMTAuIFBhY2thZ2VzIHRvIGRvIHN0YXRpc3RpY2FsIGluZmVyZW5jZSoqCgp0aGVyZSBhcmUgZ3JlYXQgdG9vbHMgaW4gdGhlIFB5dGhvbiBlY29zeXN0ZW0gZm9yIGRvaW5nIHN0YXRpc3RpY2FsIGluZmVyZW5jZSwgaW5jbHVkaW5nIGJ5IG9wdGltaXphdGlvbiwgc2NpcHkgZG90IHN0YXRzIGFuZAoKKioxMS4gUGFja2FnZXMgdG8gZG8gc3RhdGlzdGljYWwgaW5mZXJlbmNlKioKCnN0YXRzbW9kZWxzIGJlaW5nIHR3byBnb29kIGV4YW1wbGVzLiBJbiB0aGlzIGNvdXJzZSwgaG93ZXZlciwKCioqMTIuIFBhY2thZ2VzIHRvIGRvIHN0YXRpc3RpY2FsIGluZmVyZW5jZSoqCgp3ZSBmb2N1cyBvbiBoYWNrZXIgc3RhdGlzdGljcyBiZWNhdXNlIHRoZSB0ZWNobmlxdWUgaXMgbGlrZSBhIFN3aXNzIEFybXkga25pZmU7IHRoZSBzYW1lIHNpbXBsZSBwcmluY2lwbGUgaXMgYXBwbGljYWJsZSB0byBhIHdpZGUgdmFyaWV0eSBvZiBzdGF0aXN0aWNhbCBwcm9ibGVtcy4KCjEgS25pZmUgaW1hZ2U6IEQKMiBNIENvbW1vbnMsIENDIEJZCjMgU0EgMy4wCgoqKjEzLiBMZXQncyBwcmFjdGljZSEqKgoKTm93IGl0J3MgdGltZSBmb3IgeW91IHRvIGRvIHNvbWUgZXhlcmNpc2VzIHRvIGRlbW9uc3RyYXRlIGhvdyBjaG9vc2luZyBvcHRpbWFsIHBhcmFtZXRlcnMgcmVzdWx0cyBpbiBiZXN0IGFncmVlbWVudCBiZXR3ZWVuIHRoZSB0aGVvcmV0aWNhbCBtb2RlbCBkaXN0cmlidXRpb24gYW5kIHlvdXIgZGF0YS4KCiMjIyAqKkhvdyBvZnRlbiBkbyB3ZSBnZXQgbm8taGl0dGVycz8qKgoKVGhlIG51bWJlciBvZiBnYW1lcyBwbGF5ZWQgYmV0d2VlbiBlYWNoIG5vLWhpdHRlciBpbiB0aGUgbW9kZXJuIGVyYSAoMTkwMS0yMDE1KSBvZiBNYWpvciBMZWFndWUgQmFzZWJhbGwgaXMgc3RvcmVkIGluIHRoZSBhcnJheSBgbm9oaXR0ZXJfdGltZXNgLgoKSWYgeW91IGFzc3VtZSB0aGF0IG5vLWhpdHRlcnMgYXJlIGRlc2NyaWJlZCBhcyBhIFBvaXNzb24gcHJvY2VzcywgdGhlbiB0aGUgdGltZSBiZXR3ZWVuIG5vLWhpdHRlcnMgaXMgRXhwb25lbnRpYWxseSBkaXN0cmlidXRlZC4gQXMgeW91IGhhdmUgc2VlbiwgdGhlIEV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbiBoYXMgYSBzaW5nbGUgcGFyYW1ldGVyLCB3aGljaCB3ZSB3aWxsIGNhbGwgJFx0YXUkLCB0aGUgdHlwaWNhbCBpbnRlcnZhbCB0aW1lLiBUaGUgdmFsdWUgb2YgdGhlIHBhcmFtZXRlciAkXHRhdSQgdGhhdCBtYWtlcyB0aGUgZXhwb25lbnRpYWwgZGlzdHJpYnV0aW9uIGJlc3QgbWF0Y2ggdGhlIGRhdGEgaXMgdGhlIG1lYW4gaW50ZXJ2YWwgdGltZSAod2hlcmUgdGltZSBpcyBpbiB1bml0cyBvZiBudW1iZXIgb2YgZ2FtZXMpIGJldHdlZW4gbm8taGl0dGVycy4KCkNvbXB1dGUgdGhlIHZhbHVlIG9mIHRoaXMgcGFyYW1ldGVyIGZyb20gdGhlIGRhdGEuIFRoZW4sIHVzZSBgbnAucmFuZG9tLmV4cG9uZW50aWFsKClgIHRvICJyZXBlYXQiIHRoZSBoaXN0b3J5IG9mIE1ham9yIExlYWd1ZSBCYXNlYmFsbCBieSBkcmF3aW5nIGludGVyLW5vLWhpdHRlciB0aW1lcyBmcm9tIGFuIGV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbiB3aXRoIHRoZSAkXHRhdSQgeW91IGZvdW5kIGFuZCBwbG90IHRoZSBoaXN0b2dyYW0gYXMgYW4gYXBwcm94aW1hdGlvbiB0byB0aGUgUERGLgoKTnVtUHksIHBhbmRhcywgbWF0bG90bGliLnB5cGxvdCwgYW5kIHNlYWJvcm4gaGF2ZSBiZWVuIGltcG9ydGVkIGZvciB5b3UgYXMgYG5wYCwgYHBkYCwgYHBsdGAsIGFuZCBgc25zYCwgcmVzcGVjdGl2ZWx5LgoKKipJbnN0cnVjdGlvbnMqKgoKLSBTZWVkIHRoZSByYW5kb20gbnVtYmVyIGdlbmVyYXRvciB3aXRoIGA0MmAuCi0gQ29tcHV0ZSB0aGUgbWVhbiB0aW1lIChpbiB1bml0cyBvZiBudW1iZXIgb2YgZ2FtZXMpIGJldHdlZW4gbm8taGl0dGVycy4KLSBEcmF3IDEwMCwwMDAgc2FtcGxlcyBmcm9tIGFuIEV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbiB3aXRoIHRoZSBwYXJhbWV0ZXIgeW91IGNvbXB1dGVkIGZyb20gdGhlIG1lYW4gb2YgdGhlIGludGVyLW5vLWhpdHRlciB0aW1lcy4KUGxvdCB0aGUgdGhlb3JldGljYWwgUERGIHVzaW5nIGBwbHQuaGlzdCgpYC4gUmVtZW1iZXIgdG8gdXNlIGtleXdvcmQgYXJndW1lbnRzIGBiaW5zPTUwYCwgYG5vcm1lZD1UcnVlYCwgYW5kIGBoaXN0dHlwZT0nc3RlcCdgLiBCZSBzdXJlIHRvIGxhYmVsIHlvdXIgYXhlcy4KLSBTaG93IHlvdXIgcGxvdC4KCmBgYHtweXRob259CiMgU2VlZCByYW5kb20gbnVtYmVyIGdlbmVyYXRvcgpfX19fCgojIENvbXB1dGUgbWVhbiBuby1oaXR0ZXIgdGltZTogdGF1CnRhdSA9IF9fX18KCiMgRHJhdyBvdXQgb2YgYW4gZXhwb25lbnRpYWwgZGlzdHJpYnV0aW9uIHdpdGggcGFyYW1ldGVyIHRhdTogaW50ZXJfbm9oaXR0ZXJfdGltZQppbnRlcl9ub2hpdHRlcl90aW1lID0gX19fXyhfX19fLCAxMDAwMDApCgojIFBsb3QgdGhlIFBERiBhbmQgbGFiZWwgYXhlcwpfID0gX19fXyhpbnRlcl9ub2hpdHRlcl90aW1lLAogICAgICAgICAgICAgX19fXywgX19fXywgX19fXykKXyA9IHBsdC54bGFiZWwoJ0dhbWVzIGJldHdlZW4gbm8taGl0dGVycycpCl8gPSBwbHQueWxhYmVsKCdQREYnKQoKIyBTaG93IHRoZSBwbG90CnBsdC5zaG93KCkKCmBgYAoKIyMjICoqRG8gdGhlIGRhdGEgZm9sbG93IG91ciBzdG9yeT8qKgoKWW91IGhhdmUgbW9kZWxlZCBuby1oaXR0ZXJzIHVzaW5nIGFuIEV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbi4gQ3JlYXRlIGFuIEVDREYgb2YgdGhlIHJlYWwgZGF0YS4gT3ZlcmxheSB0aGUgdGhlb3JldGljYWwgQ0RGIHdpdGggdGhlIEVDREYgZnJvbSB0aGUgZGF0YS4gVGhpcyBoZWxwcyB5b3UgdG8gdmVyaWZ5IHRoYXQgdGhlIEV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbiBkZXNjcmliZXMgdGhlIG9ic2VydmVkIGRhdGEuCgpJdCBtYXkgYmUgaGVscGZ1bCB0byByZW1pbmQgeW91cnNlbGYgb2YgdGhlIFtmdW5jdGlvbiB5b3UgY3JlYXRlZCBpbiB0aGUgcHJldmlvdXMgY291cnNlXShodHRwczovL2NhbXB1cy5kYXRhY2FtcC5jb20vY291cnNlcy9zdGF0aXN0aWNhbC10aGlua2luZy1pbi1weXRob24tcGFydC0xL2dyYXBoaWNhbC1leHBsb3JhdG9yeS1kYXRhLWFuYWx5c2lzP2V4PTEyKSB0byBjb21wdXRlIHRoZSBFQ0RGLCBhcyB3ZWxsIGFzIHRoZSBjb2RlIHlvdSB3cm90ZSB0byBbcGxvdCBpdF0oaHR0cHM6Ly9jYW1wdXMuZGF0YWNhbXAuY29tL2NvdXJzZXMvc3RhdGlzdGljYWwtdGhpbmtpbmctaW4tcHl0aG9uLXBhcnQtMS9ncmFwaGljYWwtZXhwbG9yYXRvcnktZGF0YS1hbmFseXNpcz9leD0xMykuCgoqKkluc3RydWN0aW9ucyoqCgotIENvbXB1dGUgYW4gRUNERiBmcm9tIHRoZSBhY3R1YWwgdGltZSBiZXR3ZWVuIG5vLWhpdHRlcnMgKGBub2hpdHRlcl90aW1lc2ApLiBVc2UgdGhlIGBlY2RmKClgIGZ1bmN0aW9uIHlvdSB3cm90ZSBpbiB0aGUgcHJlcXVlbCBjb3Vyc2UuCi0gQ3JlYXRlIGEgQ0RGIGZyb20gdGhlIHRoZW9yZXRpY2FsIHNhbXBsZXMgeW91IHRvb2sgaW4gdGhlIGxhc3QgZXhlcmNpc2UgKGBpbnRlcl9ub2hpdHRlcl90aW1lYCkuCi0gUGxvdCBgeF90aGVvcmAgYW5kIGB5X3RoZW9yYCBhcyBhIGxpbmUgdXNpbmcgYHBsdC5wbG90KClgLiBUaGVuIG92ZXJsYXkgdGhlIEVDREYgb2YgdGhlIHJlYWwgZGF0YSBgeGAgYW5kIGB5YCBhcyBwb2ludHMuIFRvIGRvIHRoaXMsIHlvdSBoYXZlIHRvIHNwZWNpZnkgdGhlIGtleXdvcmQgYXJndW1lbnRzIGBtYXJrZXIgPSAnLidgIGFuZCBgbGluZXN0eWxlID0gJ25vbmUnYCBpbiBhZGRpdGlvbiB0byBgeGAgYW5kIGB5YCBpbnNpZGUgYHBsdC5wbG90KClgLgotIFNldCBhIDIlIG1hcmdpbiBvbiB0aGUgcGxvdC4KLSBTaG93IHRoZSBwbG90LgoKYGBge3B5dGhvbn0KIyBDcmVhdGUgYW4gRUNERiBmcm9tIHJlYWwgZGF0YTogeCwgeQp4LCB5ID0gX19fXwoKIyBDcmVhdGUgYSBDREYgZnJvbSB0aGVvcmV0aWNhbCBzYW1wbGVzOiB4X3RoZW9yLCB5X3RoZW9yCnhfdGhlb3IsIHlfdGhlb3IgPSBfX19fCgojIE92ZXJsYXkgdGhlIHBsb3RzCnBsdC5wbG90KF9fX18sIF9fX18pCnBsdC5wbG90KF9fX18sIF9fX18sIG1hcmtlcj1fX19fLCBsaW5lc3R5bGU9X19fXykKCiMgTWFyZ2lucyBhbmQgYXhpcyBsYWJlbHMKcGx0Lm1hcmdpbnMoX19fXykKcGx0LnhsYWJlbCgnR2FtZXMgYmV0d2VlbiBuby1oaXR0ZXJzJykKcGx0LnlsYWJlbCgnQ0RGJykKCiMgU2hvdyB0aGUgcGxvdApwbHQuc2hvdygpCgpgYGAKCiMjICoqSG93IGlzIHRoaXMgcGFyYW1ldGVyIG9wdGltYWw/KioKCk5vdyBzYW1wbGUgb3V0IG9mIGFuIGV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbiB3aXRoICRcdGF1JCBiZWluZyB0d2ljZSBhcyBsYXJnZSBhcyB0aGUgb3B0aW1hbCAkXHRhdSQuIERvIGl0IGFnYWluIGZvciAkXHRhdSQgaGFsZiBhcyBsYXJnZS4gTWFrZSBDREZzIG9mIHRoZXNlIHNhbXBsZXMgYW5kIG92ZXJsYXkgdGhlbSB3aXRoIHlvdXIgZGF0YS4gWW91IGNhbiBzZWUgdGhhdCB0aGV5IGRvIG5vdCByZXByb2R1Y2UgdGhlIGRhdGEgYXMgd2VsbC4gVGh1cywgdGhlICRcdGF1JCB5b3UgY29tcHV0ZWQgZnJvbSB0aGUgbWVhbiBpbnRlci1uby1oaXR0ZXIgdGltZXMgaXMgb3B0aW1hbCBpbiB0aGF0IGl0IGJlc3QgcmVwcm9kdWNlcyB0aGUgZGF0YS4KCipOb3RlKjogSW4gdGhpcyBhbmQgYWxsIHN1YnNlcXVlbnQgZXhlcmNpc2VzLCB0aGUgcmFuZG9tIG51bWJlciBnZW5lcmF0b3IgaXMgcHJlLXNlZWRlZCBmb3IgeW91IHRvIHNhdmUgeW91IHNvbWUgdHlwaW5nLgoKKipJbnN0cnVjdGlvbnMqKgoKLSBUYWtlIGAxMDAwMGAgc2FtcGxlcyBvdXQgb2YgYW4gRXhwb25lbnRpYWwgZGlzdHJpYnV0aW9uIHdpdGggcGFyYW1ldGVyICAkXHRhdV97MS8yfSQ9IGB0YXUvMmAuCi0gVGFrZSBgMTAwMDBgIHNhbXBsZXMgb3V0IG9mIGFuIEV4cG9uZW50aWFsIGRpc3RyaWJ1dGlvbiB3aXRoIHBhcmFtZXRlciAgJFx0YXVfezJ9JD0gYDIqdGF1YC4KLSBHZW5lcmF0ZSBDREZzIGZyb20gdGhlc2UgdHdvIHNldHMgb2Ygc2FtcGxlcyB1c2luZyB5b3VyIGBlY2RmKClgIGZ1bmN0aW9uLgotIEFkZCB0aGVzZSB0d28gQ0RGcyBhcyBsaW5lcyB0byB5b3VyIHBsb3QuIFRoaXMgaGFzIGJlZW4gZG9uZSBmb3IgeW91LCBzbyBoaXQgJ1N1Ym1pdCBBbnN3ZXInIHRvIHZpZXcgdGhlIHBsb3QhCgpgYGB7cHl0aG9ufQojIFBsb3QgdGhlIHRoZW9yZXRpY2FsIENERnMKcGx0LnBsb3QoeF90aGVvciwgeV90aGVvcikKcGx0LnBsb3QoeCwgeSwgbWFya2VyPScuJywgbGluZXN0eWxlPSdub25lJykKcGx0Lm1hcmdpbnMoMC4wMikKcGx0LnhsYWJlbCgnR2FtZXMgYmV0d2VlbiBuby1oaXR0ZXJzJykKcGx0LnlsYWJlbCgnQ0RGJykKCiMgVGFrZSBzYW1wbGVzIHdpdGggaGFsZiB0YXU6IHNhbXBsZXNfaGFsZgpzYW1wbGVzX2hhbGYgPSBfX19fCgojIFRha2Ugc2FtcGxlcyB3aXRoIGRvdWJsZSB0YXU6IHNhbXBsZXNfZG91YmxlCnNhbXBsZXNfZG91YmxlID0gX19fXwoKIyBHZW5lcmF0ZSBDREZzIGZyb20gdGhlc2Ugc2FtcGxlcwp4X2hhbGYsIHlfaGFsZiA9IF9fX18KeF9kb3VibGUsIHlfZG91YmxlID0gX19fXwoKIyBQbG90IHRoZXNlIENERnMgYXMgbGluZXMKXyA9IHBsdC5wbG90KHhfaGFsZiwgeV9oYWxmKQpfID0gcGx0LnBsb3QoeF9kb3VibGUsIHlfZG91YmxlKQoKIyBTaG93IHRoZSBwbG90CnBsdC5zaG93KCkKYGBgCgojIyAqKkxpbmVhciByZWdyZXNzaW9uIGJ5IGxlYXN0IHNxdWFyZXMqKgoKKioxLiBMaW5lYXIgcmVncmVzc2lvbiBieSBsZWFzdCBzcXVhcmVzKioKClNvbWV0aW1lcyB0d28gdmFyaWFibGVzIGFyZSByZWxhdGVkLiBZb3UgbWF5IHJlY2FsbCBmcm9tIHRoZSBwcmVxdWVsIHRvIHRoaXMgY291cnNlIHRoYXQgd2UgY29tcHV0ZWQgdGhlIFBlYXJzb24gY29ycmVsYXRpb24gY29lZmZpY2llbnQgYmV0d2VlbgoKKioyLiAyMDA4IFVTIHN3aW5nIHN0YXRlIGVsZWN0aW9uIHJlc3VsdHMqKgoKT2JhbWEncyB2b3RlIHNoYXJlIGluIGVhY2ggY291bnR5IGluIHN3aW5ncyBzdGF0ZXMgYW5kIHRoZSB0b3RhbCB2b3RlIGNvdW50IG9mIHRoZSByZXNwZWN0aXZlIGNvdW50aWVzLiBUaGUgUGVhcnNvbiBjb3JyZWxhdGlvbiBjb2VmZmljaWVudCBpcyBpbXBvcnRhbnQgdG8gY29tcHV0ZSwgYnV0IHdlIG1pZ2h0IGxpa2UgdG8gZ2V0IGEgZnVsbGVyIHVuZGVyc3RhbmRpbmcgb2YgaG93IHRoZSBkYXRhIGFyZSByZWxhdGVkIHRvIGVhY2ggb3RoZXIuIFNwZWNpZmljYWxseSwgd2UgbWlnaHQgc3VzcGVjdCBzb21lIHVuZGVybHlpbmcgZnVuY3Rpb24gZ2l2ZXMgdGhlIGRhdGEgaXRzIHNoYXBlLgoKMSBEYXRhIHJldHJpZXZlZCBmcm9tIERhdGEuZ292IChodHRwczovL3d3dy5kYXRhLmdvdi8pCgoqKjMuIDIwMDggVVMgc3dpbmcgc3RhdGUgZWxlY3Rpb24gcmVzdWx0cyoqCgpPZnRlbiB0aW1lcyBhIGxpbmVhciBmdW5jdGlvbiBpcyBhcHByb3ByaWF0ZSB0byBkZXNjcmliZSB0aGUgZGF0YSwgYW5kIHRoaXMgaXMgd2hhdCB3ZSB3aWxsIGZvY3VzIG9uIGluIHRoaXMgY291cnNlLiBUaGUgcGFyYW1ldGVycyBvZiB0aGUgZnVuY3Rpb24gYXJlCgoxIERhdGEgcmV0cmlldmVkIGZyb20gRGF0YS5nb3YgKGh0dHBzOi8vd3d3LmRhdGEuZ292LykKCioqNC4gMjAwOCBVUyBzd2luZyBzdGF0ZSBlbGVjdGlvbiByZXN1bHRzKioKCnRoZSBzbG9wZSBhbmQgaW50ZXJjZXB0LiBUaGUgc2xvcGUgc2V0cyBob3cgc3RlZXAgdGhlIGxpbmUgaXMsIGFuZCB0aGUgaW50ZXJjZXB0IHNldHMgd2hlcmUgdGhlIGxpbmUgY3Jvc3NlcyB0aGUgeS1heGlzLiBIb3cgZG8gd2UgZmlndXJlIG91dCB3aGljaCBzbG9wZSBhbmQgaW50ZXJjZXB0IGJlc3QgZGVzY3JpYmUgdGhlIGRhdGE/IEEgc2ltcGxlIGFuc3dlciBpcyB0aGF0IHdlIHdhbnQgdG8gY2hvb3NlIHRoZSBzbG9wZSBhbmQgaW50ZXJjZXB0IHN1Y2ggdGhhdCB0aGUgZGF0YSBwb2ludHMgY29sbGVjdGl2ZWx5IGxpZSBhcyBjbG9zZSBhcyBwb3NzaWJsZSB0byB0aGUgbGluZS4gVGhpcyBpcyBlYXNpZXN0IHRvIHRoaW5rIGFib3V0IGJ5IGZpcnN0IGNvbnNpZGVyaW5nIG9uZSBkYXRhIHBvaW50LAoKMSBEYXRhIHJldHJpZXZlZCBmcm9tIERhdGEuZ292IChodHRwczovL3d3dy5kYXRhLmdvdi8pCgoqKjUuIDIwMDggVVMgc3dpbmcgc3RhdGUgZWxlY3Rpb24gcmVzdWx0cyoqCgpzYXkgdGhpcyBvbmUuIFRoZSB2ZXJ0aWNhbCBkaXN0YW5jZSBiZXR3ZWVuIHRoZSBkYXRhIHBvaW50IGFuZCB0aGUgbGluZSBpcyBjYWxsZWQKCjEgRGF0YSByZXRyaWV2ZWQgZnJvbSBEYXRhLmdvdiAoaHR0cHM6Ly93d3cuZGF0YS5nb3YvKQoKKio2LiBSZXNpZHVhbHMqKgoKdGhlIHJlc2lkdWFsLiBJbiB0aGlzIGNhc2UsIHRoZSByZXNpZHVhbCBoYXMgYSBuZWdhdGl2ZSB2YWx1ZSBiZWNhdXNlIHRoZSBkYXRhIHBvaW50IGxpZXMgYmVsb3cgdGhlIGxpbmUuIEVhY2ggZGF0YSBwb2ludCBoYXMgYSByZXNpZHVhbCBhc3NvY2lhdGVkIHdpdGggaXQuCgoxIERhdGEgcmV0cmlldmVkIGZyb20gRGF0YS5nb3YgKGh0dHBzOi8vd3d3LmRhdGEuZ292LykKCioqNy4gTGVhc3Qgc3F1YXJlcyoqCgpXZSBkZWZpbmUgdGhlIGxpbmUgdGhhdCBpcyBjbG9zZXN0IHRvIHRoZSBkYXRhIHRvIGJlIHRoZSBsaW5lIGZvciB3aGljaCB0aGUgc3VtIG9mIHRoZSBzcXVhcmVzIG9mIGFsbCBvZiB0aGUgcmVzaWR1YWxzIGlzIG1pbmltYWwuIFRoaXMgcHJvY2VzcywgZmluZGluZyB0aGUgcGFyYW1ldGVycyBmb3Igd2hpY2ggdGhlIHN1bSBvZiB0aGUgc3F1YXJlcyBvZiB0aGUgcmVzaWR1YWxzIGlzIG1pbmltYWwsIGlzIGNhbGxlZCAibGVhc3Qgc3F1YXJlcyIuIFRoZXJlIGFyZSBtYW55IGFsZ29yaXRobXMgdG8gZG8gdGhpcyBpbiBwcmFjdGljZS4KCioqOC4gTGVhc3Qgc3F1YXJlcyB3aXRoIG5wLnBvbHlmaXQoKSoqCgpXZSB3aWxsIHVzZSB0aGUgTnVtcHkgZnVuY3Rpb24gcG9seWZpdCwgd2hpY2ggcGVyZm9ybXMgbGVhc3Qgc3F1YXJlcyBhbmFseXNpcyB3aXRoIHBvbHlub21pYWwgZnVuY3Rpb25zLiBXZSBjYW4gdXNlIGl0IGJlY2F1c2UgYSBsaW5lYXIgZnVuY3Rpb24gaXMgYSBmaXJzdCBkZWdyZWUgcG9seW5vbWlhbC4gVGhlIGZpcnN0IHR3byBhcmd1bWVudHMgdG8gdGhpcyBmdW5jdGlvbiBhcmUgdGhlIHggYW5kIHkgZGF0YS4gVGhlIHRoaXJkIGFyZ3VtZW50IGlzIHRoZSBkZWdyZWUgb2YgdGhlIHBvbHlub21pYWwgeW91IHdpc2ggdG8gZml0OyBmb3IgbGluZWFyIGZ1bmN0aW9ucywgd2UgZW50ZXIgb25lLiBUaGUgZnVuY3Rpb24gcmV0dXJucyB0aGUgc2xvcGUgYW5kIGludGVyY2VwdCBvZiB0aGUgYmVzdCBmaXQgbGluZS4gVGhlIHNsb3BlIHRlbGxzIHVzIHRoYXQgd2UgZ2V0IGFib3V0IDQgbW9yZSBwZXJjZW50IHZvdGVzIGZvciBPYmFtYSBmb3IgZXZlcnkgMTAwLDAwMCBhZGRpdGlvbmFsIHZvdGVycyBpbiBhIGNvdW50eS4gTm93IHRoYXQgeW91IGtub3cgaG93IHRvIHBlcmZvcm0gYSBsaW5lYXIgcmVncmVzc2lvbiwKCioqOS4gTGV0J3MgcHJhY3RpY2UhKioKCmxldCdzIGRvIGl0IHdpdGggc29tZSByZWFsIGRhdGEgaW4gdGhlIGV4ZXJjaXNlcyEKCiMjIyAqKkVEQSBvZiBsaXRlcmFjeS9mZXJ0aWxpdHkgZGF0YSoqCgpJbiB0aGUgbmV4dCBmZXcgZXhlcmNpc2VzLCB3ZSB3aWxsIGxvb2sgYXQgdGhlIGNvcnJlbGF0aW9uIGJldHdlZW4gZmVtYWxlIGxpdGVyYWN5IGFuZCBmZXJ0aWxpdHkgKGRlZmluZWQgYXMgdGhlIGF2ZXJhZ2UgbnVtYmVyIG9mIGNoaWxkcmVuIGJvcm4gcGVyIHdvbWFuKSB0aHJvdWdob3V0IHRoZSB3b3JsZC4gRm9yIGVhc2Ugb2YgYW5hbHlzaXMgYW5kIGludGVycHJldGF0aW9uLCB3ZSB3aWxsIHdvcmsgd2l0aCB0aGUgYGlsbGl0ZXJhY3lgIHJhdGUuCgpJdCBpcyBhbHdheXMgYSBnb29kIGlkZWEgdG8gZG8gc29tZSBFREEgYWhlYWQgb2Ygb3VyIGFuYWx5c2lzLiBUbyB0aGlzIGVuZCwgcGxvdCB0aGUgZmVydGlsaXR5IHZlcnN1cyBpbGxpdGVyYWN5IGFuZCBjb21wdXRlIHRoZSBQZWFyc29uIGNvcnJlbGF0aW9uIGNvZWZmaWNpZW50LiBUaGUgTnVtcHkgYXJyYXkgYGlsbGl0ZXJhY3lgIGhhcyB0aGUgaWxsaXRlcmFjeSByYXRlIGFtb25nIGZlbWFsZXMgZm9yIG1vc3Qgb2YgdGhlIHdvcmxkJ3MgbmF0aW9ucy4gVGhlIGFycmF5IGBmZXJ0aWxpdHlgIGhhcyB0aGUgY29ycmVzcG9uZGluZyBmZXJ0aWxpdHkgZGF0YS4KCkhlcmUsIGl0IG1heSBiZSB1c2VmdWwgdG8gcmVmZXIgYmFjayB0byB0aGUgW2Z1bmN0aW9uIHlvdSB3cm90ZSBpbiB0aGUgcHJldmlvdXMgY291cnNlXShodHRwczovL2NhbXB1cy5kYXRhY2FtcC5jb20vY291cnNlcy9zdGF0aXN0aWNhbC10aGlua2luZy1pbi1weXRob24tcGFydC0xL3F1YW50aXRhdGl2ZS1leHBsb3JhdG9yeS1kYXRhLWFuYWx5c2lzP2V4PTE1KSB0byBjb21wdXRlIHRoZSBQZWFyc29uIGNvcnJlbGF0aW9uIGNvZWZmaWNpZW50LgoKKipJbnN0cnVjdGlvbnMqKgoKLSBQbG90IGBmZXJ0aWxpdHlgICh5LWF4aXMpIHZlcnN1cyBgaWxsaXRlcmFjeWAgKHgtYXhpcykgYXMgYSBzY2F0dGVyIHBsb3QuCi0gU2V0IGEgMiUgbWFyZ2luLgotIENvbXB1dGUgYW5kIHByaW50IHRoZSBQZWFyc29uIGNvcnJlbGF0aW9uIGNvZWZmaWNpZW50IGJldHdlZW4gYGlsbGl0ZXJhY3lgIGFuZCBgZmVydGlsaXR5LmAKCmBgYHtweXRob259CiMgUGxvdCB0aGUgaWxsaXRlcmFjeSByYXRlIHZlcnN1cyBmZXJ0aWxpdHkKXyA9IHBsdC5wbG90KF9fX18sIF9fX18sIF9fX189Jy4nLCBfX19fPSdub25lJykKCiMgU2V0IHRoZSBtYXJnaW5zIGFuZCBsYWJlbCBheGVzCnBsdC5tYXJnaW5zKF9fX18pCl8gPSBwbHQueGxhYmVsKCdwZXJjZW50IGlsbGl0ZXJhdGUnKQpfID0gcGx0LnlsYWJlbCgnZmVydGlsaXR5JykKCiMgU2hvdyB0aGUgcGxvdApwbHQuc2hvdygpCgojIFNob3cgdGhlIFBlYXJzb24gY29ycmVsYXRpb24gY29lZmZpY2llbnQKcHJpbnQocGVhcnNvbl9yKF9fX18sIF9fX18pKQoKYGBgCgojIyMgKipMaW5lYXIgcmVncmVzc2lvbioqCgpXZSB3aWxsIGFzc3VtZSB0aGF0IGZlcnRpbGl0eSBpcyBhIGxpbmVhciBmdW5jdGlvbiBvZiB0aGUgZmVtYWxlIGlsbGl0ZXJhY3kgcmF0ZS4gVGhhdCBpcywgJGYgPSBhaSArIGIkLCB3aGVyZSAkYSQgaXMgdGhlIHNsb3BlIGFuZCAkYiQgaXMgdGhlIGludGVyY2VwdC4gV2UgY2FuIHRoaW5rIG9mIHRoZSBpbnRlcmNlcHQgYXMgdGhlIG1pbmltYWwgZmVydGlsaXR5IHJhdGUsIHByb2JhYmx5IHNvbWV3aGVyZSBiZXR3ZWVuIG9uZSBhbmQgdHdvLiBUaGUgc2xvcGUgdGVsbHMgdXMgaG93IHRoZSBmZXJ0aWxpdHkgcmF0ZSB2YXJpZXMgd2l0aCBpbGxpdGVyYWN5LiBXZSBjYW4gZmluZCB0aGUgYmVzdCBmaXQgbGluZSB1c2luZyBgbnAucG9seWZpdCgpYC4KClBsb3QgdGhlIGRhdGEgYW5kIHRoZSBiZXN0IGZpdCBsaW5lLiBQcmludCBvdXQgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHQuIChUaGluazogd2hhdCBhcmUgdGhlaXIgdW5pdHM/KQoKKipJbnN0cnVjdGlvbnMqKgoKLSBDb21wdXRlIHRoZSBzbG9wZSBhbmQgaW50ZXJjZXB0IG9mIHRoZSByZWdyZXNzaW9uIGxpbmUgdXNpbmcgYG5wLnBvbHlmaXQoKWAuIFJlbWVtYmVyLCBgZmVydGlsaXR5YCBpcyBvbiB0aGUgeS1heGlzIGFuZCBgaWxsaXRlcmFjeWAgb24gdGhlIHgtYXhpcy4KLSBQcmludCBvdXQgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHQgZnJvbSB0aGUgbGluZWFyIHJlZ3Jlc3Npb24uCi0gVG8gcGxvdCB0aGUgYmVzdCBmaXQgbGluZSwgY3JlYXRlIGFuIGFycmF5IGB4YCB0aGF0IGNvbnNpc3RzIG9mIDAgYW5kIDEwMCB1c2luZyBgbnAuYXJyYXkoKWAuIFRoZW4sIGNvbXB1dGUgdGhlIHRoZW9yZXRpY2FsIHZhbHVlcyBvZiBgeWAgYmFzZWQgb24geW91ciByZWdyZXNzaW9uIHBhcmFtZXRlcnMuIEkuZS4sIGB5ID0gYSAqIHggKyBiYC4KLVBsb3QgdGhlIGRhdGEgYW5kIHRoZSByZWdyZXNzaW9uIGxpbmUgb24gdGhlIHNhbWUgcGxvdC4gQmUgc3VyZSB0byBsYWJlbCB5b3VyIGF4ZXMuCi0gSGl0ICdTdWJtaXQgQW5zd2VyJyB0byBkaXNwbGF5IHlvdXIgcGxvdC4KCmBgYHtweXRob259CiMgUGxvdCB0aGUgaWxsaXRlcmFjeSByYXRlIHZlcnN1cyBmZXJ0aWxpdHkKXyA9IHBsdC5wbG90KGlsbGl0ZXJhY3ksIGZlcnRpbGl0eSwgbWFya2VyPScuJywgbGluZXN0eWxlPSdub25lJykKcGx0Lm1hcmdpbnMoMC4wMikKXyA9IHBsdC54bGFiZWwoJ3BlcmNlbnQgaWxsaXRlcmF0ZScpCl8gPSBwbHQueWxhYmVsKCdmZXJ0aWxpdHknKQoKIyBQZXJmb3JtIGEgbGluZWFyIHJlZ3Jlc3Npb24gdXNpbmcgbnAucG9seWZpdCgpOiBhLCBiCmEsIGIgPSBfX19fCgojIFByaW50IHRoZSByZXN1bHRzIHRvIHRoZSBzY3JlZW4KcHJpbnQoJ3Nsb3BlID0nLCBhLCAnY2hpbGRyZW4gcGVyIHdvbWFuIC8gcGVyY2VudCBpbGxpdGVyYXRlJykKcHJpbnQoJ2ludGVyY2VwdCA9JywgYiwgJ2NoaWxkcmVuIHBlciB3b21hbicpCgojIE1ha2UgdGhlb3JldGljYWwgbGluZSB0byBwbG90CnggPSBfX19fCnkgPSBfX19fICogX19fXyArIF9fX18KCiMgQWRkIHJlZ3Jlc3Npb24gbGluZSB0byB5b3VyIHBsb3QKXyA9IHBsdC5wbG90KF9fX18sIF9fX18pCgojIERyYXcgdGhlIHBsb3QKcGx0LnNob3coKQoKYGBgCgojIyMgKipIb3cgaXMgaXQgb3B0aW1hbD8qKgoKVGhlIGZ1bmN0aW9uIGBucC5wb2x5Zml0KClgIHRoYXQgeW91IHVzZWQgdG8gZ2V0IHlvdXIgcmVncmVzc2lvbiBwYXJhbWV0ZXJzIGZpbmRzIHRoZSAqb3B0aW1hbCogc2xvcGUgYW5kIGludGVyY2VwdC4gSXQgaXMgb3B0aW1pemluZyB0aGUgc3VtIG9mIHRoZSBzcXVhcmVzIG9mIHRoZSByZXNpZHVhbHMsIGFsc28ga25vd24gYXMgUlNTIChmb3IgcmVzaWR1YWwgc3VtIG9mIHNxdWFyZXMpLiBJbiB0aGlzIGV4ZXJjaXNlLCB5b3Ugd2lsbCBwbG90IHRoZSBmdW5jdGlvbiB0aGF0IGlzIGJlaW5nIG9wdGltaXplZCwgdGhlIFJTUywgdmVyc3VzIHRoZSBzbG9wZSBwYXJhbWV0ZXIgYGFgLiBUbyBkbyB0aGlzLCBmaXggdGhlIGludGVyY2VwdCB0byBiZSB3aGF0IHlvdSBmb3VuZCBpbiB0aGUgb3B0aW1pemF0aW9uLiBUaGVuLCBwbG90IHRoZSBSU1MgdnMuIHRoZSBzbG9wZS4gV2hlcmUgaXMgaXQgbWluaW1hbD8KCioqSW5zdHJ1Y3Rpb25zKioKCi0gU3BlY2lmeSB0aGUgdmFsdWVzIG9mIHRoZSBzbG9wZSB0byBjb21wdXRlIHRoZSBSU1MuIFVzZSBgbnAubGluc3BhY2UoKWAgdG8gZ2V0IGAyMDBgIHBvaW50cyBpbiB0aGUgcmFuZ2UgYmV0d2VlbiBgMGAgYW5kIGAwLjFgLiBGb3IgZXhhbXBsZSwgdG8gZ2V0IGAxMDBgIHBvaW50cyBpbiB0aGUgcmFuZ2UgYmV0d2VlbiBgMGAgYW5kIGAwLjVgLCB5b3UgY291bGQgdXNlIGBucC5saW5zcGFjZSgpYCBsaWtlIHNvOiBgbnAubGluc3BhY2UoMCwgMC41LCAxMDApYC4KLSBJbml0aWFsaXplIGFuIGFycmF5LCBgcnNzYCwgdG8gY29udGFpbiB0aGUgUlNTIHVzaW5nIGBucC5lbXB0eV9saWtlKClgIGFuZCB0aGUgYXJyYXkgeW91IGNyZWF0ZWQgYWJvdmUuIFRoZSBgZW1wdHlfbGlrZSgpYCBmdW5jdGlvbiByZXR1cm5zIGEgbmV3IGFycmF5IHdpdGggdGhlIHNhbWUgc2hhcGUgYW5kIHR5cGUgYXMgYSBnaXZlbiBhcnJheSAoaW4gdGhpcyBjYXNlLCBgYV92YWxzYCkuCi0gV3JpdGUgYSBgZm9yYCBsb29wIHRvIGNvbXB1dGUgdGhlIHN1bSBvZiBSU1Mgb2YgdGhlIHNsb3BlLiBIaW50OiB0aGUgUlNTIGlzIGdpdmVuIGJ5IGBucC5zdW0oKHlfZGF0YSAtIGEgKiB4X2RhdGEgLSBiKSoqMilgLiBUaGUgdmFyaWFibGUgYGJgIHlvdSBjb21wdXRlZCBpbiB0aGUgbGFzdCBleGVyY2lzZSBpcyBhbHJlYWR5IGluIHlvdXIgbmFtZXNwYWNlLiBIZXJlLCBgZmVydGlsaXR5YCBpcyB0aGUgYHlfZGF0YWAgYW5kIGBpbGxpdGVyYWN5YCB0aGUgYHhfZGF0YWAuCi0gUGxvdCB0aGUgUlNTIChgcnNzYCkgdmVyc3VzIHNsb3BlIChgYV92YWxzYCkuCi0gSGl0ICdTdWJtaXQgQW5zd2VyJyB0byBzZWUgdGhlIHBsb3QhCgpgYGB7cHl0aG9ufQojIFNwZWNpZnkgc2xvcGVzIHRvIGNvbnNpZGVyOiBhX3ZhbHMKYV92YWxzID0gX19fXwoKIyBJbml0aWFsaXplIHN1bSBvZiBzcXVhcmUgb2YgcmVzaWR1YWxzOiByc3MKcnNzID0gX19fXwoKIyBDb21wdXRlIHN1bSBvZiBzcXVhcmUgb2YgcmVzaWR1YWxzIGZvciBlYWNoIHZhbHVlIG9mIGFfdmFscwpmb3IgaSwgYSBpbiBlbnVtZXJhdGUoYV92YWxzKToKICAgIHJzc1tpXSA9IF9fX18oKF9fX18gLSBhKl9fX18gLSBiKSoqMikKCiMgUGxvdCB0aGUgUlNTCnBsdC5wbG90KF9fX18sIF9fX18sICctJykKcGx0LnhsYWJlbCgnc2xvcGUgKGNoaWxkcmVuIHBlciB3b21hbiAvIHBlcmNlbnQgaWxsaXRlcmF0ZSknKQpwbHQueWxhYmVsKCdzdW0gb2Ygc3F1YXJlIG9mIHJlc2lkdWFscycpCgpwbHQuc2hvdygpCgpgYGAKCiMjICoqVGhlIGltcG9yYXRuY2UgRURBOiBBbnNjb21iZSdzIHF1YXJ0ZXQqKgoKKioxLiBUaGUgaW1wb3J0YW5jZSBvZiBFREE6IEFuc2NvbWJlJ3MgcXVhcnRldCoqCgpJbiAxOTczLCBzdGF0aXN0aWNpYW4gRnJhbmNpcyBBbnNjb21iZSBwdWJsaXNoZWQgYSBwYXBlciB0aGF0IGNvbnRhaW5lZAoKKioyLiBBbnNjb21iZSdzIHF1YXJ0ZXQqKgoKZm91ciBmaWN0aXRpb3VzIHgteSBkYXRhIHNldHMsIHBsb3R0ZWQgaGVyZS4gSGUgdXNlcyB0aGVzZSBkYXRhIHNldHMgdG8gbWFrZSBhbiBpbXBvcnRhbnQgcG9pbnQuIFRoYXQgcG9pbnQgYmVjb21lcyBjbGVhciBpZiB3ZSBibGluZGx5IGdvIGFib3V0IGRvaW5nIHBhcmFtZXRlciBlc3RpbWF0aW9uIG9uIHRoZXNlIGRhdGEgc2V0cy4gRmlyc3QsIGxldCdzIGxvb2sgYXQgdGhlIGF2ZXJhZ2UgeC12YWx1ZXMgb2YgdGhlIGZvdXIgZGF0YSBzZXRzLgoKMSBEYXRhOiBBbnNjb21iZSwgVGhlIEFtZXJpY2FuIFN0YXRpc3RpY2lhbiwgMTk3MwoKKiozLiBBbnNjb21iZSdzIHF1YXJ0ZXQqKgoKVGhleSBhcmUgYWxsIHRoZSBzYW1lLiBIb3cgYWJvdXQgdGhlIGF2ZXJhZ2UgeS12YWx1ZXM/CgoxIERhdGE6IEFuc2NvbWJlLCBUaGUgQW1lcmljYW4gU3RhdGlzdGljaWFuLCAxOTczCgoqKjQuIEFuc2NvbWJlJ3MgcXVhcnRldCoqCgpBZ2FpbiwgYWxsIHRoZSBzYW1lLiBBbmQgd2hhdCBpZiB3ZSBkbyBhIGxpbmVhciByZWdyZXNzaW9uIG9uIGVhY2ggb2YgdGhlIGRhdGEgc2V0cz8KCjEgRGF0YTogQW5zY29tYmUsIFRoZSBBbWVyaWNhbiBTdGF0aXN0aWNpYW4sIDE5NzMKCioqNS4gQW5zY29tYmUncyBxdWFydGV0KioKClRoZXkgYWxsIGhhdmUgdGhlIHNhbWUgbGluZSEgU3VyZWx5IHNvbWUgb2YgdGhlIGZpdHMgYXJlIGxlc3Mgb3B0aW1hbCB0aGFuIG90aGVycy4gTGV0J3MgbG9vayBhdCB0aGUgc3VtIG9mIHRoZSBzcXVhcmVzIG9mIHRoZSByZXNpZHVhbHMuCgoxIERhdGE6IEFuc2NvbWJlLCBUaGUgQW1lcmljYW4gU3RhdGlzdGljaWFuLCAxOTczCgoqKjYuIEFuc2NvbWJlJ3MgcXVhcnRldCoqCgpPaCBteSwgdGhleSBhcmUgYWxsIGJhc2ljYWxseSB0aGUgc2FtZSBhcyB3ZWxsLiBPZiBjb3Vyc2UsIEFuc2NvbWJlIGNvbnN0cnVjdGVkIHRoZSBkYXRhIHNldHMgc28gdGhhdCB0aGlzIHdvdWxkIGhhcHBlbi4gVGhlIHBvaW50IGhlIHdhcyBtYWtpbmcgaXMgdmVyeSBpbXBvcnRhbnQuIFlvdSBhbHJlYWR5IGhhdmUgc29tZSBwb3dlcmZ1bCB0b29scyBmb3Igc3RhdGlzdGljYWwgaW5mZXJlbmNlLiBZb3UgY2FuIGNvbXB1dGUgc3VtbWFyeSBzdGF0aXN0aWNzIGFuZCBvcHRpbWFsIHBhcmFtZXRlcnMsIGluY2x1ZGluZyBsaW5lYXIgcmVncmVzc2lvbiBwYXJhbWV0ZXJzLCBhbmQgYnkgdGhlIGVuZCBvZiB0aGUgY291cnNlLCB5b3Ugd2lsbCBhYmxlIHRvIGNvbnN0cnVjdCBjb25maWRlbmNlIGludGVydmFscyB3aXRoIHF1YW50aWZ5IHVuY2VydGFpbnR5IGFib3V0IHRoZSBwYXJhbWV0ZXIgZXN0aW1hdGVzLiBUaGVzZSBhcmUgY3J1Y2lhbCBza2lsbHMgZm9yIGFueSBkYXRhIGFuYWx5c2lzLCBubyBkb3VidC4KCjEgRGF0YTogQW5zY29tYmUsIFRoZSBBbWVyaWNhbiBTdGF0aXN0aWNpYW4sIDE5NzMKCioqNy4gTG9vayBiZWZvcmUgeW91IGxlYXAhKioKCkJ1dCBsb29rIGJlZm9yZSB5b3UgbGVhcCEgVGhpcyBpcyBhIHBvd2VyZnVsIHJlbWluZGVyIHRvIGRvIHNvbWUgZ3JhcGhpYyBleHBsb3JhdG9yeSBkYXRhIGFuYWx5c2lzIGJlZm9yZSB5b3Ugc3RhcnQgY29tcHV0aW5nIGFuZCBtYWtpbmcganVkZ21lbnRzIGFib3V0IHlvdXIgZGF0YS4gRm9yIGV4YW1wbGUsCgoqKjguIEFuc2NvbWJlJ3MgcXVhcnRldCoqCgp0aGlzIGRhdGEgc2V0IG1pZ2h0IGJlIHdlbGwgbW9kZWxlZCB3aXRoIGEgbGluZSwgYW5kIHRoZSByZWdyZXNzaW9uIHBhcmFtZXRlcnMgd2lsbCBiZSBtZWFuaW5nZnVsLiBUaGUgc2FtZSBpcyB0cnVlIG9mCgoxIERhdGE6IEFuc2NvbWJlLCBUaGUgQW1lcmljYW4gU3RhdGlzdGljaWFuLCAxOTczCgoqKjkuIEFuc2NvbWJlJ3MgcXVhcnRldCoqCgp0aGlzIGRhdGEgc2V0LCBidXQgdGhlIG91dGxpZXIgdGhyb3dzIG9mZiB0aGUgc2xvcGUgYW5kIGludGVyY2VwdC4gQWZ0ZXIgZG9pbmcgRURBLCB5b3Ugc2hvdWxkIGxvb2sgaW50byB3aGF0IGlzIGNhdXNpbmcgdGhhdCBvdXRsaWVyLgoKMSBEYXRhOiBBbnNjb21iZSwgVGhlIEFtZXJpY2FuIFN0YXRpc3RpY2lhbiwgMTk3MwoKKioxMC4gQW5zY29tYmUncyBxdWFydGV0KioKClRoaXMgZGF0YSBzZXQgbWlnaHQgYWxzbyBoYXZlIGEgbGluZWFyIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIHggYW5kIHksIGJ1dCBmcm9tIHRoZSBwbG90LCB5b3UgY2FuIGNvbmNsdWRlIHRoYXQgeW91IHNob3VsZCB0cnkgdG8gYWNxdWlyZSBtb3JlIGRhdGEgZm9yIGludGVybWVkaWF0ZSB4IHZhbHVlcyB0byBtYWtlIHN1cmUgdGhhdCBpdCBkb2VzLgoKMSBEYXRhOiBBbnNjb21iZSwgVGhlIEFtZXJpY2FuIFN0YXRpc3RpY2lhbiwgMTk3MwoKKioxMS4gQW5zY29tYmUncyBxdWFydGV0KioKCkFuZCB0aGlzIGRhdGEgc2V0IGlzIGRlZmluaXRlbHkgbm90IGxpbmVhciwgYW5kIHlvdSBuZWVkIHRvIGNob29zZSBhbm90aGVyIG1vZGVsLiBFeHBsb3JlIHlvdXIgZGF0YSBmaXJzdC4gSSdsbCBsZXQgeW91IHByb3ZlIHRvIHlvdXJzZWxmCgoxIERhdGE6IEFuc2NvbWJlLCBUaGUgQW1lcmljYW4gU3RhdGlzdGljaWFuLCAxOTczCgoqKjEyLiBMZXQncyBwcmFjdGljZSEqKgoKdGhhdCB0aGVzZSBkYXRhIHNldHMgZ2l2ZSB0aGUgc2FtZSByZWdyZXNzaW9uIHBhcmFtZXRlcnMuIEl0IHdpbGwgYmUgZ29vZCBwcmFjdGljZSwgYW5kIHNlZWluZyBpcyBiZWxpZXZpbmchCgojIyMgKipUaGUgaW1wb3J0YW5jZSBvZiBFREEKV2h5IHNob3VsZCBleHBsb3JhdG9yeSBkYXRhIGFuYWx5c2lzIGJlIHRoZSBmaXJzdCBzdGVwIGluIGFuIGFuYWx5c2lzIG9mIGRhdGEgKGFmdGVyIGdldHRpbmcgeW91ciBkYXRhIGltcG9ydGVkIGFuZCBjbGVhbmVkLCBvZiBjb3Vyc2UpPwoKKipQb3NzaWJsZSBBbnN3ZXJzKioKCjEuIFlvdSBjYW4gYmUgcHJvdGVjdGVkIGZyb20gbWlzaW50ZXJwcmV0YXRpb24gb2YgdGhlIHR5cGUgZGVtb25zdHJhdGVkIGJ5IEFuc2NvbWJlJ3MgcXVhcnRldC4KCjIuIEVEQSBwcm92aWRlcyBhIGdvb2Qgc3RhcnRpbmcgcG9pbnQgZm9yIHBsYW5uaW5nIHRoZSByZXN0IG9mIHlvdXIgYW5hbHlzaXMuCgozLiBFREEgaXMgbm90IHJlYWxseSBhbnkgbW9yZSBkaWZmaWN1bHQgdGhhbiBhbnkgb2YgdGhlIHN1YnNlcXVlbnQgYW5hbHlzaXMsIHNvIHRoZXJlIGlzIG5vIGV4Y3VzZSBmb3Igbm90IGV4cGxvcmluZyB0aGUgZGF0YS4KCjQuIEFsbCBvZiB0aGVzZSByZWFzb25zIQoKQW5zd2VyOgoKIyMjICoqTGluZWFyIHJlZ3Jlc3Npb24gb24gYXBwcm9wcmlhdGUgQW5zY29tYmUgZGF0YSoqCgpGb3IgcHJhY3RpY2UsIHBlcmZvcm0gYSBsaW5lYXIgcmVncmVzc2lvbiBvbiB0aGUgZGF0YSBzZXQgZnJvbSBBbnNjb21iZSdzIHF1YXJ0ZXQgdGhhdCBpcyBtb3N0IHJlYXNvbmFibHkgaW50ZXJwcmV0ZWQgd2l0aCBsaW5lYXIgcmVncmVzc2lvbi4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gQ29tcHV0ZSB0aGUgcGFyYW1ldGVycyBmb3IgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHQgdXNpbmcgYG5wLnBvbHlmaXQoKWAuIFRoZSBBbnNjb21iZSBkYXRhIGFyZSBzdG9yZWQgaW4gdGhlIGFycmF5cyBgeGAgYW5kIGB5YC4KLSBQcmludCB0aGUgc2xvcGUgYGFgIGFuZCBpbnRlcmNlcHQgYGJgLgotIEdlbmVyYXRlIHRoZW9yZXRpY2FsICR4JCBhbmQgJHkkIGRhdGEgZnJvbSB0aGUgbGluZWFyIHJlZ3Jlc3Npb24uIFlvdXIgJHgkIGFycmF5LCB3aGljaCB5b3UgY2FuIGNyZWF0ZSB3aXRoIGBucC5hcnJheSgpYCwgc2hvdWxkIGNvbnNpc3Qgb2YgYDNgIGFuZCBgMTVgLiBUbyBnZW5lcmF0ZSB0aGUgJHkkIGRhdGEsIG11bHRpcGx5IHRoZSBzbG9wZSBieSBgeF90aGVvcmAgYW5kIGFkZCB0aGUgaW50ZXJjZXB0LgotIFBsb3QgdGhlIEFuc2NvbWJlIGRhdGEgYXMgYSBzY2F0dGVyIHBsb3QgYW5kIHRoZW4gcGxvdCB0aGUgdGhlb3JldGljYWwgbGluZS4gUmVtZW1iZXIgdG8gaW5jbHVkZSB0aGUgYG1hcmtlcj0nLidgIGFuZCBgbGluZXN0eWxlPSdub25lJ2Aga2V5d29yZCBhcmd1bWVudHMgaW4gYWRkaXRpb24gdG8gYHhgIGFuZCBgeWAgd2hlbiB0byBwbG90IHRoZSBBbnNjb21iZSBkYXRhIGFzIGEgc2NhdHRlciBwbG90LiBZb3UgZG8gbm90IG5lZWQgdGhlc2UgYXJndW1lbnRzIHdoZW4gcGxvdHRpbmcgdGhlIHRoZW9yZXRpY2FsIGxpbmUuCi0gSGl0ICdTdWJtaXQgQW5zd2VyJyB0byBzZWUgdGhlIHBsb3QhCgpgYGB7cHl0aG9ufQojIFBlcmZvcm0gbGluZWFyIHJlZ3Jlc3Npb246IGEsIGIKYSwgYiA9IF9fX18KCiMgUHJpbnQgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHQKcHJpbnQoX19fXywgX19fXykKCiMgR2VuZXJhdGUgdGhlb3JldGljYWwgeCBhbmQgeSBkYXRhOiB4X3RoZW9yLCB5X3RoZW9yCnhfdGhlb3IgPSBucC5hcnJheShbX19fXywgX19fX10pCnlfdGhlb3IgPSBfX19fICogX19fXyArIF9fX18KCiMgUGxvdCB0aGUgQW5zY29tYmUgZGF0YSBhbmQgdGhlb3JldGljYWwgbGluZQpfID0gX19fXwpfID0gX19fXwoKIyBMYWJlbCB0aGUgYXhlcwpwbHQueGxhYmVsKCd4JykKcGx0LnlsYWJlbCgneScpCgojIFNob3cgdGhlIHBsb3QKcGx0LnNob3coKQpgYGAKCiMjIyAqKkxpbmVhciByZWdyZXNzaW9uIG9uIGFsbCBBbnNjb21iZSBkYXRhKioKCk5vdywgdG8gdmVyaWZ5IHRoYXQgYWxsIGZvdXIgb2YgdGhlIEFuc2NvbWJlIGRhdGEgc2V0cyBoYXZlIHRoZSBzYW1lIHNsb3BlIGFuZCBpbnRlcmNlcHQgZnJvbSBhIGxpbmVhciByZWdyZXNzaW9uLCB5b3Ugd2lsbCBjb21wdXRlIHRoZSBzbG9wZSBhbmQgaW50ZXJjZXB0IGZvciBlYWNoIHNldC4gVGhlIGRhdGEgYXJlIHN0b3JlZCBpbiBsaXN0czsgYGFuc2NvbWJlX3ggPSBbeDEsIHgyLCB4MywgeDRdYCBhbmQgYGFuc2NvbWJlX3kgPSBbeTEsIHkyLCB5MywgeTRdYCwgd2hlcmUsIGZvciBleGFtcGxlLCBgeDJgIGFuZCBgeTJgIGFyZSB0aGUgJHgkIGFuZCAkeSQgdmFsdWVzIGZvciB0aGUgc2Vjb25kIEFuc2NvbWJlIGRhdGEgc2V0LgoKKipJbnN0cnVjdGlvbnMqKgoKLSBXcml0ZSBhIGBmb3JgIGxvb3AgdG8gZG8gdGhlIGZvbGxvd2luZyBmb3IgZWFjaCBBbnNjb21iZSBkYXRhIHNldC4KICAtIENvbXB1dGUgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHQuCiAgLSBQcmludCB0aGUgc2xvcGUgYW5kIGludGVyY2VwdC4KCmBgYHtweXRob259CiMgSXRlcmF0ZSB0aHJvdWdoIHgseSBwYWlycwpmb3IgeCwgeSBpbiB6aXAoX19fXywgX19fXyk6CiAgICAjIENvbXB1dGUgdGhlIHNsb3BlIGFuZCBpbnRlcmNlcHQ6IGEsIGIKICAgIGEsIGIgPSBfX19fCgogICAgIyBQcmludCB0aGUgcmVzdWx0CiAgICBwcmludCgnc2xvcGU6JywgYSwgJ2ludGVyY2VwdDonLCBiKQoKYGBgCgo=</div>
 
 
 
