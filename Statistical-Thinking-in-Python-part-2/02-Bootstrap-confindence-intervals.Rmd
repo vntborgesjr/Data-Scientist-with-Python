@@ -1,0 +1,14 @@
+---
+title: "02 - Bootstrap confindence intervals"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    code_folding: hide
+---
+
+```{python}
+
+```
+
