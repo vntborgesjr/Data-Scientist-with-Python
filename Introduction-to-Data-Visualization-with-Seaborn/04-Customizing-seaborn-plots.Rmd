@@ -1,6 +1,11 @@
 ---
 title: "04 - Customizing seaborn plots"
-output: html_notebook
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    code_folding: hide
 ---
 
 ```{python setup, include=FALSE}
