@@ -1,10 +1,14 @@
 ---
 title: "01 - Introduction to Matplotlib"
-output: html_notebook
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    code_folding: hide
 ---
 
-```{python setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{python setup, echo = False, warning = False, message = False}
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -164,7 +168,7 @@ The data is given to you in DataFrames: `seattle_weather` and `austin_weather`. 
 - In the top right (index 0,1), plot Seattle temperatures.
 - In the bottom left (1, 0) and bottom right (1, 1) plot Austin precipitations and temperatures.
 
-```{python, eval = True, echo = False}
+```{python, eval = True, echo = True}
 # Create a Figure and an array of subplots with 2 rows and 2 columns
 fig, ax = plt.subplots(2, 2)
 
