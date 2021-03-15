@@ -18,9 +18,20 @@ import pandas as pd
 sns.set()
 
 light = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/speed-of-light.csv")
-michelson_speed_of_light = light['velocity of light in air (km/s)']
+michelson_speed_of_light = np.array(light['velocity of light in air (km/s)'])
 
 election = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2008_election_results_swing.csv")
+election['total'] = election.total_votes/900
+
+female_literacy_fertility = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/female_literacy_fertility.csv")
+
+female_literacy_fertility = female_literacy_fertility[(female_literacy_fertility['fertility'] > 1000)]
+illiteracy = 100 - np.array(female_literacy_fertility['female literacy'])
+fertility = np.array(female_literacy_fertility['fertility'])/1000
+
+election['total'] = election.total_votes/900
+
+anscombe = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/anscombe.csv")
 
 def ecdf(data):
   """Compute ECDF for a one-dimensional array of measurements."""
@@ -95,7 +106,7 @@ plt.show()
 the CDF, which was more effective because there is no binning bias. To compute and plot the CDF, we needed our old friends
 
 ```{python}
-x_vel_light, y_vel_light = ecdf(np.array(michelson_speed_of_light))
+x_vel_light, y_vel_light = ecdf(michelson_speed_of_light)
 x_vel_light_sample, y_vel_light_sample = ecdf(samples)
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
@@ -119,7 +130,7 @@ Numpy and matplotlib dot pyplot, so the first step was to import them with their
 The result was that the theoretical CDF overlayed beautifully with the empirical CDF. How did we know that the mean and standard deviation calculated from the data were the appropriate values for the Normal parameters? We could have chosen others.
 
 ```{python}
-x_vel_light, y_vel_light = ecdf(np.array(michelson_speed_of_light))
+x_vel_light, y_vel_light = ecdf(michelson_speed_of_light)
 x_vel_light_sample, y_vel_light_sample = ecdf(samples)
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
@@ -367,8 +378,8 @@ fig, ax = plt.subplots()
 fig.tight_layout(pad = 5)
 
 _ = ax.plot(election.total_votes/900, election.dem_share, marker = '.', linestyle = 'none')
-?ax.plot
-_ = ax.set_xlabel('total voltes (thousands)')
+
+_ = ax.set_xlabel('total votes (thousands)')
 _ = ax.set_ylabel('percent of vote for Obama')
 _ = ax.set_ylim(0, 100)
 _ = ax.set_xlim(0, 1000)
@@ -377,28 +388,106 @@ plt.clf()
 ```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
+
 **3. 2008 US swing state election results**
 
 Often times a linear function is appropriate to describe the data, and this is what we will focus on in this course. The parameters of the function are
 
+```{python}
+a, b = np.polyfit(election.total_votes, election.dem_share, 1)
+x = np.array([0, 1000])
+y = a * x*900 + b
+g = sns.relplot(x = 'total', 
+                y = 'dem_share', 
+                data = election,
+                kind = 'scatter',
+                height = 2.6)
+_ = g.set(xlabel = 'total votes (thousands)',
+          ylabel = 'percent of vote for Obama',
+          ylim = (0, 100),
+          xlim = (0, 1000))
+_ = plt.plot(x, y)
+plt.show()
+plt.clf()
+```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **4. 2008 US swing state election results**
 
-the slope and intercept. The slope sets how steep the line is, and the intercept sets where the line crosses the y-axis. How do we figure out which slope and intercept best describe the data? A simple answer is that we want to choose the slope and intercept such that the data points collectively lie as close as possible to the line. This is easiest to think about by first considering one data point,
+the slope and intercept. The slope sets how steep the line is, and the intercept sets where the line crosses the y-axis. How do we figure out which slope and intercept best describe the data? A simple answer is that we want to choose the slope and intercept such that the data points collectively lie as close as possible to the line. 
 
+```{python}
+a, b = np.polyfit(election.total_votes, election.dem_share, 1)
+x = np.array([0, 1000])
+y = a * x*900 + b
+g = sns.relplot(x = 'total', 
+                y = 'dem_share', 
+                data = election,
+                kind = 'scatter',
+                height = 2.6)
+_ = g.set(xlabel = 'total votes (thousands)',
+          ylabel = 'percent of vote for Obama',
+          ylim = (0, 100),
+          xlim = (0, 1000))
+_ = plt.plot(x, y)
+_ = plt.annotate("intercept", xy = (0, b), xytext = (400, 35), arrowprops = {'arrowstyle': '->', 'color': 'gray'})
+_ = plt.annotate("slope", xy = (500, 55), xytext = (500, 70), arrowprops = {'arrowstyle': '<-', 'color': 'gray'})
+
+plt.show()
+plt.clf()
+```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **5. 2008 US swing state election results**
 
-say this one. The vertical distance between the data point and the line is called
+This is easiest to think about by first considering one data point, say this one. The vertical distance between the data point and the line is called
 
+```{python}
+a, b = np.polyfit(election.total_votes, election.dem_share, 1)
+x = np.array([0, 1000])
+y = a * x*900 + b
+g = sns.relplot(x = 'total', 
+                y = 'dem_share', 
+                data = election,
+                kind = 'scatter',
+                height = 2.6)
+_ = g.set(xlabel = 'total votes (thousands)',
+          ylabel = 'percent of vote for Obama',
+          ylim = (0, 100),
+          xlim = (0, 1000))
+_ = plt.plot(x, y)
+#_ = plt.annotate("intercept", xy = (0, b), xytext = (400, 35), arrowprops = {'arrowstyle': '->', 'color': 'gray'})
+#_ = plt.annotate("slope", xy = (500, 55), xytext = (500, 70), arrowprops = {'arrowstyle': '<-', 'color': 'gray'})
+
+plt.show()
+plt.clf()
+```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **6. Residuals**
 
 the residual. In this case, the residual has a negative value because the data point lies below the line. Each data point has a residual associated with it.
 
+```{python}
+a, b = np.polyfit(election.total_votes, election.dem_share, 1)
+x = np.array([0, 1000])
+y = a * x*900 + b
+g = sns.relplot(x = 'total', 
+                y = 'dem_share', 
+                data = election,
+                kind = 'scatter',
+                height = 2.6)
+_ = g.set(xlabel = 'total votes (thousands)',
+          ylabel = 'percent of vote for Obama',
+          ylim = (0, 100),
+          xlim = (0, 1000))
+_ = plt.plot(x, y)
+#_ = plt.annotate("intercept", xy = (0, b), xytext = (400, 35), arrowprops = {'arrowstyle': '->', 'color': 'gray'})
+#_ = plt.annotate("slope", xy = (500, 55), xytext = (500, 70), arrowprops = {'arrowstyle': '<-', 'color': 'gray'})
+
+plt.show()
+plt.clf()
+```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **7. Least squares**
@@ -408,6 +497,16 @@ We define the line that is closest to the data to be the line for which the sum 
 **8. Least squares with np.polyfit()**
 
 We will use the Numpy function polyfit, which performs least squares analysis with polynomial functions. We can use it because a linear function is a first degree polynomial. The first two arguments to this function are the x and y data. The third argument is the degree of the polynomial you wish to fit; for linear functions, we enter one. The function returns the slope and intercept of the best fit line. The slope tells us that we get about 4 more percent votes for Obama for every 100,000 additional voters in a county. Now that you know how to perform a linear regression,
+
+```{python}
+slope, intercept = np.polyfit(election.total_votes,
+                                 election.dem_share, 1)
+slope
+```
+
+```{python}
+intercept
+```
 
 **9. Let's practice!**
 
@@ -421,6 +520,16 @@ It is always a good idea to do some EDA ahead of our analysis. To this end, plot
 
 Here, it may be useful to refer back to the [function you wrote in the previous course](https://campus.datacamp.com/courses/statistical-thinking-in-python-part-1/quantitative-exploratory-data-analysis?ex=15) to compute the Pearson correlation coefficient.
 
+```{python}
+def pearson_r(x, y):
+  """Compute Pearson correlation coefficient between two arrays."""
+  # Compute correlation matrix: corr_mat
+  corr_mat = np.corrcoef(x, y)
+
+  # Return entry [0,1]
+  return corr_mat[0,1]
+```
+
 **Instructions**
 
 - Plot `fertility` (y-axis) versus `illiteracy` (x-axis) as a scatter plot.
@@ -429,20 +538,23 @@ Here, it may be useful to refer back to the [function you wrote in the previous 
 
 ```{python}
 # Plot the illiteracy rate versus fertility
-_ = plt.plot(____, ____, ____='.', ____='none')
+_ = plt.plot(illiteracy, fertility, marker = '.', linestyle='none')
 
 # Set the margins and label axes
-plt.margins(____)
+plt.margins(0.02)
 _ = plt.xlabel('percent illiterate')
 _ = plt.ylabel('fertility')
 
 # Show the plot
 plt.show()
+plt.clf()
 
 # Show the Pearson correlation coefficient
-print(pearson_r(____, ____))
+print(pearson_r(illiteracy, fertility))
 
 ```
+
+You can see the correlation between illiteracy and fertility by eye, and by the substantial Pearson correlation coefficient of 0.8. It is difficult to resolve in the scatter plot, but there are many points around near-zero illiteracy and about 1.8 children/woman.
 
 ### **Linear regression**
 
@@ -466,22 +578,23 @@ _ = plt.xlabel('percent illiterate')
 _ = plt.ylabel('fertility')
 
 # Perform a linear regression using np.polyfit(): a, b
-a, b = ____
+a, b = np.polyfit(illiteracy,
+                  fertility, 1)
 
 # Print the results to the screen
 print('slope =', a, 'children per woman / percent illiterate')
 print('intercept =', b, 'children per woman')
 
 # Make theoretical line to plot
-x = ____
-y = ____ * ____ + ____
+x = np.array([0, 100])
+y = a * x + b
 
 # Add regression line to your plot
-_ = plt.plot(____, ____)
+_ = plt.plot(x, y)
 
 # Draw the plot
 plt.show()
-
+plt.clf()
 ```
 
 ### **How is it optimal?**
@@ -498,23 +611,25 @@ The function `np.polyfit()` that you used to get your regression parameters find
 
 ```{python}
 # Specify slopes to consider: a_vals
-a_vals = ____
+a_vals = np.linspace(0, 0.1, 200)
 
 # Initialize sum of square of residuals: rss
-rss = ____
+rss = np.empty_like(a_vals)
 
 # Compute sum of square of residuals for each value of a_vals
 for i, a in enumerate(a_vals):
-    rss[i] = ____((____ - a*____ - b)**2)
+    rss[i] = np.sum((fertility - a*illiteracy - b)**2)
 
 # Plot the RSS
-plt.plot(____, ____, '-')
-plt.xlabel('slope (children per woman / percent illiterate)')
-plt.ylabel('sum of square of residuals')
+_ = plt.plot(a_vals, rss, '-')
+_ = plt.xlabel('slope (children per woman / percent illiterate)')
+_ = plt.ylabel('sum of square of residuals')
 
 plt.show()
-
+plt.clf()
 ```
+
+Notice that the minimum on the plot, that is the value of the slope that gives the minimum sum of the square of the residuals, is the same value you got when performing the regression.
 
 ## **The imporatnce EDA: Anscombe's quartet**
 
@@ -526,30 +641,283 @@ In 1973, statistician Francis Anscombe published a paper that contained
 
 four fictitious x-y data sets, plotted here. He uses these data sets to make an important point. That point becomes clear if we blindly go about doing parameter estimation on these data sets. First, let's look at the average x-values of the four data sets.
 
+```{python}
+a = sns.relplot(x = 'x',
+                y = 'y',
+                data = anscombe,
+                kind = 'scatter',
+                col = 'Dataset',
+                col_wrap = 2,
+                height = 1.7)
+               
+plt.show()
+```
+
 1 Data: Anscombe, The American Statistician, 1973
 
 **3. Anscombe's quartet**
 
 They are all the same. How about the average y-values?
 
+```{python}
+x = anscombe.x
+y = anscombe.y
+# Create a Figure and an array of subplots with 2 rows and 2 columns
+fig, ax = plt.subplots(2, 2, sharey = True, sharex = True)
+
+# Fit the subplots in to the figure area
+#_ = fig.tight_layout(pad = 5)
+
+# Addressing the top left Axes as index 0, 0, plot month and Seattle precipitation
+_ = ax[0, 0].plot(x[0:10],
+                y[0:10],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[0, 1].plot(x[11:21],
+                y[11:21],
+                marker = '.',
+                linestyle = 'none', )
+_ = ax[1, 0].plot(x[22:32],
+                y[22:32],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[1, 1].plot(x[33:43],
+                y[33:43],
+                marker = '.',
+                linestyle = 'none')
+
+# Add vertical lines (mean of x)
+_ = ax[0, 0].axvline(np.mean(anscombe.x[0:10]))
+_ = ax[0, 1].axvline(np.mean(anscombe.x[11:21]))
+_ = ax[1, 0].axvline(np.mean(anscombe.x[22:32]))
+_ = ax[1, 1].axvline(np.mean(anscombe.x[33:43]))
+
+# Customize the y limits
+_ = ax[0, 0].set_ylim(2, 15)
+_ = ax[0, 1].set_ylim(2, 15)
+_ = ax[1, 0].set_ylim(2, 15)
+_ = ax[1, 1].set_ylim(2, 15)
+
+# Customize the y limits
+_ = ax[0, 0].set_xlim(2, 20)
+_ = ax[0, 1].set_xlim(2, 20)
+_ = ax[1, 0].set_xlim(2, 20)
+_ = ax[1, 1].set_xlim(2, 20)
+
+# Customize the x-axis label
+_ = ax[1, 0].set_xlabel('x')
+_ = ax[1, 1].set_xlabel('x')
+
+# Customize the y-axis label
+_ = ax[0, 0].set_ylabel('y')
+_ = ax[1, 0].set_ylabel('y')
+plt.show()
+plt.clf()
+```
 1 Data: Anscombe, The American Statistician, 1973
 
 **4. Anscombe's quartet**
 
 Again, all the same. And what if we do a linear regression on each of the data sets?
 
+```{python}
+# Create a Figure and an array of subplots with 2 rows and 2 columns
+fig, ax = plt.subplots(2, 2, sharey = True, sharex = True)
+
+# Fit the subplots in to the figure area
+#_ = fig.tight_layout(pad = 5)
+
+# Addressing the top left Axes as index 0, 0, plot month and Seattle precipitation
+_ = ax[0, 0].plot(x[0:10],
+                y[0:10],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[0, 1].plot(x[11:21],
+                y[11:21],
+                marker = '.',
+                linestyle = 'none', )
+_ = ax[1, 0].plot(x[22:32],
+                y[22:32],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[1, 1].plot(x[33:43],
+                y[33:43],
+                marker = '.',
+                linestyle = 'none')
+
+# Add horizontal lines (mean of y)
+_ = ax[0, 0].axhline(np.mean(anscombe.y[0:10]))
+_ = ax[0, 1].axhline(np.mean(anscombe.y[11:21]))
+_ = ax[1, 0].axhline(np.mean(anscombe.y[22:32]))
+_ = ax[1, 1].axhline(np.mean(anscombe.y[33:43]))
+
+# Customize the y limits
+_ = ax[0, 0].set_ylim(2, 15)
+_ = ax[0, 1].set_ylim(2, 15)
+_ = ax[1, 0].set_ylim(2, 15)
+_ = ax[1, 1].set_ylim(2, 15)
+
+# Customize the y limits
+_ = ax[0, 0].set_xlim(2, 20)
+_ = ax[0, 1].set_xlim(2, 20)
+_ = ax[1, 0].set_xlim(2, 20)
+_ = ax[1, 1].set_xlim(2, 20)
+
+# Customize the x-axis label
+_ = ax[1, 0].set_xlabel('x')
+_ = ax[1, 1].set_xlabel('x')
+
+# Customize the y-axis label
+_ = ax[0, 0].set_ylabel('y')
+_ = ax[1, 0].set_ylabel('y')
+plt.show()
+plt.clf()
+```
 1 Data: Anscombe, The American Statistician, 1973
 
 **5. Anscombe's quartet**
 
 They all have the same line! Surely some of the fits are less optimal than others. Let's look at the sum of the squares of the residuals.
 
+```{python}
+# fit linear regression model
+a0, b0 = np.polyfit(x[0:10], y[0:10], 1)
+a1, b1 = np.polyfit(x[11:22], y[11:22], 1)
+a2, b2 = np.polyfit(x[22:32], y[22:32], 1)
+a3, b3 = np.polyfit(x[33:43], y[33:43], 1)
+
+# predict y values
+x0 = np.array([2, 20])
+y0 = a0*x0 + b0
+y1 = a1*x0 + b1
+y2 = a2*x0 + b2
+y3 = a3*x0 + b3
+
+# Create a Figure and an array of subplots with 2 rows and 2 columns
+fig, ax = plt.subplots(2, 2, sharey = True, sharex = True)
+
+# Fit the subplots in to the figure area
+#_ = fig.tight_layout(pad = 5)
+
+# Addressing the top left Axes as index 0, 0, plot month and Seattle precipitation
+_ = ax[0, 0].plot(x[0:10],
+                y[0:10],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[0, 1].plot(x[11:21],
+                y[11:21],
+                marker = '.',
+                linestyle = 'none', )
+_ = ax[1, 0].plot(x[22:32],
+                y[22:32],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[1, 1].plot(x[33:43],
+                y[33:43],
+                marker = '.',
+                linestyle = 'none')
+
+# Add predicted values
+_ = ax[0, 0].plot(x0, y0)
+_ = ax[0, 1].plot(x0, y1)
+_ = ax[1, 0].plot(x0, y2)
+_ = ax[1, 1].plot(x0, y3)
+
+# Customize the y limits
+_ = ax[0, 0].set_ylim(2, 15)
+_ = ax[0, 1].set_ylim(2, 15)
+_ = ax[1, 0].set_ylim(2, 15)
+_ = ax[1, 1].set_ylim(2, 15)
+
+# Customize the y limits
+_ = ax[0, 0].set_xlim(2, 20)
+_ = ax[0, 1].set_xlim(2, 20)
+_ = ax[1, 0].set_xlim(2, 20)
+_ = ax[1, 1].set_xlim(2, 20)
+
+# Customize the x-axis label
+_ = ax[1, 0].set_xlabel('x')
+_ = ax[1, 1].set_xlabel('x')
+
+# Customize the y-axis label
+_ = ax[0, 0].set_ylabel('y')
+_ = ax[1, 0].set_ylabel('y')
+plt.show()
+plt.clf()
+
+```
 1 Data: Anscombe, The American Statistician, 1973
 
 **6. Anscombe's quartet**
 
 Oh my, they are all basically the same as well. Of course, Anscombe constructed the data sets so that this would happen. The point he was making is very important. You already have some powerful tools for statistical inference. You can compute summary statistics and optimal parameters, including linear regression parameters, and by the end of the course, you will able to construct confidence intervals with quantify uncertainty about the parameter estimates. These are crucial skills for any data analysis, no doubt.
 
+```{python}
+# calculate the sum of squares
+rss0 = np.sum((y[0:10] - a0*x[0:10] - b0)**2)
+rss1 = np.sum((y[11:21] - a1*x[11:21] - b1)**2)
+rss2 = np.sum((y[22:32] - a2*x[23:32] - b2)**2)
+rss3 = np.sum((y[33:43] - a3*x[33:43] - b3)**2)
+
+# Create a Figure and an array of subplots with 2 rows and 2 columns
+fig, ax = plt.subplots(2, 2, sharey = True, sharex = True)
+
+# Fit the subplots in to the figure area
+#_ = fig.tight_layout(pad = 5)
+
+# Addressing the top left Axes as index 0, 0, plot month and Seattle precipitation
+_ = ax[0, 0].plot(x[0:10],
+                y[0:10],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[0, 1].plot(x[11:21],
+                y[11:21],
+                marker = '.',
+                linestyle = 'none', )
+_ = ax[1, 0].plot(x[22:32],
+                y[22:32],
+                marker = '.',
+                linestyle = 'none')
+_ = ax[1, 1].plot(x[33:43],
+                y[33:43],
+                marker = '.',
+                linestyle = 'none')
+
+# Add predicted values
+_ = ax[0, 0].plot(x0, y0)
+_ = ax[0, 1].plot(x0, y1)
+_ = ax[1, 0].plot(x0, y2)
+_ = ax[1, 1].plot(x0, y3)
+
+# Customize the y limits
+_ = ax[0, 0].set_ylim(2, 15)
+_ = ax[0, 1].set_ylim(2, 15)
+_ = ax[1, 0].set_ylim(2, 15)
+_ = ax[1, 1].set_ylim(2, 15)
+
+# Customize the y limits
+_ = ax[0, 0].set_xlim(2, 20)
+_ = ax[0, 1].set_xlim(2, 20)
+_ = ax[1, 0].set_xlim(2, 20)
+_ = ax[1, 1].set_xlim(2, 20)
+
+# Customize the x-axis label
+_ = ax[1, 0].set_xlabel('x')
+_ = ax[1, 1].set_xlabel('x')
+
+# Customize the y-axis label
+_ = ax[0, 0].set_ylabel('y')
+_ = ax[1, 0].set_ylabel('y')
+''.join(["sum sq. rsid. = ", str(rss0)])
+# Annotate the sum of squares
+_ = ax[0, 0].annotate(''.join(["sum sq. rsid. = ", str(round(rss0, 1))]), xy = (9, 4), xytext = (8, 4))
+_ = ax[0, 1].annotate(''.join(["sum sq. rsid. = ", str(round(rss1, 1))]), xy = (9, 4), xytext = (8, 4))
+_ = ax[1, 0].annotate(''.join(["sum sq. rsid. = ", str(round(rss2, 1))]), xy = (9, 4), xytext = (8, 4))
+_ = ax[1, 1].annotate(''.join(["sum sq. rsid. = ", str(round(rss3, 1))]), xy = (9, 4), xytext = (8, 4))
+
+plt.show()
+plt.clf()
+```
 1 Data: Anscombe, The American Statistician, 1973
 
 **7. Look before you leap!**
@@ -584,7 +952,8 @@ And this data set is definitely not linear, and you need to choose another model
 
 that these data sets give the same regression parameters. It will be good practice, and seeing is believing!
 
-### **The importance of EDA
+### **The importance of EDA**
+
 Why should exploratory data analysis be the first step in an analysis of data (after getting your data imported and cleaned, of course)?
 
 **Possible Answers**
@@ -597,7 +966,7 @@ Why should exploratory data analysis be the first step in an analysis of data (a
 
 4. All of these reasons!
 
-Answer:
+Answer: 4
 
 ### **Linear regression on appropriate Anscombe data**
 
@@ -612,31 +981,50 @@ For practice, perform a linear regression on the data set from Anscombe's quarte
 - Hit 'Submit Answer' to see the plot!
 
 ```{python}
+x = x[0:10]
+y = y[0:10]
+
+_ = plt.tight_layout(pad = 2)
+
 # Perform linear regression: a, b
-a, b = ____
+a, b = np.polyfit(x, y, 1)
 
 # Print the slope and intercept
-print(____, ____)
+print(a, b)
 
 # Generate theoretical x and y data: x_theor, y_theor
-x_theor = np.array([____, ____])
-y_theor = ____ * ____ + ____
+x_theor = np.array([3, 15])
+y_theor = a * x_theor + b
 
 # Plot the Anscombe data and theoretical line
-_ = ____
-_ = ____
+_ = plt.plot(x, y, marker = '.', linestyle = 'none')
+_ = plt.plot(x_theor, y_theor)
 
 # Label the axes
-plt.xlabel('x')
-plt.ylabel('y')
+_ = plt.xlabel('x')
+_ = plt.ylabel('y')
 
 # Show the plot
 plt.show()
+plt.clf()
 ```
 
 ### **Linear regression on all Anscombe data**
 
 Now, to verify that all four of the Anscombe data sets have the same slope and intercept from a linear regression, you will compute the slope and intercept for each set. The data are stored in lists; `anscombe_x = [x1, x2, x3, x4]` and `anscombe_y = [y1, y2, y3, y4]`, where, for example, `x2` and `y2` are the $x$ and $y$ values for the second Anscombe data set.
+
+```{python, echo = False}
+x1 = x[0:10]
+x2 = x[11:22]
+x3 = x[23:32]
+x4 = x[33:43]
+y1 = y[0:10]
+y2 = y[11:22]
+y3 = y[23:32]
+y4 = y[33:43]
+anscombe_x = [x1, x2, x3, x4]
+anscombe_y = [y1, y2, y3, y4]
+```
 
 **Instructions**
 
@@ -646,12 +1034,12 @@ Now, to verify that all four of the Anscombe data sets have the same slope and i
 
 ```{python}
 # Iterate through x,y pairs
-for x, y in zip(____, ____):
+for x, y in zip(anscombe_x, anscombe_y):
     # Compute the slope and intercept: a, b
-    a, b = ____
-
+    a, b = np.polyfit(x, y, 1)
     # Print the result
     print('slope:', a, 'intercept:', b)
 
 ```
 
+Indeed, they all have the same slope and intercept.
