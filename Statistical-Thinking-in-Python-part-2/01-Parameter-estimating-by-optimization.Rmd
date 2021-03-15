@@ -8,8 +8,56 @@ output:
     code_folding: hide
 ---
 
-```{python}
+```{python setup}
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import pandas as pd
 
+# Set default Seaborn style
+sns.set()
+
+light = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/speed-of-light.csv")
+michelson_speed_of_light = light['velocity of light in air (km/s)']
+
+election = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2008_election_results_swing.csv")
+
+def ecdf(data):
+  """Compute ECDF for a one-dimensional array of measurements."""
+  # Number of data points: n
+  n = len(data)
+
+  # x-data for the ECDF: x
+  x = np.sort(data)
+
+  # y-data for the ECDF: y
+  y = np.arange(1, n + 1) / n
+
+  return x, y
+
+nohitter_times = np.array([ 843, 1613, 1101,  215,  684,  814,  278,  324,  161,  219,  545,
+        715,  966,  624,   29,  450,  107,   20,   91, 1325,  124, 1468,
+        104, 1309,  429,   62, 1878, 1104,  123,  251,   93,  188,  983,
+        166,   96,  702,   23,  524,   26,  299,   59,   39,   12,    2,
+        308, 1114,  813,  887,  645, 2088,   42, 2090,   11,  886, 1665,
+       1084, 2900, 2432,  750, 4021, 1070, 1765, 1322,   26,  548, 1525,
+         77, 2181, 2752,  127, 2147,  211,   41, 1575,  151,  479,  697,
+        557, 2267,  542,  392,   73,  603,  233,  255,  528,  397, 1529,
+       1023, 1194,  462,  583,   37,  943,  996,  480, 1497,  717,  224,
+        219, 1531,  498,   44,  288,  267,  600,   52,  269, 1086,  386,
+        176, 2199,  216,   54,  675, 1243,  463,  650,  171,  327,  110,
+        774,  509,    8,  197,  136,   12, 1124,   64,  380,  811,  232,
+        192,  731,  715,  226,  605,  539, 1491,  323,  240,  179,  702,
+        156,   82, 1397,  354,  778,  603, 1001,  385,  986,  203,  149,
+        576,  445,  180, 1403,  252,  675, 1351, 2983, 1568,   45,  899,
+       3260, 1025,   31,  100, 2055, 4043,   79,  238, 3931, 2351,  595,
+        110,  215,    0,  563,  206,  660,  242,  577,  179,  157,  192,
+        192, 1848,  792, 1693,   55,  388,  225, 1134, 1172, 1555,   31,
+       1582, 1044,  378, 1687, 2915,  280,  765, 2819,  511, 1521,  745,
+       2491,  580, 2072, 6450,  578,  745, 1075, 1103, 1549, 1520,  138,
+       1202,  296,  277,  351,  391,  950,  459,   62, 1056, 1128,  139,
+        420,   87,   71,  814,  603, 1349,  162, 1027,  783,  326,  101,
+        876,  381,  905,  156,  419,  239,  119,  129,  467])
 ```
 
 ## **Optimal parameters**
@@ -22,12 +70,44 @@ After completing the prequel to this course, you are now beginning to think prob
 
 We verified that both by looking at the PDF and
 
+```{python}
+mean = np.mean(michelson_speed_of_light)
+std = np.std(michelson_speed_of_light)
+samples = np.random.normal(mean, std, 10000)
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+sns.distplot(michelson_speed_of_light, hist = True, kde = True, 
+             bins = 9, color = 'darkblue', 
+             hist_kws = {'edgecolor':'black'},
+             kde_kws = {'linewidth': 4})
+#_ = ax.hist(michelson_speed_of_light, bins =  9, density = True)
+#_ = ax.hist(samples, bins =  int(180/5), density = True, histtype = 'step')
+_ = ax.set_xlabel('speed of light(km/s)')
+_ = ax.set_ylabel('PDF')
+plt.show()
+```
+
 1 Data: Michelson, 1880
 
 **3. CDF of Michelson's measurements**
 
 the CDF, which was more effective because there is no binning bias. To compute and plot the CDF, we needed our old friends
 
+```{python}
+x_vel_light, y_vel_light = ecdf(np.array(michelson_speed_of_light))
+x_vel_light_sample, y_vel_light_sample = ecdf(samples)
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(x_vel_light, y_vel_light, marker = '.', linestyle = 'none')
+_ = ax.plot(x_vel_light_sample, y_vel_light_sample)
+
+_ = ax.set_xlabel('speed of light (km/s)')
+_ = ax.set_ylabel('CDF')
+plt.show()
+```
 1 Data: Michelson, 1880
 
 **4. Checking Normality of Michelson data**
@@ -38,18 +118,66 @@ Numpy and matplotlib dot pyplot, so the first step was to import them with their
 
 The result was that the theoretical CDF overlayed beautifully with the empirical CDF. How did we know that the mean and standard deviation calculated from the data were the appropriate values for the Normal parameters? We could have chosen others.
 
+```{python}
+x_vel_light, y_vel_light = ecdf(np.array(michelson_speed_of_light))
+x_vel_light_sample, y_vel_light_sample = ecdf(samples)
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(x_vel_light, y_vel_light, marker = '.', linestyle = 'none')
+_ = ax.plot(x_vel_light_sample, y_vel_light_sample)
+
+_ = ax.set_xlabel('speed of light (km/s)')
+_ = ax.set_ylabel('CDF')
+plt.show()
+```
 1 Data: Michelson, 1880
 
 **6. CDF with bad estimate of st. dev.**
 
 What if the standard deviation differs by 50%? The CDFs no longer match. Or if the mean
 
+```{python}
+mean = np.mean(michelson_speed_of_light)
+std = np.std(michelson_speed_of_light)
+np.random.seed(42)
+samples = np.random.normal(mean, std + std/2, 10000)
+x_vel_light_sample, y_vel_light_sample = ecdf(samples)
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(x_vel_light, y_vel_light, marker = '.', linestyle = 'none')
+_ = ax.plot(x_vel_light_sample, y_vel_light_sample)
+
+_ = ax.set_xlabel('speed of light (km/s)')
+_ = ax.set_ylabel('CDF')
+plt.show()
+```
 1 Data: Michelson, 1880
 
 **7. CDF with bad estimate of mean**
 
-varies by just point-01%. So, if we believe that the process that generates our data gives Normally distributed results,
+varies by just point-0001%. So, if we believe that the process that generates our data gives Normally distributed results,
 
+```{python}
+mean = np.mean(michelson_speed_of_light)
+std = np.std(michelson_speed_of_light)
+np.random.seed(42)
+samples = np.random.normal((mean + mean*0.0001), std, 10000)
+x_vel_light_sample, y_vel_light_sample = ecdf(samples)
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(x_vel_light, y_vel_light, marker = '.', linestyle = 'none')
+_ = ax.plot(x_vel_light_sample, y_vel_light_sample)
+
+_ = ax.set_xlabel('speed of light (km/s)')
+_ = ax.set_ylabel('CDF')
+plt.show()
+```
 1 Data: Michelson, 1880
 
 **8. Optimal parameters**
@@ -60,6 +188,25 @@ the set of parameters that brings the model, in this case a Normal distribution,
 
 the model you chose for your data. When your model is wrong, the optimal parameters are not really meaningful. Finding the optimal parameters is not always as easy as just computing the mean and standard deviation from the data. We will encounter this later in this chapter when we do linear regressions and we rely on built-in NumPy functions to find the optimal parameters for us. I pause to note that
 
+```{python}
+mean = np.mean(michelson_speed_of_light)
+std = np.std(michelson_speed_of_light)
+np.random.seed(42)
+samples = np.random.normal((mean + mean*0.0001), std, 10000)
+x_vel_light_sample, y_vel_light_sample = ecdf(samples)
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(x_vel_light, y_vel_light, marker = '.', linestyle = 'none')
+_ = ax.plot(x_vel_light_sample, y_vel_light_sample)
+
+_ = ax.set_xlabel('speed of light (km/s)')
+_ = ax.set_ylabel('CDF')
+_ = ax.annotate("CDF for 'optimal' \nparamenters of a \nbad model", xy = ((mean + mean*0.0001)+10, 0.6), xytext = (300000.38524000003, 0.3), arrowprops = {'arrowstyle': '->', 'color': 'gray'})
+plt.show()
+plt.clf()
+```
 1 Source: Mass. Dept. of Environmental Protection
 
 **10. Packages to do statistical inference**
@@ -101,25 +248,28 @@ Plot the theoretical PDF using `plt.hist()`. Remember to use keyword arguments `
 - Show your plot.
 
 ```{python}
+plt.clf()
 # Seed random number generator
-____
+np.random.seed(42)
 
 # Compute mean no-hitter time: tau
-tau = ____
+tau = np.mean(nohitter_times)
 
 # Draw out of an exponential distribution with parameter tau: inter_nohitter_time
-inter_nohitter_time = ____(____, 100000)
+inter_nohitter_time = np.random.exponential(tau, 100000)
 
 # Plot the PDF and label axes
-_ = ____(inter_nohitter_time,
-             ____, ____, ____)
+_ = plt.hist(inter_nohitter_time, density = True,
+             bins = 50, histtype = 'step')
 _ = plt.xlabel('Games between no-hitters')
 _ = plt.ylabel('PDF')
 
 # Show the plot
 plt.show()
-
+plt.clf()
 ```
+
+We see the typical shape of the Exponential distribution, going from a maximum at 0 and decaying to the right.
 
 ### **Do the data follow our story?**
 
@@ -137,24 +287,26 @@ It may be helpful to remind yourself of the [function you created in the previou
 
 ```{python}
 # Create an ECDF from real data: x, y
-x, y = ____
+x, y = ecdf(nohitter_times)
 
 # Create a CDF from theoretical samples: x_theor, y_theor
-x_theor, y_theor = ____
+x_theor, y_theor = ecdf(inter_nohitter_time)
 
 # Overlay the plots
-plt.plot(____, ____)
-plt.plot(____, ____, marker=____, linestyle=____)
+_ = plt.plot(x_theor, y_theor)
+_ = plt.plot(x, y, marker = '.', linestyle = 'none')
 
 # Margins and axis labels
-plt.margins(____)
-plt.xlabel('Games between no-hitters')
-plt.ylabel('CDF')
+_ = plt.margins(0.02)
+_ = plt.xlabel('Games between no-hitters')
+_ = plt.ylabel('CDF')
 
 # Show the plot
 plt.show()
-
+plt.clf()
 ```
+
+It looks like no-hitters in the modern era of Major League Baseball are Exponentially distributed. Based on the story of the Exponential distribution, this suggests that they are a random process; when a no-hitter will happen is independent of when the last no-hitter was.
 
 ## **How is this parameter optimal?**
 
@@ -170,22 +322,23 @@ Now sample out of an exponential distribution with $\tau$ being twice as large a
 - Add these two CDFs as lines to your plot. This has been done for you, so hit 'Submit Answer' to view the plot!
 
 ```{python}
+np.random.seed(42)
 # Plot the theoretical CDFs
-plt.plot(x_theor, y_theor)
-plt.plot(x, y, marker='.', linestyle='none')
-plt.margins(0.02)
-plt.xlabel('Games between no-hitters')
-plt.ylabel('CDF')
+_ = plt.plot(x_theor, y_theor)
+_ = plt.plot(x, y, marker='.', linestyle='none')
+_ = plt.margins(0.02)
+_ = plt.xlabel('Games between no-hitters')
+_ = plt.ylabel('CDF')
 
 # Take samples with half tau: samples_half
-samples_half = ____
+samples_half = np.random.exponential(tau/2, 10000)
 
 # Take samples with double tau: samples_double
-samples_double = ____
+samples_double = np.random.exponential(tau*2, 10000)
 
 # Generate CDFs from these samples
-x_half, y_half = ____
-x_double, y_double = ____
+x_half, y_half = ecdf(samples_half)
+x_double, y_double = ecdf(samples_double)
 
 # Plot these CDFs as lines
 _ = plt.plot(x_half, y_half)
@@ -193,7 +346,10 @@ _ = plt.plot(x_double, y_double)
 
 # Show the plot
 plt.show()
+plt.clf()
 ```
+
+Notice how the value of tau given by the mean matches the data best. In this way, tau is an optimal parameter.
 
 ## **Linear regression by least squares**
 
@@ -205,6 +361,20 @@ Sometimes two variables are related. You may recall from the prequel to this cou
 
 Obama's vote share in each county in swings states and the total vote count of the respective counties. The Pearson correlation coefficient is important to compute, but we might like to get a fuller understanding of how the data are related to each other. Specifically, we might suspect some underlying function gives the data its shape.
 
+```{python}
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(election.total_votes/900, election.dem_share, marker = '.', linestyle = 'none')
+?ax.plot
+_ = ax.set_xlabel('total voltes (thousands)')
+_ = ax.set_ylabel('percent of vote for Obama')
+_ = ax.set_ylim(0, 100)
+_ = ax.set_xlim(0, 1000)
+plt.show()
+plt.clf()
+```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **3. 2008 US swing state election results**
