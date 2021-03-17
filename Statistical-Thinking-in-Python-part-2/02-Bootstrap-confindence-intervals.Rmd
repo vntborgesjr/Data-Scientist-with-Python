@@ -9,7 +9,64 @@ output:
 ---
 
 ```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import pandas as pd
 
+# Set default Seaborn style
+sns.set()
+
+light = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/speed-of-light.csv")
+michelson_speed_of_light = np.array(light['velocity of light in air (km/s)'])
+
+sheffield_weather_station = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/sheffield_weather_station.csv")
+
+rainfall = sheffield_weather_station.rain.values
+
+def ecdf(data):
+  """Compute ECDF for a one-dimensional array of measurements."""
+  # Number of data points: n
+  n = len(data)
+  # x-data for the ECDF: x
+  x = np.sort(data)
+  # y-data for the ECDF: y
+  y = np.arange(1, n + 1) / n
+  return x, y
+
+nohitter_times = np.array([ 843, 1613, 1101,  215,  684,  814,  278,  324,  161,  219,  545,
+        715,  966,  624,   29,  450,  107,   20,   91, 1325,  124, 1468,
+        104, 1309,  429,   62, 1878, 1104,  123,  251,   93,  188,  983,
+        166,   96,  702,   23,  524,   26,  299,   59,   39,   12,    2,
+        308, 1114,  813,  887,  645, 2088,   42, 2090,   11,  886, 1665,
+       1084, 2900, 2432,  750, 4021, 1070, 1765, 1322,   26,  548, 1525,
+         77, 2181, 2752,  127, 2147,  211,   41, 1575,  151,  479,  697,
+        557, 2267,  542,  392,   73,  603,  233,  255,  528,  397, 1529,
+       1023, 1194,  462,  583,   37,  943,  996,  480, 1497,  717,  224,
+        219, 1531,  498,   44,  288,  267,  600,   52,  269, 1086,  386,
+        176, 2199,  216,   54,  675, 1243,  463,  650,  171,  327,  110,
+        774,  509,    8,  197,  136,   12, 1124,   64,  380,  811,  232,
+        192,  731,  715,  226,  605,  539, 1491,  323,  240,  179,  702,
+        156,   82, 1397,  354,  778,  603, 1001,  385,  986,  203,  149,
+        576,  445,  180, 1403,  252,  675, 1351, 2983, 1568,   45,  899,
+       3260, 1025,   31,  100, 2055, 4043,   79,  238, 3931, 2351,  595,
+        110,  215,    0,  563,  206,  660,  242,  577,  179,  157,  192,
+        192, 1848,  792, 1693,   55,  388,  225, 1134, 1172, 1555,   31,
+       1582, 1044,  378, 1687, 2915,  280,  765, 2819,  511, 1521,  745,
+       2491,  580, 2072, 6450,  578,  745, 1075, 1103, 1549, 1520,  138,
+       1202,  296,  277,  351,  391,  950,  459,   62, 1056, 1128,  139,
+        420,   87,   71,  814,  603, 1349,  162, 1027,  783,  326,  101,
+        876,  381,  905,  156,  419,  239,  119,  129,  467])
+
+election = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2008_election_results_swing.csv")
+total = election.total_votes.values/900
+dem_share = election.dem_share.values
+
+female_literacy_fertility = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/female_literacy_fertility.csv")
+
+female_literacy_fertility = female_literacy_fertility[(female_literacy_fertility['fertility'] > 1000)]
+illiteracy = 100 - np.array(female_literacy_fertility['female literacy'])
+fertility = np.array(female_literacy_fertility['fertility'])/1000
 ```
 
 ## **Generating bootstrap replicates**
@@ -22,19 +79,50 @@ In the prequel to this course we computed summary statistics of measurements, in
 
 Michelson was not interested in what the measured speed of light was in the specific 100 measurements conducted in the summer of 1879. He wanted to know what the speed of light actually is. Statistically speaking, that means he wanted to know what speed of light he would observe if he did the experiment over and over again an infinite number of times. Unfortunately, actually repeating the experiment lots and lots of times is just not possible. But, as hackers, we can simulate getting the data again.
 
+```{python}
+mean = np.mean(michelson_speed_of_light)
+std = np.std(michelson_speed_of_light)
+samples = np.random.normal(mean, std, 10000)
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+sns.distplot(michelson_speed_of_light, hist = True, kde = True, 
+             bins = 9, color = 'darkblue', 
+             hist_kws = {'edgecolor':'black'},
+             kde_kws = {'linewidth': 4})
+#_ = ax.hist(michelson_speed_of_light, bins =  9, density = True)
+#_ = ax.hist(samples, bins =  int(180/5), density = True, histtype = 'step')
+_ = ax.set_xlabel('speed of light(km/s)')
+_ = ax.set_ylabel('PDF')
+plt.show()
+plt.clf()
+```
+
 1 Data: Michelson, 1880
 
 **3. Resampling an array**
 
 The idea is that we resample the data we have and recompute the summary statistic of interest, say the mean. To resample an array of measurements, we randomly
 
+Data:
+`[23.3, 27.1, 24.3, 25.3, 26.0]`
+Mean = `np.mean([23.3, 27.1, 24.3, 25.3, 26.0])`
+Resample data: 
+`[     ,       ,       ,     ,     ]`
 **4. Resampling an array**
 
 select one entry and
 
+Data:
+`[23.3, 27.1, 24.3, 25.3, 26.0]`
+Mean = `np.mean([23.3, 27.1, 24.3, 25.3, 26.0])`
+Resample data: 
+`[27.1,       ,       ,     ,     ]`
+
 **5. Resampling an array**
 
 store it. Importantly, we
+
 
 **6. Resampling an array**
 
@@ -44,6 +132,12 @@ replace the entry in the original array, or equivalently, we just don't delete i
 
 select another
 
+Data:
+`[23.3, 27.1, 24.3, 25.3, 26.0]`
+Mean = `np.mean([23.3, 27.1, 24.3, 25.3, 26.0])`
+Resample data: 
+`[27.1, 26.0,       ,     ,     ]`
+
 **8. Resampling an array**
 
 one and store it. We do this n times,
@@ -52,11 +146,35 @@ one and store it. We do this n times,
 
 where n is the total number of measurements, five in this case. We then have a resampled array of data. Using this new resampled array, we compute the summary statistic and store the result. Resampling the speed of light data is as if we repeated Michelson's set of measurements.
 
+Data:
+`[23.3, 27.1, 24.3, 25.3, 26.0]`
+Mean = `np.mean([23.3, 27.1, 24.3, 25.3, 26.0])`
+Resample data: 
+`[27.1, 26.0, 23.3, 25.7, 23.3]`
+Mean = `np.mean([27.1, 26.0, 23.3, 25.7, 23.3])`
+
 **10. Mean of resampled Michelson measurements**
 
 We do this over and over again to get a large number of summary statistics from resampled data sets. We can use these results to plot an ECDF, for example, to get a picture of the probability distribution describing the summary statistic. This process is an example of
 
-11. Bootstrapping
+```{python}
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+for bs in range(50):
+  boots_speed_of_light = np.random.choice(michelson_speed_of_light, size = 100)
+  boots_speed_of_light_x, boots_speed_of_light_y = ecdf(boots_speed_of_light)
+  _ = ax.plot(boots_speed_of_light_x, boots_speed_of_light_y, marker = '.', linestyle = 'none')
+
+_ = ax.set_xlabel('mean speed of light (km/s)')
+_ = ax.set_ylabel('ECDF of bootstrap replicates')
+plt.show()
+plt.clf()
+```
+
+**11. Bootstrapping**
+
 bootstrapping, which more generally is the use of resampled data to perform statistical inference. To make sure we have our terminology down, each resampled array is called
 
 **12. Bootstrap sample**
@@ -71,9 +189,21 @@ is the value of the summary statistic computed from the bootstrap sample. The na
 
 First, we need a function to perform the resampling. The Numpy function random dot choice provides this functionality. Conveniently, like many of the other functions in the Numpy random module, it has a size keyword argument, which allows us to specify how many samples we want to take out of the array. Notice that it chose the number five three times; the function does not delete an entry when it samples it out of the array. Now, we can draw 100 samples out of the Michelson speed of light data.
 
+```{python}
+import numpy as np
+np.random.choice([1, 2, 3, 4, 5], size = 5)
+```
+
 **15. Computing a bootstrap replicate**
 
 This is a bootstrap sample, since there were 100 data points and we are choosing 100 of them with replacement. Now that we have a bootstrap sample, we can compute a bootstrap replicate. We can pick whatever summary statistic we like. We'll compute the mean, median, and standard deviation. It's as simple as treating the bootstrap sample as though it were a data set.
+
+```{python}
+bs_sample = np.random.choice(michelson_speed_of_light, size = 100)
+np.mean(bs_sample)
+np.median(bs_sample)
+np.std(bs_sample)
+```
 
 **16. Let's practice!**
 
@@ -91,7 +221,7 @@ Getting tripped up over terminology is a common cause of frustration in students
 
 3. An actual repeat of the measurements.
 
-Answer:
+Answer: 2
 
 ### **Bootstrapping by hand**
 
@@ -111,7 +241,9 @@ To help you gain intuition about how bootstrapping works, imagine you have a dat
 
 5. There are 27 unique samples, and the maximum mean is 1.
 
-Answer:
+Answer: 5
+
+There are 27 total bootstrap samples, and one of them, [1,1,1] has a mean of 1. Conversely, 7 of them have a mean of zero.
 
 ### **Visualizing bootstrap samples**
 
@@ -128,18 +260,18 @@ In this exercise, you will generate bootstrap samples from the set of annual rai
 - Hit 'Submit Answer' to visualize the samples!
 
 ```{python}
-for _ in range(50):
+for sample in range(50):
     # Generate bootstrap sample: bs_sample
-    bs_sample = ____(____, size=____)
+    bs_sample = np.random.choice(rainfall, size = len(rainfall))
 
     # Compute and plot ECDF from bootstrap sample
-    x, y = ____
-    _ = plt.plot(____, ____, ____='.', ____='none',
-                 ____='gray', ____=0.1)
+    x, y = ecdf(bs_sample)
+    _ = plt.plot(x, y, marker = '.', linestyle = 'none',
+                 color = 'red')
 
 # Compute and plot ECDF from original data
-x, y = ____
-_ = plt.plot(____, ____, ____='.')
+x, y = ecdf(rainfall)
+_ = plt.plot(x, y, marker = '.', alpha = 0.1)
 
 # Make margins and label axes
 plt.margins(0.02)
@@ -148,7 +280,10 @@ _ = plt.ylabel('ECDF')
 
 # Show the plot
 plt.show()
+plt.clf()
 ```
+
+Notice how the bootstrap samples give an idea of how the distribution of rainfalls is spread.
 
 ## **Bootstrap confidence intervals**
 
@@ -160,17 +295,51 @@ In the last video, we learned how to take a set of data, create a bootstrap samp
 
 We will call the function bootstrap_replicate_1d, since it works on one-dimensional arrays. We pass in the data and also a function that computes the statistic of interest. We could pass np dot mean or np dot median, for example. Generating a replicate takes two steps. First, we choose entries out of the data array so that the bootstrap sample has the same number of entries as the original data. Then, we compute the statistic using the specified function. If we call the function, we get a bootstrap replicate. And we can do this over and over again. So, how do we do it over and over again?
 
+```{python}
+def bootstrap_replicate_1d(data, func):
+  """Generate bootstrap replicate of 1d data"""
+  bs_sample = np.random.choice(data, len(data))
+  return func(bs_sample)
+bootstrap_replicate_1d(michelson_speed_of_light, np.mean)
+```
+```{python}
+bootstrap_replicate_1d(michelson_speed_of_light, np.mean)
+```
+```{python}
+bootstrap_replicate_1d(michelson_speed_of_light, np.mean)
+```
+
 **3. Many bootstrap replicates**
 
 With a for loop! First, we have to initialize an array to store our bootstrap replicates. We will make 10,000 replicates, so we use np dot empty to create an empty array. Next, we write a for loop to generate a replicate and store it in the bs_replicates array. Now that we have the replicates,
 
+```{python}
+bs_replicates = np.empty(10000)
+for i in range(10000):
+  bs_replicates[i] = bootstrap_replicate_1d(michelson_speed_of_light, np.mean)
+```
 **4. Plotting a histogram of bootstrap replicates**
 
 we can make a histogram to see what we might expect to get for the mean of repeated measurements of the speed of light. Note that we use the normed equals True keyword argument. This sets the height of the bars of the histogram such that the total area of the bars is equal to one. This is called
 
+```{python}
+_ = plt.hist(bs_replicates, bins = 30, density = True)
+_ = plt.xlabel('mean speed of light (km/s)')
+_ = plt.ylabel('PDF')
+plt.show()
+plt.clf()
+```
 **5. Bootstrap estimate of the mean**
 
 normalization, and we do it so that the histogram approximates a probability density function. You'll recall from the prequel to this course that the area under the PDF gives a probability. So, we have computed the approximate PDF of the mean speed of light we would expect to get if we performed the measurements again. Now we're thinking probabilistically! If we repeat the experiment again and again, we are likely to only see the sample mean vary by about 30 km/s. Now it is useful to summarize this result without having to resort to a graphical method like a histogram. To do this,
+
+```{python}
+_ = plt.hist(bs_replicates, bins = 30, density = True)
+_ = plt.xlabel('mean speed of light (km/s)')
+_ = plt.ylabel('PDF')
+plt.show()
+plt.clf()
+```
 
 **6. Confidence interval of a statistic**
 
@@ -179,6 +348,11 @@ we will compute the 95% confidence interval of the mean. The p% confidence inter
 **7. Bootstrap confidence interval**
 
 By doing bootstrap replicas, we just "repeated" the experiment over and over again. So, we just use np dot percentile to compute the 2-point-5th and 97-point-5th percentiles to get the 95% confidence interval. This is indeed commensurate with what we see in the histogram.
+
+```{python}
+conf_int = np.percentile(bs_replicates, [2.5, 97.5])
+print(conf_int)
+```
 
 **8. Let's practice!**
 
@@ -205,18 +379,14 @@ def bootstrap_replicate_1d(data, func):
   - Return the array of replicates `bs_replicates`. This has already been done for you.
 
 ```{python}
-def draw_bs_reps(data, func, size=1):
-    """Draw bootstrap replicates."""
-
-    # Initialize array of replicates: bs_replicates
-    bs_replicates = ____
-
-    # Generate replicates
-    for i in ____:
-        bs_replicates[i] = ____
-
-    return bs_replicates
-
+def draw_bs_reps(data, func, size = 1):
+  """Draw bootstrap replicates."""
+  # Initialize array of replicates: bs_replicates
+  bs_replicates = np.empty(size)
+  # Generate replicates
+  for i in range(size):
+    bs_replicates[i] = bootstrap_replicate_1d(data, func)
+  return bs_replicates
 ```
 
 ### **Bootstrap replicates of the mean and the SEM**
@@ -239,24 +409,27 @@ The dataset has been pre-loaded for you into an array called `rainfall`.
 
 ```{python}
 # Take 10,000 bootstrap replicates of the mean: bs_replicates
-bs_replicates = ____
+bs_replicates = draw_bs_reps(rainfall, np.mean, 10000)
 
 # Compute and print SEM
-sem = ____ / np.sqrt(____)
+sem = np.std(rainfall) / np.sqrt(len(rainfall))
 print(sem)
 
 # Compute and print standard deviation of bootstrap replicates
-bs_std = ____
+bs_std = np.std(bs_replicates)
 print(bs_std)
 
 # Make a histogram of the results
-_ = plt.hist(____, ____=50, ____=True)
+_ = plt.hist(bs_replicates, bins = 50, density = True)
 _ = plt.xlabel('mean annual rainfall (mm)')
 _ = plt.ylabel('PDF')
 
 # Show the plot
 plt.show()
+plt.clf()
 ```
+
+Notice that the SEM we got from the known expression and the bootstrap replicates is the same and the distribution of the bootstrap replicates of the mean is Normal.
 
 ### **Confidence intervals of rainfall data**
 
@@ -274,13 +447,18 @@ Use the bootstrap replicates you just generated to compute the 95% confidence in
 
 4. (761, 841) mm/year
 
-Answer:
+```{python}
+conf_int = np.percentile(bs_replicates, [2.5, 97.5])
+print(conf_int)
+```
+Answer: 2
 
 ### **Bootstrap replicates of other statistics**
 
 We saw in a previous exercise that the mean is Normally distributed. This does not necessarily hold for other statistics, but no worry: as hackers, we can always take bootstrap replicates! In this exercise, you'll generate bootstrap replicates for the variance of the annual rainfall at the Sheffield Weather Station and plot the histogram of the replicates.
 
 Here, you will make use of the `draw_bs_reps()` function you defined a few exercises ago. It is provided below for your reference:
+
 ```{python}
 def draw_bs_reps(data, func, size=1):
     """Draw bootstrap replicates."""
@@ -300,20 +478,22 @@ def draw_bs_reps(data, func, size=1):
 
 ```{python}
 # Generate 10,000 bootstrap replicates of the variance: bs_replicates
-bs_replicates = ____
+bs_replicates = draw_bs_reps(rainfall, np.var, 10000)
 
 # Put the variance in units of square centimeters
-____
+bs_replicates = bs_replicates/100
 
 # Make a histogram of the results
-_ = plt.hist(____, ____, ____)
+_ = plt.hist(bs_replicates, bins = 50, density = True)
 _ = plt.xlabel('variance of annual rainfall (sq. cm)')
 _ = plt.ylabel('PDF')
 
 # Show the plot
 plt.show()
-
+plt.clf()
 ```
+
+This is not normally distributed, as it has a longer tail to the right. Note that you can also compute a confidence interval on the variance, or any other statistic, using np.percentile() with your bootstrap replicates.
 
 ### **Confidence interval on the rate of no-hitters**
 
@@ -328,23 +508,26 @@ Consider again the inter-no-hitter intervals for the modern era of baseball. Gen
 
 ```{python}
 # Draw bootstrap replicates of the mean no-hitter time (equal to tau): bs_replicates
-bs_replicates = ____
+bs_replicates = draw_bs_reps(nohitter_times, np.mean, 10000)
 
 # Compute the 95% confidence interval: conf_int
-conf_int = ____
+conf_int = np.percentile(bs_replicates, [2.5, 97.5])
 
 # Print the confidence interval
-print('95% confidence interval =', ____, 'games')
+print('95% confidence interval =', conf_int, 'games')
 
 # Plot the histogram of the replicates
-_ = plt.hist(bs_replicates, bins=50, normed=True)
+_ = plt.hist(bs_replicates, bins = 50, dnesity = True)
 _ = plt.xlabel(r'$\tau$ (games)')
 _ = plt.ylabel('PDF')
 
 # Show the plot
 plt.show()
+plt.clf()
 
 ```
+
+This gives you an estimate of what the typical time between no-hitters is. It could be anywhere between 643 and 895 games.
 
 ## **Pairs bootstrap**
 
@@ -360,6 +543,23 @@ nonparametrically. By this, I mean that we did not assume any model underlying t
 
 When we performed a linear least squares regression, however, we were using a linear model, which has two parameters, the slope and intercept. This was a parametric estimate. The optimal parameter values we compute for our parametric model are like other statistics, in that we would get different values for them if we acquired the data again. We can perform bootstrap estimates to get confidence intervals on the slope and intercept as well. Remember: we need to think probabilistically. Let's consider the swing state election data from the prequel to this course. What if we had the election again, under identical conditions? How would the slope and intercept change? This is kind of a tricky question; there are several ways to get bootstrap estimates of the confidence intervals on these parameters, each of which makes difference assumptions about the data. We will do a method that makes the least assumptions,
 
+```{python}
+a, b = np.polyfit(election.total_votes, election.dem_share, 1)
+x = np.array([0, 1000])
+y = a * x*900 + b
+g = sns.relplot(x = 'total', 
+                y = 'dem_share', 
+                data = election,
+                kind = 'scatter',
+                height = 2.6)
+_ = g.set(xlabel = 'total votes (thousands)',
+          ylabel = 'percent of vote for Obama',
+          ylim = (0, 100),
+          xlim = (0, 1000))
+_ = plt.plot(x, y)
+plt.show()
+plt.clf()
+```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **4. Pairs bootstrap for linear regression**
@@ -370,14 +570,71 @@ called pairs bootstrap. Since we cannot resample individual data because each co
 
 Because np dot random dot choice must sample a 1D array, we will sample the indices of the data points. We can generate the indices of a NumPy array using the np dot arrange function. It give us an array of sequential integers. We then sample the indices with replacement. The bootstrap sample is generated by slicing out the respective values from the original data arrays. With these in hand,
 
+```{python}
+np.arange(7)
+```
+```{python}
+inds = np.arange(len(total))
+bs_inds = np.random.choice(inds, len(inds))
+bs_total_votes = total[bs_inds]
+bs_dem_share = dem_share[bs_inds]
+```
+
 **6. Computing a pairs bootstrap replicate**
 
 we can perform a linear regression using np dot polyfit on the pairs bootstrap sample to get a bootstrap replicate. If we compare the result to the linear regression on the original data, they are close, but not equal. As we have seen before, you can use many of these replicates to generate bootstrap confidence intervals for the slope and intercept using np dot percentile. You can also
+
+```{python}
+bs_slope, bs_intercept = np.polyfit(bs_total_votes, bs_dem_share, 1)
+bs_slope, bs_intercept
+```
+
+```{python}
+np.polyfit(total, dem_share, 1)
+```
+
 
 **7. 2008 US swing state election results**
 
 plot the lines you get from your bootstrap replicates to get a graphic idea how the regression line may change if the data were collected again. You will work through this whole procedure in the exercises.
 
+```{python}
+def draw_bs_pairs_linreg(x, y, size=1):
+  """Perform pairs bootstrap for linear regression."""
+  # Set up array of indices to sample from: inds
+  inds = np.arange(len(x))
+  # Initialize replicates: bs_slope_reps, bs_intercept_reps
+  bs_slope_reps = np.empty(size)
+  bs_intercept_reps = np.empty(size)
+  # Generate replicates
+  for i in range(size):
+    bs_inds = np.random.choice(inds, size = len(inds))
+    bs_x, bs_y = x[bs_inds], y[bs_inds]
+    bs_slope_reps[i], bs_intercept_reps[i] = np.polyfit(bs_x, bs_y, 1)
+  return bs_slope_reps, bs_intercept_reps
+
+# Generate replicates of slope and intercept using pairs bootstrap
+bs_slope_reps, bs_intercept_reps = draw_bs_pairs_linreg(total, dem_share, 1000)
+
+# Generate array of x-values for bootstrap lines: x
+x = np.array([0, max(total)])
+
+# Plot the bootstrap lines
+for i in range(100):
+    _ = plt.plot(x, 
+                 bs_slope_reps[i]*x + bs_intercept_reps[i],
+                 linewidth = 0.5, alpha = 0.2, color = 'red')
+
+# Plot the data
+_ = plt.plot(total, dem_share, marker = '.', linestyle = 'none')
+
+# Label axes, set the margins, and show the plot
+_ = plt.xlabel('total votes (thousands)')
+_ = plt.ylabel('percent of vote for Obama')
+plt.margins(0.02)
+plt.show()
+plt.clf()
+```
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **8. Let's practice!**
@@ -401,23 +658,18 @@ As discussed in the video, pairs bootstrap involves resampling pairs of data. Ea
 
 ```{python}
 def draw_bs_pairs_linreg(x, y, size=1):
-    """Perform pairs bootstrap for linear regression."""
-
-    # Set up array of indices to sample from: inds
-    inds = ____
-
-    # Initialize replicates: bs_slope_reps, bs_intercept_reps
-    bs_slope_reps = ____
-    bs_intercept_reps = ____
-
-    # Generate replicates
-    for i in range(size):
-        bs_inds = np.random.choice(____, size=____)
-        bs_x, bs_y = x[____], y[____]
-        bs_slope_reps[i], bs_intercept_reps[i] = ____
-
-    return bs_slope_reps, bs_intercept_reps
-
+  """Perform pairs bootstrap for linear regression."""
+  # Set up array of indices to sample from: inds
+  inds = np.arange(len(x))
+  # Initialize replicates: bs_slope_reps, bs_intercept_reps
+  bs_slope_reps = np.empty(size)
+  bs_intercept_reps = np.empty(size)
+  # Generate replicates
+  for i in range(size):
+    bs_inds = np.random.choice(inds, size = len(inds))
+    bs_x, bs_y = x[bs_inds], y[bs_inds]
+    bs_slope_reps[i], bs_intercept_reps[i] = np.polyfit(bs_x, bs_y, 1)
+  return bs_slope_reps, bs_intercept_reps
 ```
 
 ### **Pairs bootstrap of literacy/fertility data**
@@ -434,16 +686,17 @@ As a reminder, `draw_bs_pairs_linreg()` has a function signature of `draw_bs_pai
 
 ```{python}
 # Generate replicates of slope and intercept using pairs bootstrap
-bs_slope_reps, bs_intercept_reps = ____
+bs_slope_reps, bs_intercept_reps = draw_bs_pairs_linreg(illiteracy, fertility, 1000)
 
 # Compute and print 95% CI for slope
-print(np.percentile(____, ____))
+print(np.percentile(bs_slope_reps, [2.5, 97.5]))
 
 # Plot the histogram
-_ = plt.hist(bs_slope_reps, bins=50, normed=True)
+_ = plt.hist(bs_slope_reps, bins = 50, density = True)
 _ = plt.xlabel('slope')
 _ = plt.ylabel('PDF')
 plt.show()
+plt.clf()
 ```
 
 ### **Plotting bootstrap regressions**
@@ -461,21 +714,23 @@ A nice way to visualize the variability we might expect in a linear regression i
 
 ```{python}
 # Generate array of x-values for bootstrap lines: x
-x = ____
+x = np.array([0, 100])
 
 # Plot the bootstrap lines
-for i in range(____):
-    _ = plt.plot(____, 
-                 ____*x + ____,
-                 ____=0.5, ____=0.2, ____='red')
+for i in range(100):
+    _ = plt.plot(x, 
+                 bs_slope_reps[i]*x + bs_intercept_reps[i],
+                 linewidth = 0.5, alpha = 0.2, color = 'red')
 
 # Plot the data
-_ = ____
+_ = plt.plot(illiteracy, fertility, marker = '.', linestyle = 'none')
 
 # Label axes, set the margins, and show the plot
 _ = plt.xlabel('illiteracy')
 _ = plt.ylabel('fertility')
 plt.margins(0.02)
 plt.show()
+plt.clf()
 ```
 
+You now have some serious chops for parameter estimation. Let's move on to hypothesis testing!
