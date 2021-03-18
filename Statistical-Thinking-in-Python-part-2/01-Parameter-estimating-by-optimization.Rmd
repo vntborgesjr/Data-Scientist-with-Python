@@ -37,13 +37,10 @@ def ecdf(data):
   """Compute ECDF for a one-dimensional array of measurements."""
   # Number of data points: n
   n = len(data)
-
   # x-data for the ECDF: x
   x = np.sort(data)
-
   # y-data for the ECDF: y
   y = np.arange(1, n + 1) / n
-
   return x, y
 
 nohitter_times = np.array([ 843, 1613, 1101,  215,  684,  814,  278,  324,  161,  219,  545,
