@@ -67,6 +67,18 @@ female_literacy_fertility = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Dat
 female_literacy_fertility = female_literacy_fertility[(female_literacy_fertility['fertility'] > 1000)]
 illiteracy = 100 - np.array(female_literacy_fertility['female literacy'])
 fertility = np.array(female_literacy_fertility['fertility'])/1000
+
+def ecdf(data):
+  """Compute ECDF for a one-dimensional array of measurements."""
+  # Number of data points: n
+  n = len(data)
+  # x-data for the ECDF: x
+  x = np.sort(data)
+  # y-data for the ECDF: y
+  y = np.arange(1, n + 1) / n
+  return x, y
+
+
 ```
 
 ## **Generating bootstrap replicates**
@@ -517,7 +529,7 @@ conf_int = np.percentile(bs_replicates, [2.5, 97.5])
 print('95% confidence interval =', conf_int, 'games')
 
 # Plot the histogram of the replicates
-_ = plt.hist(bs_replicates, bins = 50, dnesity = True)
+_ = plt.hist(bs_replicates, bins = 50, density = True)
 _ = plt.xlabel(r'$\tau$ (games)')
 _ = plt.ylabel('PDF')
 
