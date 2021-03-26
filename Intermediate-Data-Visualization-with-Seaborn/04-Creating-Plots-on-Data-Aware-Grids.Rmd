@@ -1,0 +1,9 @@
+---
+title: "04 - Creating Plots on Data Aware Grids"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    code_folding: hide
+---
