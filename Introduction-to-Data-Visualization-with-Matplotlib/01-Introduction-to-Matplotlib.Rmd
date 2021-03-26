@@ -61,7 +61,7 @@ In this exercise, you will create a visualization that will allow you to compare
 - Add data from the `seattle_weather` DataFrame by calling the Axes `plot` method.
 - Add data from the `austin_weather` DataFrame in a similar manner and call `plt.show` to show the results.
 
-```{python, echo = TRUE, eval = TRUE}
+```{python}
 # Import the matplotlib.pyplot submodule and name it plt
 import matplotlib.pyplot as plt
 
@@ -98,7 +98,7 @@ In addition, a Figure object named `fig` and an Axes object named `ax` have alre
 - Pass the `marker` key-word arguments to these commands to set the Seattle data to circle markers ('o') and the Austin markers to triangles pointing downwards ('v').
 - Pass the `linestyle` key-word argument to use dashed lines for the data from both cities ('--').
 
-```{python, eval = True, echo = True}
+```{python}
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
 
@@ -131,7 +131,7 @@ In addition, a Figure object named `fig` and an Axes object named `ax` have alre
 - Use the `set_ylabel` method to add the label: "Precipitation (inches)".
 - Use the `set_title` method to add the title: "Weather patterns in Austin and Seattle".
 
-```{python, echo = True, eval = True}
+```{python}
 # Create a Figure and an Axes with plt.subplots
 fig, ax = plt.subplots()
 
@@ -168,7 +168,7 @@ The data is given to you in DataFrames: `seattle_weather` and `austin_weather`. 
 - In the top right (index 0,1), plot Seattle temperatures.
 - In the bottom left (1, 0) and bottom right (1, 1) plot Austin precipitations and temperatures.
 
-```{python, eval = True, echo = True}
+```{python}
 # Create a Figure and an array of subplots with 2 rows and 2 columns
 fig, ax = plt.subplots(2, 2)
 
