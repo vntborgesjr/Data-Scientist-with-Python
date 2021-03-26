@@ -29,6 +29,19 @@ sheffield_weather_station = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Dat
 rain_june = sheffield_weather_station.rain.values[(sheffield_weather_station.mm == 6)]
 rain_november = sheffield_weather_station.rain.values[(sheffield_weather_station.mm == 11)]
 
+frogs = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/frog_tongue_data.csv")
+df = frogs[frogs.ID.isin(['II', 'IV'])]
+df = df[['ID', 'impact force (mN)']]
+df.columns = ['ID', 'impact_force']
+df = df.replace(to_replace = ['II', 'IV'], value = ['A', 'B'], regex = True)
+df.impact_force = df.impact_force/1000
+force_a = df.impact_force[df.ID == 'A'].values
+force_b = df.impact_force[df.ID == 'B'].values
+forces_concat = np.concatenate([force_a, force_b])
+
+light = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/speed-of-light.csv")
+michelson_speed_of_light = np.array(light['velocity of light in air (km/s)'])
+
 def ecdf(data):
   """Compute ECDF for a one-dimensional array of measurements."""
   # Number of data points: n
@@ -39,6 +52,33 @@ def ecdf(data):
   y = np.arange(1, n + 1) / n
   return x, y
 
+def bootstrap_replicate_1d(data, func):
+  """Generate bootstrap replicate of 1d data"""
+  bs_sample = np.random.choice(data, len(data))
+  return func(bs_sample)
+
+def draw_bs_reps(data, func, size = 1):
+  """Draw bootstrap replicates."""
+  # Initialize array of replicates: bs_replicates
+  bs_replicates = np.empty(size)
+  # Generate replicates
+  for i in range(size):
+    bs_replicates[i] = bootstrap_replicate_1d(data, func)
+  return bs_replicates
+
+def draw_bs_pairs_linreg(x, y, size=1):
+  """Perform pairs bootstrap for linear regression."""
+  # Set up array of indices to sample from: inds
+  inds = np.arange(len(x))
+  # Initialize replicates: bs_slope_reps, bs_intercept_reps
+  bs_slope_reps = np.empty(size)
+  bs_intercept_reps = np.empty(size)
+  # Generate replicates
+  for i in range(size):
+    bs_inds = np.random.choice(inds, size = len(inds))
+    bs_x, bs_y = x[bs_inds], y[bs_inds]
+    bs_slope_reps[i], bs_intercept_reps[i] = np.polyfit(bs_x, bs_y, 1)
+  return bs_slope_reps, bs_intercept_reps
 ```
 
 ## **Formulating and simulating a hypothesis**
@@ -64,7 +104,7 @@ _ = g.set(xlabel = 'total votes (thousands)',
           ylabel = 'percent of vote for Obama',
           ylim = (0, 100),
           xlim = (0, 1000))
-_ = plt.plot(x, y)
+_ = plt.plot(x, y, color = 'green')
 plt.show()
 plt.clf()
 ```
@@ -86,10 +126,10 @@ typically called the null hypothesis. We might start by just plotting the two EC
 the county-level votes. Whew! It is pretty tough to make a judgment here. Pennsylvania seems to be slightly more toward Obama in the middle part of the ECDFs, but not much. We can't really draw a conclusion here.
 
 ```{python}
-def plot_ecdf(x_val, y_val, x_label, y_label):
+def plot_ecdf(x_val, y_val, x_label, y_label, color):
   # Create a Figure and an Axes with plt.subplots
   _ = plt.tight_layout(pad = 1)
-  _ = plt.plot(x_val, y_val, marker = '.', linestyle = 'none')
+  _ = plt.plot(x_val, y_val, marker = '.', linestyle = 'none', color = color)
   _ = plt.xlabel(x_label)
   _ = plt.ylabel(y_label)
   quit()
@@ -97,8 +137,8 @@ def plot_ecdf(x_val, y_val, x_label, y_label):
 x_dem_share_PA, y_dem_share_PA = ecdf(dem_share_PA)
 x_dem_share_OH, y_dem_share_OH = ecdf(dem_share_OH)
 
-plot_ecdf(x_dem_share_PA, y_dem_share_PA, 'percent of vote for Obama', 'ECDF')
-plot_ecdf(x_dem_share_OH, y_dem_share_OH, 'percent of vote for Obama', 'ECDF')
+plot_ecdf(x_dem_share_PA, y_dem_share_PA, 'percent of vote for Obama', 'ECDF', color = 'blue')
+plot_ecdf(x_dem_share_OH, y_dem_share_OH, 'percent of vote for Obama', 'ECDF', color = 'green')
 _ = plt.legend(['PA', 'OH'])
 plt.show()
 plt.clf()
@@ -149,6 +189,9 @@ This technique, of scrambling the order of an array, is called a permutation. It
 Let's look at how we can implement this in Python. First, we need to make a single array with all of the counties in it. We do this using the np dot concatenate function. Notice that this function takes a tuple of the arrays you wish to concatenate as an argument. Next, we use the function np dot random dot permutation to conveniently permute the entries of the array. We then assign the first 67 to be labeled Pennsylvania and the last 88 to be labeled Ohio. These samples are called permutation samples.
 
 ```{python}
+# Seed random number generator
+np.random.seed(42)
+
 import numpy as np
 dem_share_both = np.concatenate((dem_share_PA, dem_share_OH))
 dem_share_perm = np.random.permutation(dem_share_both)
@@ -200,12 +243,10 @@ permuted_data[:len(data_1)],
 permuted_data[len(data_1):], 
 ```
 , where 
-```{python}
+```{python, eval = False}
 permuted_data = np.random.permutation(np.concatenate((data_1, data_2)))
 ```
 .
-
-**Instructions**
 
 **Instructions**
 
@@ -240,6 +281,7 @@ plt.margins(0.02)
 _ = plt.xlabel('monthly rainfall (mm)')
 _ = plt.ylabel('ECDF')
 plt.show()
+plt.clf()
 ```
 
 Notice that the permutation samples ECDFs overlap and give a purple haze. None of the ECDFs from the permutation samples overlap with the observed data, suggesting that the hypothesis is not commensurate with the data. June and November rainfall are not identically distributed.
@@ -253,6 +295,14 @@ Now that we know how to simulate the null hypothesis using permutation, we can s
 **2. Are OH and PA different?**
 
 the Ohio/Pennsylvania vote data. We are testing the null hypothesis that the county-level voting is identically distributed between the two states. Remember that
+
+```{python}
+plot_ecdf(x_dem_share_PA, y_dem_share_PA, 'percent of vote for Obama', 'ECDF', color = 'blue')
+plot_ecdf(x_dem_share_OH, y_dem_share_OH, 'percent of vote for Obama', 'ECDF', color = 'green')
+_ = plt.legend(['PA', 'OH'])
+plt.show()
+plt.clf()
+```
 
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
@@ -268,15 +318,57 @@ a test statistic. A test statistic is a single number that can be computed from 
 
 From the permutation sample we generated in the last video, the value of the test statistic is 1-point-12%. The value of a test statistic computed from a permutation sample is called a permutation replicate, in this case, 1-point-12%. We already calculated that the difference in mean vote share from the actual election was 1-point-16%. So, for this permutation replicate, we did not quite get as big of a difference in means than what was observed in the original data. Now, we can "redo" the election 10,000 times under the null hypothesis by generating lots and lots of permutation replicates. (You will write for loops to do this in the exercises.)
 
+```{python}
+np.mean(perm_sample_PA) - np.mean(perm_sample_OH)
+```
+```{python}
+np.mean(dem_share_PA) - np.mean(dem_share_OH) # orig. data
+```
+
+
 **6. Mean vote difference under null hypothesis**
 
 We can plot a histogram of all the permutation replicates. The difference of means from the elections simulated under the null hypothesis lies somewhere between -4 and 4%. The actual mean percent vote difference was 1-point-16%, shown by the red line. If we tally up the area of the histogram that is
+
+```{python}
+perm_diff_election = np.empty()
+for i in range(10000):
+  perm_sample_PA, perm_sample_OH = permutation_sample(dem_share_PA, dem_share_OH)
+  perm_diff_election[i] =np.mean(perm_sample_PA) - np.mean(perm_sample_OH)
+
+diff_data_election = np.mean(dem_share_PA) - np.mean(dem_share_OH)
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+# Plot the histogram of the replicates
+_ = plt.hist(perm_diff_election, bins = 30, density = True)
+_ = plt.axvline(x = diff_data_election, color = 'red')
+_ = plt.xlabel('PA - OH mean percent vote difference')
+_ = plt.ylabel('PDF')
+
+plt.show()
+plt.clf()
+```
 
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
 **7. Mean vote difference under null hypothesis**
 
 to the right of the read line, we get that about 23% of the simulated elections had at least a 1-point-16% difference or greater. This value, point-23, is called
+
+```{python}
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+# Plot the histogram of the replicates
+_ = plt.hist(perm_diff_election, bins = 30, density = True)
+_ = plt.axvline(x = diff_data_election, color = 'red')
+_ = plt.xlabel('PA - OH mean percent vote difference')
+_ = plt.ylabel('PDF')
+
+plt.show()
+plt.clf()
+```
 
 1 Data retrieved from Data.gov (https://www.data.gov/)
 
@@ -312,7 +404,23 @@ When performing hypothesis tests, your choice of test statistic should be:
 
 3. be pertinent to the question you are seeking to answer in your hypothesis test.
 
-Answer:
+Answer: 3
+
+The most important thing to consider is: What are you asking?
+
+### **What is a p-value?**
+
+The p-value is generally a measure of:
+
+**Possible Answers**
+
+1. the probability that the hypothesis you are testing is true.
+
+2. the probability of observing your data if the hypothesis you are testing is true.
+
+3. the probability of observing a test statistic equally or more extreme than the one you observed, given that the null hypothesis is true.
+
+Answer: 3
 
 ### **Generating permutation replicates**
 
@@ -331,23 +439,20 @@ The function has call signature `draw_perm_reps(data_1, data_2, func, size=1)`. 
 
 ```{python}
 def draw_perm_reps(data_1, data_2, func, size=1):
-    """Generate multiple permutation replicates."""
-
-    # Initialize array of replicates: perm_replicates
-    perm_replicates = ____
-
-    for i in ____:
-        # Generate permutation sample
-        perm_sample_1, perm_sample_2 = ____
-
-        # Compute the test statistic
-        perm_replicates[i] = ____
-
-    return perm_replicates
+  """Generate multiple permutation replicates."""
+  # Initialize array of replicates: perm_replicates
+  perm_replicates = np.empty(size)
+  for i in range(size):
+      # Generate permutation sample
+      perm_sample_1, perm_sample_2 = permutation_sample(data_1, data_2)
+      # Compute the test statistic
+      perm_replicates[i] = func(perm_sample_1, perm_sample_2)
+  return perm_replicates
 ```
 
-### **Look before you leap: EDA before hypothesis testing
-Kleinteich and Gorb (Sci. Rep., 4, 5225, 2014) performed an interesting experiment with South American horned frogs. They held a plate connected to a force transducer, along with a bait fly, in front of them. They then measured the impact force and adhesive force of the frog's tongue when it struck the target.
+### **Look before you leap: EDA before hypothesis testing**
+
+Kleinteich and Gorb (Sci. Rep., **4**, 5225, 2014) performed an interesting experiment with South American horned frogs. They held a plate connected to a force transducer, along with a bait fly, in front of them. They then measured the impact force and adhesive force of the frog's tongue when it struck the target.
 
 Frog A is an adult and Frog B is a juvenile. The researchers measured the impact force of 20 strikes for each frog. In the next exercise, we will test the hypothesis that the two frogs have the same distribution of impact forces. But, remember, it is important to do EDA first! Let's make a bee swarm plot for the data. They are stored in a Pandas data frame, `df`, where column `ID` is the identity of the frog and column `impact_force` is the impact force in Newtons (N).
 
@@ -359,16 +464,18 @@ Frog A is an adult and Frog B is a juvenile. The researchers measured the impact
 
 ```{python}
 # Make bee swarm plot
-_ = ____
+_ = sns.swarmplot(x = "ID", y = 'impact_force', data = df)
 
 # Label axes
-_ = plt.____('frog')
-_ = plt.____('impact force (N)')
+_ = plt.xlabel('frog')
+_ = plt.ylabel('impact force (N)')
 
 # Show the plot
-____
-
+plt.show()
+plt.clf()
 ```
+
+Eyeballing it, it does not look like they come from the same distribution. Frog A, the adult, has three or four very hard strikes, and Frog B, the juvenile, has a couple weak ones. However, it is possible that with only 20 samples it might be too difficult to tell if they have difference distributions, so we should proceed with the hypothesis test.
 
 ### **Permutation test on frog data**
 
@@ -386,26 +493,202 @@ For your convenience, the data has been stored in the arrays `force_a` and `forc
 
 ```{python}
 def diff_of_means(data_1, data_2):
-    """Difference in means of two arrays."""
-
-    # The difference of means of data_1, data_2: diff
-    diff = ____
-
-    return diff
+  """Difference in means of two arrays."""
+  # The difference of means of data_1, data_2: diff
+  diff = np.mean(data_1) - np.mean(data_2)
+  return diff
 
 # Compute difference of mean impact force from experiment: empirical_diff_means
-empirical_diff_means = ____
+empirical_diff_means = diff_of_means(force_a, force_b)
 
 # Draw 10,000 permutation replicates: perm_replicates
-perm_replicates = draw_perm_reps(____, ____,
-                                 ____, size=10000)
+perm_replicates = draw_perm_reps(force_a, force_b,
+                                 diff_of_means, size = 10000)
 
 # Compute p-value: p
-p = np.sum(____ >= ____) / len(____)
+p = np.sum(perm_replicates >= empirical_diff_means) / len(perm_replicates)
 
 # Print the result
 print('p-value =', p)
 ```
 
+The p-value tells you that there is about a 0.6% chance that you would get the difference of means observed in the experiment if frogs were exactly the same. A p-value below 0.01 is typically said to be "statistically significant," but: warning! warning! warning! You have computed a p-value; it is a number. I encourage you not to distill it to a yes-or-no phrase. p = 0.006 and p = 0.000000006 are both said to be "statistically significant," but they are definitely not the same!
+
 ## **Bootstrap hypothesis tests**
 
+**1. Bootstrap hypothesis tests**
+
+Let's go over the pipeline of hypothesis testing that we have been studying.
+
+**2. Pipeline for hypothesis testing**
+
+First, clearly state the null hypothesis. Stating the null hypothesis so that it is crystal clear is essential to be able to simulate it. Next, define your test statistic. Then generate many sets of simulated data assuming the null hypothesis is true. Compute the test statistic for each simulated data set. The p-value is then the fraction of your simulated data sets for which the test statistic is at least as extreme as for the real data. Now let's do another hypothesis test.
+
+**3. Michelson and Newcomb: speed of light pioneers**
+
+Consider again Michelson's measurements of the speed of light. Around the same time that Michelson did his experiment, his future collaborator Simon Newcomb also measured the speed of light.
+
+1 Michelson image: public domain, Smithsonian
+2 Newcomb image: US Library of Congress
+
+**4. Michelson and Newcomb: speed of light pioneers**
+
+Newcomb's measurements had a mean of 299,860 km/s, differing from Michelson's by about 8 km/s. We want to know if there is something fundamentally different about Newcomb's and Michelson's measurements. The thing is: we only have Newcomb's mean and none of his data points!
+
+1 Michelson image: public domain, Smithsonian
+2 Newcomb image: US Library of Congress
+
+**5. The data we have**
+
+The question is: could Michelson have gotten the data set he did if the true mean speed of light in his experiments was equal to Newcomb's? So, we formally
+
+```{python}
+x_vel_light, y_vel_light = ecdf(michelson_speed_of_light)
+
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(x_vel_light, y_vel_light, marker = '.', linestyle = 'none')
+
+_ = ax.set_xlabel('speed of light (km/s)')
+_ = ax.set_ylabel('CDF')
+plt.show()
+plt.clf()
+print("Newcomb's mean = 299,860")
+```
+
+1 Data: Michelson, 1880
+
+**6. Null hypothesis**
+
+state our hypothesis as this: the true mean speed of light in Michelson's experiments was actually Newcomb's reported mean, which we'll call the Newcomb value. When I say the true mean speed of light in Michelson's experiments, think the mean Michelson would have gotten had done his experiment lots and lots and lots of times. Because we are comparing a data set with a value, a permutation test is not applicable. We need to simulate the situation in which the true mean speed of light in Michelson's experiments is Newcomb's value.
+
+**7. Shifting the Michelson data**
+
+To achieve this, we shift Michelson's data such that its mean now matches Newcomb's value. See here the ECDF of the shifted data relative to the original data. We can then use bootstrapping on this shifted data to simulate data acquisition under the null hypothesis.
+
+```{python}
+newcomb_value = 299860
+michelson_shifted = michelson_speed_of_light - 8*(- np.mean(michelson_speed_of_light) + newcomb_value)
+          
+#michelson_shifted_data = np.random.normal(newcomb_value,  np.std(michelson_speed_of_light), len(michelson_speed_of_light))
+x_vel_light_shifted, y_vel_light_shifted = ecdf(michelson_shifted)
+
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+fig.tight_layout(pad = 5)
+
+_ = ax.plot(x_vel_light, y_vel_light, marker = '.', linestyle = 'none')
+_ = ax.plot(x_vel_light_shifted, y_vel_light_shifted, marker = '.', linestyle = 'none', color = 'green')
+
+_ = ax.set_xlabel('speed of light (km/s)')
+_ = ax.set_ylabel('CDF')
+
+# Annotate data
+_ = ax.annotate("Michelson's data \nwith same mean \nas Newcomb", xy = (np.median(michelson_shifted), 0.45), xytext = (299600, 0.8), arrowprops = {'arrowstyle': '->', 'color': 'blue'})
+_ = ax.annotate("Michelson's data", xy = (np.median(michelson_speed_of_light), 0.55), xytext = (299900, 0.25), arrowprops = {'arrowstyle': '->', 'color': 'blue'})
+
+plt.show()
+plt.clf()
+
+```
+
+**8. Calculating the test statistic**
+
+The test statistic is the the mean of the bootstrap sample minus Newcomb's value. We write a function diff_from_newcomb to compute it, and compute the observed test statistic.
+
+```{python}
+def diff_from_newcomb(data, newcomb_value = 299860):
+  return np.mean(data) - newcomb_value
+
+diff_obs = diff_from_newcomb(michelson_speed_of_light)
+diff_obs
+```
+
+**9. Computing the p-value**
+
+We then use the draw_bs_reps function you have already written to generate the bootstrap replicates, which is the value of the test statistic computed from a bootstrap sample. Note that the data we pass into the function are the shifted Michelson measurements because those are the ones we use to simulate the null hypothesis. The p-value is computed exactly the same way as for the permutation test. We report the fraction of bootstrap replicates that are less than the observed test statistic. In this case, we use less than because the mean from Michelson's experiments was less than Newcomb's value. We get a p-value of 0-point-16. This suggests that it is quite possible the Newcomb and Michelson did not really have fundamental differences in their measurements. This is an example of
+
+```{python}
+michelson_shifted = michelson_speed_of_light + (-np.mean(michelson_speed_of_light) + newcomb_value)
+bs_replicates = draw_bs_reps(michelson_shifted, diff_from_newcomb, 10000)
+p_value= np.sum(bs_replicates <= diff_obs) / len(bs_replicates)
+p_value
+```
+
+**10. One sample test**
+
+a one-sample test, since we had one set of samples from Michelson and were comparing to a single number from Newcomb. Often in the field, you will do two-sample tests that require the bootstrap, which you will explore in the exercises. I know this video was a lot to take in. Explicitly simulating a null hypothesis like this, we we have to shift the mean, can be tricky. You'll get a chance to practice in the exercises, and you may want to go over the procedure again to make sure you understand it.
+
+**11. Let's practice!**
+
+Ok, enough talk. Let's do some bootstrap hypothesis tests!
+
+### **A one-sample bootstrap hypothesis test**
+
+Another juvenile frog was studied, Frog C, and you want to see if Frog B and Frog C have similar impact forces. Unfortunately, you do not have Frog C's impact forces available, but you know they have a mean of 0.55 N. Because you don't have the original data, you cannot do a permutation test, and you cannot assess the hypothesis that the forces from Frog B and Frog C come from the same distribution. You will therefore test another, less restrictive hypothesis: The mean strike force of Frog B is equal to that of Frog C.
+
+To set up the bootstrap hypothesis test, you will take the mean as our test statistic. Remember, your goal is to calculate the probability of getting a mean impact force less than or equal to what was observed for Frog B *if the hypothesis that the true mean of Frog B's impact forces is equal to that of Frog C is true*. You first translate all of the data of Frog B such that the mean is 0.55 N. This involves adding the mean force of Frog C and subtracting the mean force of Frog B from each measurement of Frog B. This leaves other properties of Frog B's distribution, such as the variance, unchanged.
+
+**Instructions**
+
+- Translate the impact forces of Frog B such that its mean is 0.55 N.
+- Use your `draw_bs_reps()` function to take 10,000 bootstrap replicates of the mean of your translated forces.
+- Compute the p-value by finding the fraction of your bootstrap replicates that are less than the observed mean impact force of Frog B. Note that the variable of interest here is `force_b`.
+- Print your p-value.
+
+```{python}
+# Make an array of translated impact forces: translated_force_b
+translated_force_b = force_b + (- np.mean(force_b) + 0.55)
+
+# Take bootstrap replicates of Frog B's translated impact forces: bs_replicates
+bs_replicates = draw_bs_reps(translated_force_b, np.mean, 10000)
+
+# Compute fraction of replicates that are less than the observed Frog B force: p
+p = np.sum(bs_replicates <= np.mean(force_b)) / 10000
+
+# Print the p-value
+print('p = ', p)
+
+```
+
+The low p-value suggests that the null hypothesis that Frog B and Frog C have the same mean impact force is false.
+
+### **A two-sample bootstrap hypothesis test for difference of means**
+
+We now want to test the hypothesis that Frog A and Frog B have the same mean impact force, but not necessarily the same distribution, which is also impossible with a permutation test.
+
+To do the two-sample bootstrap test, we shift *both* arrays to have the same mean, since we are simulating the hypothesis that their means are, in fact, equal. We then draw bootstrap samples out of the shifted arrays and compute the difference in means. This constitutes a bootstrap replicate, and we generate many of them. The p-value is the fraction of replicates with a difference in means greater than or equal to what was observed.
+
+The objects `forces_concat` and `empirical_diff_means` are already in your namespace.
+
+**Instructions**
+
+- Compute the mean of all forces (from `forces_concat`) using `np.mean()`.
+- Generate shifted data sets for both `force_a` and `force_b` such that the mean of each is the mean of the concatenated array of impact forces.
+- Generate 10,000 bootstrap replicates of the mean each for the two shifted arrays.
+- Compute the bootstrap replicates of the difference of means by subtracting the replicates of the shifted impact force of Frog B from those of Frog A.
+- Compute and print the p-value from your bootstrap replicates.
+
+```{python}
+# Compute mean of all forces: mean_force
+mean_force = np.mean(forces_concat)
+
+# Generate shifted arrays
+force_a_shifted = force_a - np.mean(force_a) + mean_force
+force_b_shifted = force_b - np.mean(force_b) + mean_force 
+
+# Compute 10,000 bootstrap replicates from shifted arrays
+bs_replicates_a = draw_bs_reps(force_a_shifted, np.mean, 10000)
+bs_replicates_b = draw_bs_reps(force_b_shifted, np.mean, 10000)
+
+# Get replicates of difference of means: bs_replicates
+bs_replicates = bs_replicates_a - bs_replicates_b
+
+# Compute and print p-value: p
+p = np.sum(bs_replicates >= empirical_diff_means) / len(bs_replicates)
+print('p-value =', p)
+```
+
+You got a similar result as when you did the permutation test. Nonetheless, remember that it is important to carefully think about what question you want to ask. Are you only interested in the mean impact force, or in the distribution of impact forces?
