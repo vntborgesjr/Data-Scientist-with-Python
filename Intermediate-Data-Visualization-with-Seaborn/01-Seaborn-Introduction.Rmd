@@ -1,0 +1,438 @@
+---
+title: "01 - Seaborn Introduction"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    code_folding: hide
+---
+
+```{python setup}
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+grant_file = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2010 US School Improvement Grants.csv"
+```
+
+## **1. Introduction to Seaborn**
+
+Welcome to this introduction to Seaborn. My name is Chris Moffitt and I will be your instructor for this course. I have been using Python for over 10 years and am currently the creator of the popular blog Practical Business Python. I am excited to show you how to effectively use the Seaborn library for creating insightful visualizations.
+
+**2. Python Visualization Landscape**
+
+The Python visualization landscape is complex and it can be challenging to find the right tool for the right job. Before we discuss Seaborn in detail, it is helpful to understand where it stands in this landscape. This illustration is from Jake VanderPlas' pycon 2017 presentation on the visualization landscape in Python and highlights the complex ecosystem. The key point is that matplotlib is a foundational library used by many visualization tools including Seaborn.
+
+**3. Matplotlib**
+
+matplotlib is a robust library that can support building many types of visualizations. Seaborn uses it to construct statistical visualizations. When working with Seaborn, it is helpful to understand some of the underlying matplotlib constructs. This brief example shows how to plot a column in a pandas DataFrame as a histogram. This specific example includes information about the alcohol content of several different types of Portuguese wines. If you do not understand this code example, you may want to review some introductory Python courses. The rest of this course will assume you understand basic Python and pandas usage.
+
+```{python}
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df1 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/winequality-red.csv")
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = ax.hist(df1['alcohol'])
+plt.show()
+plt.clf()
+```
+
+**4. Pandas**
+
+pandas is one of the most important Python libraries for manipulating and analyzing data. In addition to providing powerful data manipulation tools, pandas supports basic data plotting functions. The actual API is consistent with other pandas functions, so it is a very useful tool. The plotting is carried out by matplotlib, so the resulting output looks very similar to the pure matplotlib output. This functionality is very useful when you need to quickly look at data that is already in a DataFrame.
+
+```{python}
+_ = fig.tight_layout(pad = 5)
+_ = df1['alcohol'].plot.hist()
+plt.show()
+plt.clf()
+```
+
+**5. Seaborn**
+
+Seaborn integrates with the rest of the Python data science landscape by leveraging matplotlib and integrating with pandas. In this example,
+
+**6. Seaborn** 
+
+a plot similar to a histogram can be created using Seaborn's distplot() function. The resulting output looks like a histogram but actually is a Gaussian kernel density estimate or KDE. In the next slide we will compare this output to the pandas generated histogram.
+
+```{python}
+import seaborn as sns
+_ = fig.tight_layout(pad = 5)
+sns.distplot(df1['alcohol'])
+plt.show()
+plt.clf()
+```
+
+**7. Histogram vs. Distplot**
+
+This relatively simple example is illustrative of how to use Seaborn. The code is simple but can be used for powerful data analysis. In addition to the analysis, it makes reasonable assumptions about colors and other visual elements to make visualizations that look more pleasing than the standard matplotlib plots. Additionally, Seaborn performs statistical analysis on the data to generate the KDE.
+
+**8. Let's practice!**
+
+Now it's your turn to try out Seaborn.
+
+### **Seaborn foundation**
+
+What library provides the foundation for pandas and Seaborn plotting?
+
+**Possible Answers**
+
+1. javascript
+
+2. matplotlib
+
+3. vega
+
+4. ggplot2
+
+Answer: 2
+
+Matplotlib is the basis for many python plotting libraries. A basic understanding of matplotlib is helpful for better understanding Seaborn.
+
+### **Reading a csv file**
+
+Before you analyze data, you will need to read the data into a [pandas](https://pandas.pydata.org/) DataFrame. In this exercise, you will be looking at data from US School Improvement Grants in 2010. This program gave nearly $4B to schools to help them renovate or improve their programs.
+
+This first step in most data analysis is to import `pandas` and `seaborn` and read a data file in order to analyze it further.
+
+*This course introduces a lot of new concepts, so if you ever need a quick refresher, download the [Seaborn Cheat Sheet](https://datacamp-community-prod.s3.amazonaws.com/f9f06e72-519a-4722-9912-b5de742dbac4) and keep it handy!*
+
+**Instructions**
+
+- Import `pandas` and `seaborn` using the standard naming conventions.
+- The path to the csv file is stored in the `grant_file` variable.
+- Use `pandas` to read the file.
+- Store the resulting DataFrame in the variable `df`.
+
+```{python}
+# import all modules
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Read in the DataFrame
+df = pd.read_csv(grant_file)
+```
+
+You have used the correct names for importing pandas and Seaborn and successfully read the data from a csv file. You are ready to analyze the data.
+
+### **Comparing a histogram and distplot**
+
+The `pandas` library supports simple plotting of data, which is very convenient when data is already likely to be in a `pandas` DataFrame.
+
+Seaborn generally does more statistical analysis on data and can provide more sophisticated insight into the data. In this exercise, we will compare a `pandas` histogram vs the `seaborn` distplot.
+
+**Instructions**
+
+- Use the pandas' `plot.hist()` function to plot a histogram of the `Award_Amount` column.
+- Use Seaborn's `distplot()` function to plot a distribution plot of the same column.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+# Display pandas histogram
+_ = df['Award_Amount'].plot.hist()
+plt.show()
+
+# Clear out the pandas histogram
+plt.clf()
+
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+# Display a Seaborn distplot
+_ = sns.distplot(df['Award_Amount'])
+plt.show()
+
+# Clear the distplot
+plt.clf()
+```
+
+Notice how the pandas and Seaborn plots are complementary. They both show the distribution of data in different formats
+ 
+## **Using the distribution plot**
+
+**1. Using the distribution plot**
+
+Now that you have a basic understanding of Seaborn and how it relates to matplotlib and pandas, we will spend some time looking at how to customize distribution plots in Seaborn. The basic ideas learned with this plot type can be applied to the other Seaborn plotting functions we will see in upcoming exercises.
+
+**2. Creating a histogram**
+
+The Seaborn API supports customizing the type of plot by using different arguments. In this example, we can use the same distplot() function to create a standard histogram and customize the number of bins to further understand how the values are distributed. This basic approach is used by most functions in Seaborn and is a powerful tool for analyzing data quickly.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = sns.distplot(df1['alcohol'], kde = False, bins = 10)
+plt.show()
+plt.clf()
+```
+
+**3. Alternative data distributions**
+
+As you can see, the distplot() function has several options for configuration and customization. The benefit of this approach is that you can rapidly try different views and settle on the one that seems most appropriate for your analysis. Trying different combinations of the kde and rugp lot can yield important insights.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = sns.distplot(df1['alcohol'], hist = False, rug = True)
+plt.show()
+plt.clf()
+```
+
+**4. Further Customizations**
+
+There are many functions in Seaborn that build upon each other. The distplot() function we have been discussing relies on using additional Seaborn functions such as the kdeplot() and rugplot(). By understanding this relationship, you can further customize Seaborn plots by passing additional arguments to the underlying functions. In this case, we can tell the underlying kde() function to shade the plot by passing the kde_kws dictionary.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = sns.distplot(df1['alcohol'], hist = False, rug = True, kde_kws = {'shade': True})
+plt.show()
+plt.clf()
+```
+**5. Let's practice!**
+
+Now that you know about several Seaborn functions, let's practice some more.
+
+### **Plot a histogram**
+
+The `distplot()` function will return a Kernel Density Estimate (KDE) by default. The KDE helps to smooth the distribution and is a useful way to look at the data. However, Seaborn can also support the more standard histogram approach if that is more meaningful for your analysis.
+
+**Instructions**
+
+- Create a `distplot` for the data and disable the KDE.
+- Explicitly pass in the number 20 for the number of bins in the histogram.
+- Display the plot using `plt.show()`.
+
+```{python}
+fig, ax = subplots()
+_ = fig.tight_layout(pad = 5)
+
+# Create a distplot
+_ = sns.distplot(df['Award_Amount'],
+             kde = False,
+             bins = 20)
+
+# Display the plot
+plt.show()
+```
+
+The distplot() function can be configured with multiple different arguments. By disabling the KDE output, you have created a histogram.
+
+### **Rug plot and kde shading**
+
+Now that you understand some function arguments for `distplot()`, we can continue further refining the output. This process of creating a visualization and updating it in an incremental fashion is a useful and common approach to look at data from multiple perspectives.
+
+Seaborn excels at making this process simple.
+
+**Instructions**
+
+- Create a `distplot` of the `Award_Amount` column in the `df`.
+- Configure it to show a shaded kde (using the `kde_kws` dictionary).
+- Add a rug plot above the x axis.
+- Display the plot.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+# Create a distplot of the Award Amount
+_ = sns.distplot(df['Award_Amount'],
+             hist = False,
+             rug = True,
+             kde_kws = {'shade': True})
+
+# Plot the results
+plt.show()
+plt.clf()
+```
+
+This plot can be really useful for understanding how the award dollars were distributed.
+
+### **Interpreting the results**
+
+Looking at this distplot, which of these choices can you infer based on the visualization?
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+# Create a distplot of the Award Amount
+_ = sns.distplot(df['Award_Amount'],
+             hist = False,
+             rug = True,
+             kde_kws = {'shade': True})
+
+# Plot the results
+plt.show()
+plt.clf()
+```
+
+
+**Possible Answers**
+
+1. The most frequent award amount range was between \$650K and \$700K.
+
+2. The award amounts are normally distributed.
+
+3. There are a large group of award amounts < $400K.
+
+4. The average award is > $900K.
+
+Answer: 3
+
+375 of the 757 awards are <= $400k. This insight could be useful for further analysis.
+
+## **1. Regression Plots in Seaborn**
+
+Now that we have taken a look at distribution plots in Seaborn, we will transition to another basic visualization process by plotting linear regression lines. The previous analysis we performed is often referred to as univariate analysis because we only look at one variable. Regression analysis is bivariate because we are looking for relationships between two variables.
+
+**2. Introduction to regplot**
+
+The regplot() function is the basis for building regression plots in Seaborn. The basic function call is similar to distplot(), but we explicitly define the x and y variables as well as the source of the data. Since we are using a pandas DataFrame, the x and y variables refer to the columns in the DataFrame. This basic process is similar for many other Seaborn plots so it is good to make sure you understand this well before moving on to more complex plots. In this specific plot, we are interested in any relationship between the alcohol content of the wine and the pH levels. The regression line hints that there might be a slight increase in pH values as the alcohol content increases.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.regplot(x = 'alcohol', y = 'pH', data = df1)
+_ = plt.xlim(7, 16)
+_ = plt.ylim(2.6, 4.2)
+plt.show()
+plt.clf()
+```
+
+**3. lmplot() builds on top of the base regplot()**
+
+One of the confusing points about Seaborn is that it may seem like there is more than one way to do the same plot. In the previous exercises, we looked at distplots and briefly discussed kde plots as a building block for the more robust distplot(). In a similar manner, the lower level regplot() and higher level lmplot() are related. They are called the same way and produce similar output. However, the lmplot() is much more powerful. In this example, we can look at the relationship between alcohol content and quality using both of these plot types. The output looks similar except for the aspect ratio. In the next slide, I will show how the lmplot() is much more flexible.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = sns.regplot(x = 'alcohol', y = 'quality', data = df1)
+plt.show()
+plt.clf()
+```
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = sns.lmplot(x = 'alcohol', y = 'quality', data = df1, height = 2.6)
+
+plt.show()
+plt.clf()
+```
+
+**4. lmplot faceting**
+
+The use of hue and columns is a powerful concept that is present throughout many of Seaborn's functions. The use of plotting multiple graphs while changing a single variable is often called faceting. In this case, faceting can be accomplished by using the lmplot() function. The base function is very similar to regplot() but it provides much more power by allowing you to add additional information using columns, colors, or rows. There are an entire class of functions in Seaborn that support this type of faceting and we will continue to explore them throughout the course.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = sns.lmplot(x = 'alcohol', y = 'quality', data = df1, hue = 'type', height = 2.6)
+
+plt.show()
+plt.clf()
+```
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+_ = sns.lmplot(x = 'alcohol', y = 'quality', data = df1, col = 'type', height = 2.6)
+
+plt.show()
+plt.clf()
+```
+**5. Let's practice!**
+
+It is time to put these concepts into practice. In the following exercises, we will go through some more examples of using the regplot() and lmplot() functions to analyze a dataset. By the end of the exercises, you should have a good understanding of how Seaborn works and be prepared for learning about additional plot types supported by Seaborn.
+
+### **Create a regression plot**
+
+For this set of exercises, we will be looking at FiveThirtyEight's data on which US State has the worst drivers. The data set includes summary level information about fatal accidents as well as insurance premiums for each state as of 2010.
+
+In this exercise, we will look at the difference between the regression plotting functions.
+
+**Instructions**
+
+- The data is available in the dataframe called `df`.
+- Create a regression plot using `regplot()` with `"insurance_losses"` on the x axis and `"premiums"` on the y axis.
+- Create a regression plot of `"premiums"` versus `"insurance_losses"` using `lmplot()`.
+- Display the plot.
+
+```{python}
+df = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/Automobile-Insurance-Premiums.csv")
+
+# Create a regression plot of premiums vs. insurance_losses
+_ = sns.regplot(x = 'insurance_losses', y = 'premiums', data = df)
+
+# Display the plot
+plt.show()
+plt.clf()
+```
+
+```{python}
+# Create an lmplot of premiums vs. insurance_losses
+_ = sns.lmplot(x = 'insurance_losses', y = 'premiums', data = df, height = 2.6)
+
+# Display the second plot
+plt.show()
+plt.clf()
+```
+
+Notice how the output looks similar. In future exercises, we will demonstrate the additional options available when using lmplot.
+
+### **Plotting multiple variables**
+
+Since we are using `lmplot()` now, we can look at the more complex interactions of data. This data set includes geographic information by state and area. It might be interesting to see if there is a difference in relationships based on the Region of the country.
+
+**Instructions**
+
+- Use `lmplot()` to look at the relationship between `insurance_losses` and `premiums`.
+- Plot a regression line for each `Region` of the country.
+
+```{python}
+# Create a regression plot using hue
+_ = sns.lmplot(data = df,
+           x = "insurance_losses",
+           y = "premiums",
+           hue = "Region",
+           height = 2.6)
+
+# Show the results
+plt.show()
+plt.clf()
+```
+
+The results are bit difficult to read. Maybe using multiple lines is not the best approach. Let's try another one in the next exercise.
+
+### **Facetting multiple regressions**
+
+lmplot() allows us to facet the data across multiple rows and columns. In the previous plot, the multiple lines were difficult to read in one plot. We can try creating multiple plots by Region to see if that is a more useful visualization.
+
+**Instructions**
+
+- Use `lmplot()` to look at the relationship between `insurance_losses` and `premiums`.
+- Create a plot for each `Region` of the country.
+- Display the plots across multiple rows.
+
+```{python}
+# Create a regression plot with multiple rows
+_ = sns.lmplot(data = df,
+           x = "insurance_losses",
+           y = "premiums",
+           row = "Region")
+
+# Show the plot
+plt.show()
+plt.clf()
+```
+
+Faceting the data across multiple rows or columns can be a good way to see variable interactions in the data. The lmplot function supports plotting regression data by column, row and hue. This concept is used repeatedly throughout Seaborn.
