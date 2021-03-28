@@ -12,8 +12,18 @@ output:
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
 
-grant_file = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/"
+grant_file = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2010 US School Improvement Grants.csv"
+df = pd.read_csv(grant_file)
+
+df2 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2018-College-Scorecard-Tuition.csv")
+
+df3 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/Washington-DC-Bike-Share.csv")
+df3['temp'] = df3.temp/ 1000
+df3 = df3[df3['temp'] > 0.1]
+
+df4 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/Daily-Show-Guests.csv")
 ```
 
 ## **Categorical Plot Types**
@@ -42,33 +52,113 @@ The final group of plots show statistical estimates of the categorical variables
 
 Seaborn's stripplot() shows every observation in the dataset. In some cases, it can be difficult to see individual data points. We can use the jitter parameter in order to more easily see how the Average Covered Charges vary by Diagnostic Reimbursement Code.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6)
+
+_ = sns.stripplot(data = df, y = 'Model Selected', x = "Award_Amount", jitter = True)
+
+plt.show()
+plt.clf()
+```
+
 **7. Plots of each observation - swarmplot**
 
 We can plot a more sophisticated visualization of all the data using a swarmplot(). This plot uses a complex algorithm to place the observations in a manner where they do not overlap. The downside of this approach is that the swarmplot() does not scale well to large datasets.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+_ = sns.swarmplot(data = df, y = 'Model Selected', x = "Award_Amount")
+
+plt.show()
+plt.clf()
+```
 
 **8. Abstract representations - boxplot**
 
 The next category of plots show abstract representations of the data. A boxplot() is the most common of this type. This plot is used to show several measures related to the distribution of data, including the median, upper and lower quartiles, as well as outliers.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+_ = sns.boxplot(data = df, y = 'Model Selected', x = "Award_Amount")
+
+plt.show()
+plt.clf()
+```
+
 **9. Abstract representation - violinplot**
 
 The violinplot() is a combination of a kernel density plot and a box plot and can be suitable for providing an alternative view of the distribution of data. Because the plot uses a kernel density calculation it does not show all data points. This can be useful for displaying large datasets but it can be computationally intensive to create.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+_ = sns.violinplot(data = df, y = 'Model Selected', x = "Award_Amount")
+
+plt.show()
+plt.clf()
+```
 
 **10. Abstract representation - lvplot**
 
 The final plot in this grouping is the lvplot(), which stands for Letter Value plot. The API is the same as the boxplot() and violinplot() but can scale more effectively to large datasets. The lvplot() is a hybrid between a boxplot() and violinplot() and is relatively quick to render and easy to interpret.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+_ = sns.lvplot(data = df, y = 'Model Selected', x = "Award_Amount")
+
+plt.show()
+plt.clf()
+```
+
 **11. Statistical estimates - barplot**
 
 The final category of plots are statistical estimates of the data. The barplot() shows an estimate of the value as well as a confidence interval. In this example, we include the hue parameter described in Chapter 1, which provides another useful way for us to look at this categorical data.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+_ = sns.barplot(data = df, y = 'Model Selected', x = "Award_Amount", hue = 'Region')
+
+plt.show()
+plt.clf()
+```
 
 **12. Statistical estimates - pointplot**
 
 The pointplot() is similar to the barplot() in that it shows a summary measure and confidence interval. A pointplot() can be very useful for observing how values change across categorical values.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+_ = sns.pointplot(data = df, y = 'Model Selected', x = "Award_Amount", hue = 'Region')
+
+plt.show()
+plt.clf()
+```
+
 **13. Statistical estimates - countplot**
 
 The final categorical plot is the countplot(), which displays the number of instances of each variable.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+_ = sns.countplot(data = df, y = 'Model Selected', hue = 'Region')
+
+plt.show()
+plt.clf()
+```
 
 **14. Let's practice!**
 
@@ -80,16 +170,13 @@ Many datasets have categorical data and Seaborn supports several useful plot typ
 
 As a refresher, here is the KDE distribution of the Award Amounts:
 ```{python}
-# Read in the DataFrame
-grant_file = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2010 US School Improvement Grants.csv"
-df = pd.read_csv(grant_file)
 fig, ax = plt.subplots()
 _ = fig.tight_layout(pad = 5)
 
 # Create a distplot of the Award Amount
 _ = sns.distplot(df['Award_Amount'],
              hist = False,
-             rug = True,
+             rug = False,
              kde_kws = {'shade': True})
 
 # Plot the results
@@ -102,16 +189,37 @@ While this plot is useful, there is a lot more we can learn by looking at the in
 **Instructions**
 
 1. Create a `stripplot` of the `Award_Amount` with the `Model Selected` on the y axis with `jitter` enabled.
+2. Create a `swarmplot()` of the same data, but also include the hue by Region.
 
 ```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
 # Create the stripplot
-sns.____(data=df,
-         x='____',
-         y='____',
-         jitter=____)
+_ = sns.stripplot(data = df,
+         x = 'Award_Amount',
+         y = 'Model Selected',
+         jitter = True)
 
 plt.show()
+plt.clf()
 ```
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+# Create and display a swarmplot with hue set to the Region
+_ = sns.swarmplot(data = df,
+         x = 'Award_Amount',
+         y = 'Model Selected',
+         hue = 'Region')
+
+plt.show()
+plt.clf()
+```
+
+Categorical plots that show each observation can be very powerful tools for gaining insight into your data.
 
 ### **boxplots, violinplots and lvplots**
 
@@ -122,16 +230,52 @@ In this exercise, we will use the color palette options presented in Chapter 2 t
 **Instructions**
 
 1. Create and display a `boxplot` of the data with `Award_Amount` on the x axis and `Model Selected` on the y axis.
+2. Create and display a similar violinplot of the data, but use the husl palette for colors.
+3. Create and display an lvplot using the Paired palette and the Region column as the hue.
 
 ```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
 # Create a boxplot
-sns.____(data=df,
-         x='____',
-         y='____')
+_ = sns.boxplot(data = df,
+         x = 'Award_Amount',
+         y = 'Model Selected')
 
 plt.show()
 plt.clf()
 ```
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+# Create a violinplot with the husl palette
+_ = sns.violinplot(data = df,
+         x = 'Award_Amount',
+         y = 'Model Selected',
+         palette = 'husl')
+
+plt.show()
+plt.clf()
+```
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+# Create a violinplot with the husl palette
+_ = sns.lvplot(data = df,
+         x = 'Award_Amount',
+         y = 'Model Selected',
+         palette = 'Paired',
+         hue = 'Region')
+
+plt.show()
+plt.clf()
+```
+
+Seaborn's API makes it very simple to create multiple abstract representations of categorical data.
 
 ### **barplots, pointplots and countplots**
 
@@ -140,16 +284,51 @@ The final group of categorical plots are `barplots`, `pointplots` and `countplot
 **Instructions**
 
 1. Create a `countplot` with the `df` dataframe and `Model Selected` on the y axis and the color varying by `Region`.
+2. Use a `capsize` in the `pointplot` in order to add caps to the error bars.
+3. Create a `barplot` with the same data on the x and y axis and change the color of each bar based on the `Region` column.
 
 ```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
 # Show a countplot with the number of models used with each region a different color
-sns.____(data=df,
-         y="____",
-         hue="____")
+_ = sns.countplot(data = df,
+         y = "Model Selected",
+         hue = "Region")
 
 plt.show()
 plt.clf()
 ```
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+# Create a pointplot and include the capsize in order to show caps on the error bars
+_ = sns.pointplot(data = df,
+         y = 'Award_Amount',
+         x = 'Model Selected',
+         capsize = 0.1)
+
+plt.show()
+plt.clf()
+```
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 6.5)
+
+# Create a barplot with each Region shown as a different color
+_ = sns.barplot(data = df,
+         y = 'Award_Amount',
+         x = 'Model Selected',
+         hue = 'Region')
+
+plt.show()
+plt.clf()
+```
+
+The pointplot and barplot can be useful visualizations for understanding the variations of categorical data.
 
 ## **Regression Plots**
 
@@ -165,30 +344,104 @@ This dataset contains a summary of bicycle rental activity by day that has been 
 
 Here is a quick summary of the regplot() function. Like most of the Seaborn functions we have reviewed, the function requires the definition of the data and the x and y variables. In this example, we include a unique marker for the observations. Upon first glance, it looks like there is a relationship between temperature and total bike rentals in a day. This intuitively makes sense. People like to bike when the weather is warm.
 
+```{python}
+fig, ax =  plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.regplot(data = df3, x = 'temp', y =  'total_rentals', marker = '+')
+
+plt.show()
+plt.clf()
+```
+
 **4. Evaluating regression with residplot()**
 
 The residual plot is a very useful plot for understanding the appropriateness of a regression model. Ideally, the residual values in the plot should be plotted randomly across the horizontal line. In this specific example, the data looks like it might have a slight curve suggesting a nonlinear model might be appropriate.
+
+```{python}
+fig, ax =  plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.residplot(data = df3, x = 'temp', y =  'total_rentals')
+
+plt.show()
+plt.clf()
+
+```
 
 **5. Polynomial regression**
 
 If a value greater than 1 is passed to the order parameter of regplot(), then Seaborn will attempt a polynomial fit using underlying NumPy functions. In this example, Seaborn computes a second order polynomial function for the relationship between temperature and rentals. In this view, it looks like rentals might start to trail off if the weather gets too warm.
 
+```{python}
+fig, ax =  plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.regplot(data = df3, x = 'temp', y =  'total_rentals', order = 2)
+
+plt.show()
+plt.clf()
+
+```
+
 **6. residplot with polynomial regression**
 
 The residual plot can interpret the second order polynomial and plot the residual values. In this example, the values are more randomly distributed, so a second order equation is likely more appropriate for this problem.
 
+```{python}
+fig, ax =  plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.residplot(data = df3, x = 'temp', y =  'total_rentals', order = 2)
+
+plt.show()
+plt.clf()
+
+```
 **7. Categorical values**
 
 Seaborn also supports regression plots with categorical variables. It might be interesting to see how rentals change over the various months. In this example, using the jitter parameter makes it easier to see the individual distribution of the rental values for each month.
+
+```{python}
+fig, ax =  plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.regplot(data = df3, x = 'mnth', y =  'total_rentals', order = 2, x_jitter = 0.1)
+
+plt.show()
+plt.clf()
+
+```
 
 **8. Estimators**
 
 In some cases, even with the jitter, it may be difficult to see if there are any trends based on the value of the variable. Using an estimator for the x value can provide another helpful view of the data. This simplified view shows a trend consistent with the seasons in Washington, DC.
 
+```{python}
+fig, ax =  plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.regplot(data = df3, x = 'mnth', y =  'total_rentals', order = 2, x_estimator = np.mean)
+
+plt.show()
+plt.clf()
+
+```
+
 **9. Binning the data**
 
 When there are continuous variables, it can be helpful to break them into different bins. In this case, we can divide the temperature into four bins and Seaborn will take care of calculating those bins for us and plotting the results. This is much quicker than trying to use pandas or some other mechanism to create the bins. This shortcut function can help with getting a quick read on continuous data such as temperature.
 
+```{python}
+fig, ax =  plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.regplot(data = df3, x = 'temp', y =  'total_rentals', order = 2, x_bins = 4)
+
+plt.show()
+plt.clf()
+
+```
 **10. Let's practice!**
 
 Seaborn's regplot() function supports several parameters for creating highly customized regression plots. Now, let's apply these concepts to some examples.
@@ -205,18 +458,40 @@ For these exercises, all data is loaded in the `df` variable.
 
 - Plot a regression plot comparing `Tuition` and average SAT scores (`SAT_AVG_ALL`).
 - Make sure the values are shown as green triangles.
+- Use a residual plot to determine if the relationship looks linear.
 
 ```{python}
+fig, ax = plt.subplots(figsize = (4, 7))
+_ = fig.tight_layout(pad = 5)
+sns.set_style('white')
+
 # Display a regression plot for Tuition
-sns.____(data=df,
-         y='____',
-         x="SAT_AVG_ALL",
-         marker='^',
-         color='g')
+_ = sns.regplot(data = df2,
+         y = 'Tuition',
+         x = "SAT_AVG_ALL",
+         marker = '^',
+         color = 'g')
 
 plt.show()
 plt.clf()
 ```
+
+```{python}
+fig, ax = plt.subplots(figsize = (4, 7))
+_ = fig.tight_layout(pad = 5)
+sns.set_style('white')
+
+# Display a regression plot for Tuition
+_ = sns.residplot(data = df2,
+         y = 'Tuition',
+         x = "SAT_AVG_ALL",
+         color = 'g')
+
+plt.show()
+plt.clf()
+```
+
+There does appear to be a linear relationship between tuition and SAT scores.
 
 ### **Regression plot parameters**
 
@@ -227,16 +502,40 @@ For the next exercise, we can look at the relationship between tuition and the p
 **Instructions**
 
 - Plot a regression plot of `Tuition` and `PCTPELL`.
+- Create another plot that breaks the `PCTPELL` column into 5 different bins.
+- Create a final regression plot that includes a 2nd order polynomial regression line.
 
 ```{python}
 # Plot a regression plot of Tuition and the Percentage of Pell Grants
-sns.regplot(data=df,
-            y='Tuition',
-            x="____")
+_ = sns.regplot(y = df2[(df2['Tuition'] < 55000) & (df2['PCTPELL'] > 55)]['Tuition'],
+            x = df2[(df2['Tuition'] < 55000) & (df2['PCTPELL'] > 55)]["PCTPELL"])
 
 plt.show()
 plt.clf()
 ```
+
+```{python}
+# Create another plot that estimates the tuition by PCTPELL
+_ = sns.regplot(y = df2[(df2['Tuition'] < 55000) & (df2['PCTPELL'] > 55)]['Tuition'],
+            x = df2[(df2['Tuition'] < 55000) & (df2['PCTPELL'] > 55)]["PCTPELL"],
+            x_bins = 5)
+
+plt.show()
+plt.clf()
+```
+
+```{python}
+# The final plot should include a line using a 2nd order polynomial
+_ = sns.regplot(y = df2[(df2['Tuition'] < 55000) & (df2['PCTPELL'] > 55)]['Tuition'],
+            x = df2[(df2['Tuition'] < 55000) & (df2['PCTPELL'] > 55)]["PCTPELL"],
+            x_bins = 5,
+            order = 2)
+
+plt.show()
+plt.clf()
+```
+
+The regplot function is a very powerful tool for quickly analyzing data. Make sure to be careful not to overfit the data!
 
 ### **Binning data**
 
@@ -247,13 +546,37 @@ For this exercise, we will look at the relationship between tuition and the Unde
 **Instructions**
 
 - Create a `regplot` of `Tuition` and `UG` and set the `fit_reg` parameter to `False` to disable the regression line.
+- Create another plot with the `UG` data divided into 5 bins.
+- Create a `regplot()` with the data divided into 8 bins.
 
 ```{python}
 # Create a scatter plot by disabling the regression line
-sns.regplot(data=df,
-            y='Tuition',
-            x="UG",
-            fit_reg=____)
+_ = sns.regplot(data = df2,
+            y = df2[df2['UG'] <= 6000]['Tuition'],
+            x = df2[df2['UG'] <= 6000]["UG"],
+            fit_reg = False)
+
+plt.show()
+plt.clf()
+```
+
+```{python}
+# Create a scatter plot and bin the data into 5 bins
+_ = sns.regplot(data = df2,
+            y = df2[df2['UG'] <= 6000]['Tuition'],
+            x = df2[df2['UG'] <= 6000]["UG"],
+            x_bins = 5)
+
+plt.show()
+plt.clf()
+```
+
+```{python}
+# Create a regplot and bin the data into 8 bins
+_ = sns.regplot(data = df2,
+            y = df2[df2['UG'] <= 6000]['Tuition'],
+            x = df2[df2['UG'] <= 6000]["UG"],
+            x_bins = 8)
 
 plt.show()
 plt.clf()
@@ -269,21 +592,59 @@ The final category of plots we will discuss in this section are matrix plots. Th
 
 Seaborn's heatmap() function expects the data to be in a matrix. To illustrate this process, we can look at the bicycle data to see how rentals vary by day of the week and month. The crosstab() function builds a table to summarize the data by the day and month. In this example, we also use the aggfunc argument to get the average number of rentals for each of the day and month combinations. This is a very useful capability available in pandas and makes it easy to plot a heatmap once it is in this format.
 
+```{python}
+pd.crosstab(df3['mnth'], df3['weekday'], values = df3['total_rentals'], aggfunc = 'mean').round(0)
+```
+
 **3. Build a heatmap**
 
 The heatmap translates the numerical values in the matrix into a color coded grid. In this example, the colors get lighter as the numbers increase. Using this approach, it is easy to see that the busiest days are Saturdays in June and September. The color code also illustrates that rental rates are higher in the warmer weather months from May through October.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_laytout(pad = 5)
+
+_ = sns.heatmap(pd.crosstab(df3['mnth'], df3['weekday'], values = df3['total_rentals'], aggfunc = 'mean'))
+plt.show()
+plt.clf()
+```
 
 **4. Customize a heatmap**
 
 The display of the heatmap can be customized in multiple ways to present the most information as clearly as possible. This example illustrates a number of customizations. First, we use annot equals True to turn on annotations in the individual cells. The fmt option ensures that the results are displayed as integers. Next, we use a custom cmap of Yellow Green Blue to change the shading we use. By setting cbar equals False, the color bar is not displayed. Finally, passing a variable to linewidths puts some small spacing between the cells so that the values are simpler to view. This example shows how changing a few parameters in Seaborn really changes the output of the plot.
 
+```{python}
+df_crosstab = pd.crosstab(df3['mnth'], df3['weekday'], values = df3['total_rentals'], aggfunc = 'mean').round(0)
+
+_ = sns.heatmap(df_crosstab, annot = True, fmt = "d", cmap = 'YlGnBu', cbar = False, linewidth = 0.5)
+
+plt.show()
+plt.clf()
+```
+
 **5. Centering a heatmap**
 
 The final customization we will look at is centering the heatmap() color scheme. In this example, we center the colormap at the value stored for Sept and Saturday of 9 and 6 using the numeric indices for these values. The effect of this change is that overall color scheme is shifted towards yellows instead of blues.
 
+```{python}
+df_crosstab = pd.crosstab(df3['mnth'], df3['weekday'], values = df3['total_rentals'], aggfunc = 'mean').round(0)
+
+_ = sns.heatmap(df_crosstab, annot = True, fmt = "d", cmap = 'YlGnBu', cbar = True, center = df_crosstab.loc[9, 6])
+
+plt.show()
+plt.clf()
+```
+
 **6. Plotting a correlation matrix**
 
 One common usage for a heatmap is to visually represent the correlation between variables. pandas DataFrames have a corr() function that calculates the correlation between the values in the columns. The output of this function is ideally structured to be displayed as a heatmap. This visualization can be useful to understand which variables you might want to further study using regplot(). This plot shows that the total rentals are most highly correlated with the temp variables.
+
+```{python}
+_ = sns.heatmap(df3.corr())
+plt.show()
+plt.c
+```
+
 
 **7. Let's practice!**
 
@@ -303,17 +664,18 @@ The data includes the date of each guest appearance as well as their occupation.
 
 ```{python}
 # Create a crosstab table of the data
-pd_crosstab = pd.____(df["Group"], df["YEAR"])
+pd_crosstab = pd.crosstab(df4["Group"], df4["YEAR"])
 print(pd_crosstab)
 
 # Plot a heatmap of the table
-sns.____(pd_crosstab)
+_ = sns.heatmap(pd_crosstab)
 
 # Rotate tick marks for visibility
-plt.yticks(rotation=0)
-plt.xticks(rotation=90)
+_ = plt.yticks(rotation = 0)
+_ = plt.xticks(rotation = 90)
 
 plt.show()
+plt.clf()
 ```
 
 ### **Customizing heatmaps**
@@ -328,14 +690,14 @@ Seaborn supports several types of additional customizations to improve the outpu
 
 ```{python}
 # Create the crosstab DataFrame
-pd_crosstab = pd.crosstab(df["Group"], df["____"])
+pd_crosstab = pd.crosstab(df4["Group"], df4["YEAR"])
 
 # Plot a heatmap of the table with no color bar and using the BuGn palette
-sns.heatmap(pd_crosstab, cbar=____, cmap="____", linewidths=____)
+_ = sns.heatmap(pd_crosstab, cbar = False, cmap = "BuGn", linewidths = 0.3)
 
 # Rotate tick marks for visibility
-plt.yticks(rotation=0)
-plt.xticks(rotation=90)
+_ = plt.yticks(rotation = 0)
+_ = plt.xticks(rotation = 90)
 
 #Show the plot
 plt.show()
