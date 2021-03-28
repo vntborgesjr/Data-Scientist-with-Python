@@ -3,8 +3,14 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
 
-grant_file = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/"
+df2 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/2018-College-Scorecard-Tuition.csv")
+
+df = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/US-Housing-and-Urban-Development-FY-2018-Fair-Market-Rent.csv")
+
+median = df.fmr_1.median()
+mean = df.fmr_1.mean()
 ```
 
 ## **Using Seaborn Styles**
@@ -17,13 +23,79 @@ Choosing the right type of plot is only the first step in creating effective vis
 
 Seaborn has several default built in themes that are more appealing than the default matplotlib styles. In order to set a default theme, use the sns.set() function. In this example, we can look at the distribution of college tuition fees in the US. The first image shows the standard pandas histogram and the second plot shows what the histogram looks like with Seaborn's style. Notice how the color palette is muted and the grid lines are displayed. This is the default Seaborn style, also called darkgrid.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+df2['Tuition'].plot.hist()
+plt.show()
+pl.clf()
+```
+```{python}
+sns.set()
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+df2['Tuition'].plot.hist()
+plt.show()
+pl.clf()
+```
+
 **3. Theme examples with sns.set_style()**
 
 Styles control multiple aspects of the final plot including the color palette and the use of grid lines or tick marks. Depending on the visualization, one style may be more beneficial than others for conveying your message. The best approach is to experiment with the styles and use the one that works best for your needs. This example shows the impact changing styles can have when plotting your data.
 
+```{python}
+for style in ['white', 'dark', 'whitegrid', 'darkgrid', 'ticks']:
+  _ = sns.set_style(style)
+  _ = sns.distplot(df2['Tuition'])
+  plt.show()
+plt.clf()
+```
+```{python}
+_ = sns.set_style('white')
+_ = sns.distplot(df2['Tuition'])
+plt.show()
+plt.clf()
+```
+
+```{python}
+_ = sns.set_style('dark')
+_ = sns.distplot(df2['Tuition'])
+plt.show()
+plt.clf()
+```
+
+```{python}
+_ = sns.set_style('whitegrid')
+_ = sns.distplot(df2['Tuition'])
+plt.show()
+plt.clf()
+```
+
+```{python}
+_ = sns.set_style('darkgrid')
+_ = sns.distplot(df2['Tuition'])
+plt.show()
+plt.clf()
+```
+
+```{python}
+_ = sns.set_style('ticks')
+_ = sns.distplot(df2['Tuition'])
+plt.show()
+plt.clf()
+```
+
 **4. Removing axes with despine()**
 
 In general, visualizations are more impactful if the amount of excess "chart junk" is removed. A common use case is to remove the lines around the axes called spines. Seaborn's despine() function removes one or more of the spines on a chart. The default is to remove the top and right lines but more can be removed by passing arguments to the despine() function.
+
+```{python}
+_ = sns.set_style('white')
+_ = sns.distplot(df2['Tuition'])
+_ = sns.despine(left = True)
+plt.show()
+plt.clf()
+```
 
 **5. Let's practice!**
 
@@ -45,18 +117,20 @@ All of the necessary imports for `seaborn`, `pandas` and `matplotlib` have been 
 
 ```{python}
 # Plot the pandas histogram
-df['fmr_2'].plot.____()
+df['fmr_2'].plot.hist()
 plt.show()
 plt.clf()
 
 # Set the default seaborn style
-sns.____()
+sns.set()
 
 # Plot the pandas histogram again
-df['fmr_2'].plot.____()
+df['fmr_2'].plot.hist()
 plt.show()
 plt.clf()
 ```
+
+You can see how the histogram is changed when the Seaborn style is applied to the underlying visualization.
 
 ### **Comparing styles**
 
@@ -68,8 +142,20 @@ Seaborn supports setting different styles that can control the aesthetics of the
 2. Create the same `distplot()` of `fmr_2` using a whitegrid style. Clear the plot after showing it.
 
 ```{python}
+_ = sns.set_style('dark')
+_ = sns.distplot(df['fmr_2'])
+plt.show()
+plt.clf()
+```
+
+```{python}
+_ = sns.set_style('whitegrid')
+_ = sns.distplot(df['fmr_2'])
+plt.show()
+plt.clf()
 
 ```
+Seaborn's styles provide a quick and easy way to alter your visualizations in a consistent and visually appealing manner.
 
 ### **Removing spines**
 
@@ -83,20 +169,22 @@ In general, visualizations should minimize extraneous markings so that the data 
 
 ```{python}
 # Set the style to white
-sns.set_style('____')
+sns.set_style('white')
 
 # Create a regression plot
-sns.lmplot(data=df,
-           x='pop2010',
-           y='fmr_2')
+sns.lmplot(data = df,
+           x = 'pop2010',
+           y = 'fmr_2')
 
 # Remove the spines
-sns.____()
+sns.despine(top = True, right = True)
 
 # Show the plot and clear the figure
 plt.show()
 plt.clf()
 ```
+
+Removing the spines lets the data speak for itself.
 
 ## **Colors in Seaborn**
 
@@ -108,17 +196,58 @@ Color is an extremely important component in creating effective visualizations. 
 
 Since Seaborn is built on top of matplotlib, it is able to interpret and apply matplotlib color codes. By using the familiar sns.set() function with color codes equals True, any matplotlib color codes will be appropriately mapped to the Seaborn palette. Here is an example of plotting our distplot() using 'g' for green.
 
+```{python}
+_ = sns.set(color_codes = True)
+_ = sns.distplot(df2['Tuition'], color = 'g')
+plt.show()
+plt.clf()
+```
+
 **3. Palettes**
 
 As shown in the previous slide, we can assign specific colors to a plot. However, this can be tedious when there are many items that must be encoded with color. Seaborn makes this task much easier by allowing us to set a palette of colors that can be cycled through in a plot. Seaborn has six default palettes including deep, muted, pastel, bright, dark, and colorblind. Here are examples of how the different palettes look with a distplot().
+
+```{python}
+for p in sns.palettes.SEABORN_PALETTES:
+  _ = sns.set_palette(p)
+  _ = sns.distplot(df2['Tuition'])
+  plt.show()
+plt.clf()
+```
 
 **4. Displaying Palettes**
 
 Seaborn offers several convenience functions for working with palettes. The palplot() function display color swatches in a Jupyter notebook. In order to retrieve the current palette, you can use the color palette function. This short example shows the exact colors included in the default palettes and how to use each of these functions.
 
+```{python}
+for p in sns.palettes.SEABORN_PALETTES:
+  _ = sns.set_palette(p)
+  _ = sns.palplot(sns.color_palette())
+  plt.show()
+quit()
+```
+
 **5. Defining Custom Palettes**
 
 There are three main types of color palettes. Circular color palettes are used for categorical data that is not ordered. Sequential palettes are useful when the data has a consistent range from high to low values. A diverging color palette is best used when both the high and the low values are interesting. Seaborn allows us to create each of these types of palettes in multiple manners. Each example on this slide shows a different automatically created palette of 12 different colors.
+
+```{python circular color}
+# Circular color: catagorical not ordered data
+sns.palplot(sns.color_palette('Paired', 12))
+plt.show()
+```
+
+```{python sequential colors}
+# Sequential colors: when data has a consistent range from low to high
+sns.palplot(sns.color_palette('Blues', 12))
+plt.show()
+```
+
+```{python diverging colors}
+# Diverging colors: when both the low and high values are interesting
+sns.palplot(sns.color_palette('BrBG', 12))
+plt.show()
+```
 
 **6. Let's practice!**
 
@@ -134,13 +263,19 @@ Seaborn offers several options for modifying the colors of your visualizations. 
 - Create a `distplot` for the `fmr_3` column using `matplotlib`'s magenta (`m`) color code.
 
 ```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
 # Set style, enable color code, and create a magenta distplot
-sns.set(color_codes=____)
-sns.distplot(df['fmr_3'], color='____')
+_ = sns.set(color_codes = True)
+_ = sns.distplot(df['fmr_3'], color = 'm')
 
 # Show the plot
-plt.____()
+plt.show()
+plt.clf()
 ```
+
+This is a quick way to modify the colors of a plot.
 
 ### **Using default palettes**
 
@@ -153,15 +288,21 @@ Seaborn includes several default palettes that can be easily applied to your plo
 - Use a `distplot` of the `fmr_3` column.
 
 ```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
 # Loop through differences between bright and colorblind palettes
-for p in ['____', '___']:
-    sns.set_palette(___)
-    sns.___(df['fmr_3'])
+for p in ['bright', 'colorblind']:
+    _ = sns.set_palette(p)
+    _ = sns.distplot(df['fmr_3'])
     plt.show()
-    
+
     # Clear the plots    
     plt.clf()
+   
 ```
+
+Using the default color blind palette is a good option for making sure your visualizations are easy to read for individuals with degrees of color blindness.
 
 ### **Color Palettes**
 
@@ -177,7 +318,7 @@ When visualizing multiple elements of data that do not have inherent ordering. W
 
 4. None of the above.
 
-Answer:
+Answer: 2
 
 ### **Creating Custom Palettes**
 
@@ -192,8 +333,21 @@ In this exercise, you can experiment with creating different palettes.
 3. Create and display a diverging palette with 6 colors `coolwarm`.
 
 ```{python}
-
+sns.palplot(sns.color_palette('Purples', 8))
+plt.show()
 ```
+
+```{python}
+sns.palplot(sns.color_palette('husl', 10))
+plt.show()
+```
+
+```{python}
+sns.palplot(sns.color_palette('coolwarm', 6))
+plt.show()
+```
+
+Color palette possibilities are limitless. Using these helper functions will allow you to create unique and visually appealing plots that will stand out and get your points across.
 
 ## **Customizing with Matplotlib**
 
@@ -205,17 +359,54 @@ Seaborn has several convenience functions for modifying components of your final
 
 As we have discussed in prior lessons, Seaborn does its best to make plots look good with minimal changes on your part. By using matplotlib's axes objects, you can customize almost any element of your plot. The most important concept is to add additional code to create the subplots using matplotlib's subplots functions and pass the resulting axes object to the Seaborn function. Seaborn will then plot the data on the given axes. In this example, I have used the ax set function to customize the x-label to show that the tuition data is for the 2013-2014 school year.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+sns.distplot(df2['Tuition'], ax = ax)
+_ = ax.set(xlabel = 'Tuition 2013 - 14')
+plt.show()
+plt.clf()
+```
+
 **3. Further Customizations**
 
 This example shows how much control you have once you start modifying the axes. In addition to setting an x-label, I have also changed the y-label and set a limit so that tuition ranges are only between 0 and $50,000. Finally, I added a title.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+sns.distplot(df2['Tuition'], ax = ax)
+_ = ax.set(xlabel = 'Tuition 2013 - 14',
+           ylabel = 'Distribution',
+           xlim = (0, 50000),
+           title = '2013-14 Tuition and Fees Distribution')
+plt.show()
+plt.clf()
+```
 **4. Combining Plots**
 
 This example illustrates how you can combine and customize multiple Seaborn plots. First, we create two axes and ensure that the y-axis is shared between the plots. Next, we plot a full distplot on ax0. Then, we use pandas' query function to only plot the data for the state of Minnesota. The other new concept is the use of the axvline to denote the maximum amount we can budget for tuition. In this case, $20,000. The final step is to turn on the legend and display it.
 
+```{python}
+fig, (ax0, ax1) = plt.subplots(nrows = 1, ncols = 2, sharey = True, figsize = (7, 4))
+_ = fig.tight_layout(pad = 5)
+
+_ = sns.distplot(df2['Tuition'], ax = ax0)
+_ = sns.distplot(df2.query('Regions == "South East"')['Tuition'], ax = ax1)
+
+_ = ax1.set(xlabel = 'Tuition (MN)', xlim = (0, 70000))
+_ = ax1.axvline(x = 20000, label = 'My Budget', linestyle = '--')
+_ = ax1.legend()
+```
+
 **5. Combining Plots**
 
 This example shows how much control you can have when creating your own visualizations.
+
+```{python}
+plt.show()
+plt.clf()
+```
 
 **6. Let's practice!**
 
@@ -237,17 +428,21 @@ In these examples, the US HUD data is loaded in the dataframe `df` and all libra
 
 ```{python}
 # Create a figure and axes
-fig, ax = plt.____()
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 
 # Plot the distribution of data
-sns.distplot(df['fmr_3'], ax=ax)
+_ = sns.distplot(df['fmr_3'], ax = ax)
 
 # Create a more descriptive x axis label
-ax.set(____="3 Bedroom Fair Market Rent")
+ax.set(xlabel = "3 Bedroom Fair Market Rent")
 
 # Show the plot
 plt.show()
+plt.clf()
 ```
+
+Now you know the basics of how to customize a plot.
 
 ### **Additional plot customizations**
 
@@ -262,19 +457,23 @@ The `matplotlib` API supports many common customizations such as labeling axes, 
 
 ```{python}
 # Create a figure and axes
-fig, ____ = plt.subplots()
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
 
 # Plot the distribution of 1 bedroom rents
-sns.____(df['fmr_1'], ax=____)
+_ = sns.distplot(df['fmr_1'], ax = ax)
 
 # Modify the properties of the plot
-ax.set(xlabel="1 Bedroom Fair Market Rent",
-       xlim=(____,____),
-       ____="US Rent")
+_ = ax.set(xlabel="1 Bedroom Fair Market Rent",
+       xlim=(100, 1500),
+       title = "US Rent")
 
 # Display the plot
 plt.show()
+plt.clf()
 ```
+
+Making these types of customizations to your plots can really improve their impact.
 
 ### **Adding annotations**
 
@@ -289,21 +488,27 @@ For this example, the palette has been changed to `bright` using `sns.set_palett
 - Add a vertical line using `axvline` for the `median` and `mean` of the values which are already defined.
 
 ```{python}
+_ = sns.set_palette('bright')
+
 # Create a figure and axes. Then plot the data
 fig, ax = plt.subplots()
-sns.distplot(df['fmr_1'], ax=ax)
+_ = fig.tight_layout(pad = 5)
+_ = sns.distplot(df['fmr_1'], ax = ax)
 
 # Customize the labels and limits
-ax.set(____="1 Bedroom Fair Market Rent", xlim=(100,1500), title="US Rent")
+_ = ax.set(xlabel = "1 Bedroom Fair Market Rent", xlim = (100,1500), title = "US Rent")
 
 # Add vertical lines for the median and mean
-ax.axvline(x=____, color='m', label='Median', linestyle='--', linewidth=2)
-ax.axvline(x=____, color='b', label='Mean', linestyle='-', linewidth=2)
+_ = ax.axvline(x = median, color = 'm', label = 'Median', linestyle = '--', linewidth = 2)
+_ = ax.axvline(x = mean, color = 'b', label = 'Mean', linestyle = '-', linewidth = 2)
 
 # Show the legend and plot the data
-ax.____()
+_ = ax.legend()
 plt.show()
+plt.clf()
 ```
+
+That was a long example but should show the power available to you!
 
 ### **Multiple plots**
 
@@ -317,17 +522,20 @@ For the final exercise we will plot a comparison of the fair market rents for 1-
 
 ```{python}
 # Create a plot with 1 row and 2 columns that share the y axis label
-fig, (ax0, ax1) = plt.subplots(nrows=____, ncols=____, sharey=____)
+fig, (ax0, ax1) = plt.subplots(nrows = 1, ncols = 2, sharey = True)
+_ = fig.tight_layout(pad = 5)
 
 # Plot the distribution of 1 bedroom apartments on ax0
-sns.distplot(df['____'], ax=____)
-____.set(xlabel="1 Bedroom Fair Market Rent", xlim=(100,1500))
+_ = sns.distplot(df['fmr_1'], ax = ax0)
+_ = ax0.set(xlabel = "1 Bedroom Fair Market Rent", xlim = (100,1500))
 
 # Plot the distribution of 2 bedroom apartments on ax1
-sns.distplot(df['____'], ax=____)
-____.set(xlabel="2 Bedroom Fair Market Rent", xlim=(100,1500))
+_ = sns.distplot(df['fmr_2'], ax = ax1)
+_ = ax1.set(xlabel = "2 Bedroom Fair Market Rent", xlim = (100,1500))
 
 # Display the plot
 plt.show()
+plt.clf()
 ```
 
+Well done. You have completed the customization section of the course.
