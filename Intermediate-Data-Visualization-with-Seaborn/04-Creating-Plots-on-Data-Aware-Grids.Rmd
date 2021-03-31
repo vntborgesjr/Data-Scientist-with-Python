@@ -24,6 +24,10 @@ df3['temp'] = df3.temp/ 1000
 df3 = df3[df3['temp'] > 0.1]
 
 df4 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/Daily-Show-Guests.csv")
+
+df5 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/US-Housing-and-Urban-Development-FY-2018-Fair-Market-Rent.csv")
+
+df6 = pd.read_csv("/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/Automobile-Insurance-Premiums.csv")
 ```
 
 ## **Using FacetGrid, factorplot and lmplot**
@@ -247,17 +251,50 @@ Let's take a look at our Fair Market Housing data we looked at in a previous exe
 
 The process for creating a PairGrid is similar to a FacetGrid in that we must create the grid, then map a plot type to the grid. The interesting point with this grid is that we do not define the row and column parameters. Instead we define the variables. In this case, the variables are the dataframe columns that we want to look at. The dataframe contains a Fair Market Rate column as well as a Median Income column, which we pass to the PairGrid. The next step is to let Seaborn know that we want to see a scatter plot visualization of the relationship between the two variables. Seaborn takes care of varying the x and y-axis for each of these plots.
 
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+g = sns.PairGrid(df5, vars = ['fmr_4', 'fmr_1'])
+g = g.map(plt.scatter)
+plt.show()
+plt.clf()
+```
+
 **4. Customizing the PairGrid diagonals**
 
 In the previous example, the diagonals contained straight lines, which are not very insightful. Fortunately, the PairGrid supports defining the type of plots that can be displayed on the diagonals. You can use the map_diag function to define the plotting function for the main diagonal. The map_offdiag function defines the other diagonal. In this case, we are looking at a histogram plot of the Fair Market Rent and Median Income. This view is much more useful than the previous scatter.
+
+```{python}
+fig, ax = plt.subplots()
+_ = fig.tight_layout(pad = 5)
+
+g = sns.PairGrid(df5, vars = ['fmr_4', 'fmr_1'])
+g = g.map_diag(plt.hist)
+g = g.map_offdiag(plt.scatter)
+plt.show()
+plt.clf()
+```
 
 **5. Pairplot**
 
 Pairplot is a shortcut function that simplifies the PairGrid. First, we define the variables like we did in the previous view. However, instead of mapping the plots, we can pass keywords to the function to specify the kind of plots for the main and off diagonals. The other nice aspect of this function is that it plots a regression line for us. This is a useful feature for visualizing potential relationships in the data.
 
+```{python}
+_ =  sns.pairplot(df5, vars = ['fmr_4', 'fmr_1'], kind = 'reg', diag_kind = 'hist')
+plt.show()
+plt.clf()
+```
+
 **6. Customizing a pairplot**
 
 Here is another example of how Seaborn can generate complex plots with very little code. To limit the data we are interested in, we filter the data to rentals with less than 3 bedrooms and assign hue to the bedrooms column. We also pass a keyword argument to reduce the alpha variable to 0.5. This makes the scatter plots transparent so that it is easier to see the observations. The other item to notice is that we passed in 3 variables, so this plot now contains a total of nine plots.
+
+```{python}
+sns.pairplot(df5, vars = ['fmr_1', 'fmr_3', 'fmr_4'], hue = 'state_alpha', palette = 'husl', plot_kws = {'alpha': 0.5})
+plt.show()
+plt.clf()
+```
 
 **7. Let's practice!**
 
@@ -272,20 +309,28 @@ Seaborn supports this pair-wise analysis using the `PairGrid`. In this exercise,
 **Instructions**
 
 1. Compare `"fatal_collisions"` to `"premiums"` by using a scatter plot mapped to a `PairGrid()`.
-2. 
+2. Create another `PairGrid` but plot a histogram on the diagonal and scatter plot on the off diagonal.
 
 ```{python}
 # Create a PairGrid with a scatter plot for fatal_collisions and premiums
-g = sns.___(df, ___=["fatal_collisions", "premiums"])
-g2 = g.___(plt.scatter)
+g = sns.PairGrid(df6, vars = ["fatal_collisions", "premiums"])
+g2 = g.map(plt.scatter)
 
 plt.show()
 plt.clf()
 ```
 
 ```{python}
+# Create the same PairGrid but map a histogram on the diag
+g = sns.PairGrid(df6, vars = ["fatal_collisions", "premiums"])
+g2 = g.map_diag(plt.hist)
+g3 = g2.map_offdiag(plt.scatter)
 
+plt.show()
+plt.clf()
 ```
+
+This analysis provides useful insight into the distribution of premium amounts as well as the limited relationships between `fatal_collision` and `premiums`.
 
 ### **Using a pairplot**
 
@@ -295,20 +340,33 @@ The `pairplot()` function is generally a more convenient way to look at pairwise
 
 1. Recreate the pairwise plot from the previous exercise using `pairplot()`.
 2. 
+- Create another `pairplot` using the `"Region"` to color code the results.
+- Use the `RdBu` palette to change the colors of the plot.
 
 ```{python}
 # Create a pairwise plot of the variables using a scatter plot
-sns.___(data=df,
-        ___=["fatal_collisions", "premiums"],
-        kind='___')
+_ = sns.pairplot(data = df6,
+        vars = ["fatal_collisions", "premiums"],
+        kind = 'scatter')
 
 plt.show()
 plt.clf()
 ```
 
 ```{python}
+# Plot the same data but use a different color palette and color code by Region
+_ = sns.pairplot(data = df6,
+        vars = ["fatal_collisions", "premiums"],
+        kind = 'scatter',
+        hue = 'Region',
+        palette = 'RdBu',
+        diag_kws = {'alpha': 0.5})
 
+plt.show()
+plt.clf()
 ```
+
+The `pairplot` is generally a simpler than `PairGrid` for plotting complex relationships
 
 ### **Additional pairplots**
 
@@ -323,22 +381,35 @@ We have already looked at using `kind` to control the types of plots. We can als
 1.
 - Create a pair plot that examines `fatal_collisions_speeding` and `fatal_collisions_alc` on the x axis and `premiums` and `insurance_losses` on the y axis.
 - Use the `husl` palette and color code the scatter plot by `Region`.
+2. 
+- Build a `pairplot()` with kde plots along the diagonals. Include the `insurance_losses` and `premiums` as the variables.
+- Use a `reg` plot for the the non-diagonal plots.
+- Use the `BrBG` palette for the final plot.
 
 ```{python}
 # Build a pairplot with different x and y variables
-sns.___(data=df,
-        ___=["fatal_collisions_speeding", "fatal_collisions_alc"],
-        ___=['premiums', 'insurance_losses'],
-        kind='scatter',
-        hue='Region',
-        ___='husl')
+_ = sns.pairplot(data = df6,
+        x_vars = ["fatal_collisions_speeding", "fatal_collisions_alc"],
+        y_vars = ['premiums', 'insurance_losses'],
+        kind = 'scatter',
+        hue = 'Region',
+        palette = 'husl')
 
 plt.show()
 plt.clf()
 ```
 
 ```{python}
+# plot relationships between insurance_losses and premiums
+_ = sns.pairplot(data = df6,
+             vars = ["insurance_losses", "premiums"],
+             kind = 'reg',
+             palette = 'BrBG',
+             diag_kind = 'kde',
+             hue = 'Region')
 
+plt.show()
+plt.clf()
 ```
 
 ## **Using JointGrid and jointplot**
@@ -355,17 +426,49 @@ The JointGrid is similar to the other Grid plots in that it takes a small number
 
 The JointGrid() creation process follows the same steps as the other grids. You must define the grid and map the plots onto the grid. In this case, we define the Tuition and Admission Rates as the X and Y variables. Then we map Seaborn's regplot() and distplot() to the grid. Seaborn takes care of creating the plot.
 
+```{python}
+g = sns.JointGrid(df2, x = 'Tuition', y = 'ADM_RATE_ALL')
+_ = g.plot(sns.regplot, sns.distplot)
+
+plt.show()
+plt.clf()
+```
+
 **4. Advanced JointGrid**
 
 Here, we show the flexibility available through the JointGrid() function. The plot_joint() function specifies that a kde plot should be included in the center. The kdeplots on the margins are defined with plot_marginals(). We also use the annotate() function to define additional information about the relationship of the variables. Python's SciPy stats library contains a function that calculates the Pearson correlation value. Seaborn takes care of applying that function and labeling the graph with this value. This view of the data helps us understand the distributions of data for these two variables. In this example, there is a large group of values that have tuition between \$15,000 and $20,000 and admission rates around 60%.
+
+```{python}
+g = sns.JointGrid(df2, x = 'Tuition', y = 'ADM_RATE_ALL')
+g = g.plot_joint(sns.kdeplot)
+g = g.plot_marginals(sns.kdeplot, shade = True)
+g = g.annotate(stats.pearsonr)
+
+plt.show()
+plt.clf()
+```
 
 **5. jointplot()**
 
 The jointplot() is easier to use but provides fewer customization capabilities. In this example, we show a hex plot as the method to demonstrate the relationship between the two variables. Seaborn automatically includes the Pearson r correlation in this plot. As you can see, this is a simpler approach than creating the JointGrid().
 
+```{python}
+_ = sns.jointplot(data = df2, x = 'Tuition', y = 'ADM_RATE_ALL', kind = 'hex')
+
+plt.show()
+plt.clf()
+```
+
 **6. Customizing a jointplot**
 
 The jointplot() supports simple creation of scatter, hex, residual, regression, and kde plots. It can also support adding overlay plots to enhance the final output. This example, shows a fairly common paradigm for analyzing the data with Seaborn. In addition to defining the X and Y variables, we set the limits for the x-axis to cut off at 0 and 25,000. We also pass keywords to the marginal plot to control the structure of the histogram. In this case, we only want to look at the distribution of results for public universities with an undergraduate enrollment less than 2,500 students. Finally, by including the plot_joint() function, a kde plot is overlaid on the scatter plot.
+
+```{python}
+g = (sns.jointplot(x = 'Tuition', y = 'ADM_RATE_ALL', kind = 'scatter', xlim = (0, 25000), marginal_kws = dict(bins = 15, rug = True), data = df2.query('UG < 2500 & Ownership == "Public"')).plot_joint(sns.kdeplot))
+
+plt.show()
+plt.clf()
+```
 
 **7. Customizing a jointplot**
 
@@ -384,27 +487,38 @@ For these exercises, we will use the bike share data that we reviewed earlier. I
 **Instructions**
 
 1.
-- Use Seaborn's "whitegrid" style for these plots.
-- Create a JointGrid() with "hum" on the x-axis and "total_rentals" on the y.
-- Plot a regplot() and distplot() on the margins.
+- Use Seaborn's `"whitegrid"` style for these plots.
+- Create a `JointGrid()` with `"hum"` on the x-axis and `"total_rentals"` on the y.
+- Plot a `regplot()` and `distplot()` on the margins.
+2. Re-create the plot using a `jointplot()`.
 
 ```{python}
 # Build a JointGrid comparing humidity and total_rentals
-sns.___("whitegrid")
-g = sns.___(___="hum",
-            ___="total_rentals",
-            data=df,
-            xlim=(0.1, 1.0)) 
+_ = sns.set_style("whitegrid")
+g = sns.JointGrid(x = "hum",
+            y = "total_rentals",
+            data = df3,
+            xlim = (0.1, 1.0)) 
 
-g.plot(sns.___, sns.distplot)
+g.plot(sns.regplot, sns.distplot)
 
 plt.show()
 plt.clf()
 ```
 
 ```{python}
+# Create a jointplot similar to the JointGrid 
+_ = sns.jointplot(x = "hum",
+        y = "total_rentals",
+        kind = 'reg',
+        data = df3)
 
+plt.show()
+plt.clf()
+plt.clf()
 ```
+
+These plots show that there is limited relationship between rental amounts and humidity levels.
 
 ### **Jointplots and regression**
 
@@ -413,25 +527,37 @@ Since the previous plot does not show a relationship between humidity and rental
 **Instructions**
 
 1. Create a `jointplot` with a 2nd order polynomial regression plot comparing `temp` and `total_rentals`.
+2. Use a residual plot to check the appropriateness of the model.
 
 ```{python}
 # Plot temp vs. total_rentals as a regression plot
-sns.____(x="temp",
-         y="____",
-         kind='____',
-         data=df,
-         order=____,
-         xlim=(0, 1))
+_ = sns.jointplot(x = "temp",
+         y = "total_rentals",
+         kind = 'reg',
+         data = df3,
+         order = 2,
+         xlim = (0, 1))
 
 plt.show()
 plt.clf()
 ```
 
 ```{python}
+# Plot a jointplot showing the residuals
+_ = sns.jointplot(x = "temp",
+        y = "total_rentals",
+        kind = 'resid',
+        data = df3,
+        order = 2)
 
+plt.show()
+plt.clf()
 ```
 
+Based on the residual plot and the pearson r value, there is a positive relationship between temperature and total_rentals.
+
 ### **Complex jointplots**
+
 The `jointplot` is a convenience wrapper around many of the `JointGrid` functions. However, it is possible to overlay some of the `JointGrid` plots on top of the standard `jointplot`. In this example, we can look at the different distributions for riders that are considered `casual` versus those that are `registered`.
 
 **Instructions**
@@ -439,24 +565,33 @@ The `jointplot` is a convenience wrapper around many of the `JointGrid` function
 1.
 - Create a `jointplot` with a scatter plot comparing `temp` and `casual` riders.
 - Overlay a `kdeplot` on top of the scatter plot.
-2. 
+2. Build a similar plot for `registered` users.
 
 ```{python}
 # Create a jointplot of temp vs. casual riders
 # Include a kdeplot over the scatter plot
-g = (sns.___(x="temp",
-             y="casual",
-             kind='___',
-             data=df,
-             marginal_kws=dict(bins=10, rug=True))
-    .plot_joint(sns.___))
+g = (sns.jointplot(x = "temp",
+             y = "casual",
+             kind = 'scatter',
+             data = df3,
+             marginal_kws = dict(bins = 10, rug = True))
+    .plot_joint(sns.kdeplot))
     
 plt.show()
 plt.clf()
 ```
 
 ```{python}
+# Replicate the above plot but only for registered riders
+g = (sns.jointplot(x = "temp",
+             y = "registered",
+             kind = 'scatter',
+             data = df3,
+             marginal_kws = dict(bins = 10, rug = True))
+    .plot_joint(sns.kdeplot))
 
+plt.show()
+plt.clf()
 ```
 
 ## **Selecting Seaborn Plots**
