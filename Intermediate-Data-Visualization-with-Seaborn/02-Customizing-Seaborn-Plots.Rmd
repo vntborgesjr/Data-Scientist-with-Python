@@ -1,3 +1,12 @@
+---
+title: "02 - Customizing Seaborn Plots"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    code_folding: hide
+---
 
 ```{python setup}
 import matplotlib.pyplot as plt
