@@ -213,15 +213,497 @@ pre code {
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction-to-ohter-file-types"><strong>Introduction to ohter file types</strong></a>
+<ul>
+<li><a href="#not-so-flat-any-more"><strong>Not so flat any more</strong></a></li>
+<li><a href="#loading-a-pickled-file"><strong>Loading a pickled file</strong></a></li>
+<li><a href="#listing-sheets-in-excel-files"><strong>Listing sheets in Excel files</strong></a></li>
+<li><a href="#importing-sheets-from-excel-files"><strong>Importing sheets from Excel files</strong></a></li>
+<li><a href="#customizing-your-spreadsheet-import"><strong>Customizing your spreadsheet import</strong></a></li>
+</ul></li>
+<li><a href="#importing-sasstata-files-using-pandas"><strong>Importing SAS/Stata files using pandas</strong></a>
+<ul>
+<li><a href="#how-to-import-sas7bdat"><strong>How to import SAS7BDAT</strong></a></li>
+<li><a href="#importing-sas-files"><strong>Importing SAS files</strong></a></li>
+</ul></li>
+<li><a href="#using-read_stata-to-import-stata-files"><strong>Using read_stata to import Stata files</strong></a>
+<ul>
+<li><a href="#importing-stata-files"><strong>Importing Stata files</strong></a></li>
+</ul></li>
+<li><a href="#importing-hdf5-files"><strong>Importing HDF5 files</strong></a>
+<ul>
+<li><a href="#using-file-to-import-hdf5-files"><strong>Using File to import HDF5 files</strong></a></li>
+<li><a href="#using-h5py-to-import-hdf5-files"><strong>Using h5py to import HDF5 files</strong></a></li>
+<li><a href="#extracting-data-from-your-hdf5-file"><strong>Extracting data from your HDF5 file</strong></a></li>
+</ul></li>
+<li><a href="#importing-matlab-files"><strong>Importing MATLAB files</strong></a>
+<ul>
+<li><a href="#loading-.mat-files"><strong>Loading .mat files</strong></a></li>
+<li><a href="#the-structure-of-.mat-in-python"><strong>The structure of .mat in Python</strong></a></li>
+</ul></li>
+</ul>
+</div>
 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbnVtcHkgYXMgbnBcbmltcG9ydCBtYXRwbG90bGliLnB5cGxvdCBhcyBwbHRcbmBgYCJ9 -->
+<pre class="python"><code>import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="introduction-to-ohter-file-types" class="section level2">
+<h2><strong>Introduction to ohter file types</strong></h2>
+<p><strong>1. Introduction to other file types</strong></p>
+<p>Now that you have mastered the art of importing flat files in Python, it is time to check out a number of other file types that you will find yourself needing to work with as a data scientist.</p>
+<p><strong>2. Other file types</strong></p>
+<p>In this chapter, you will learn how to import Excel spreadsheets, which professionals from all disciplines use to store their data. You will also gain familiarity with importing MATLAB, SAS and Stata files, which are commonplace. You will also learn how to import HDF5 files and you’ll actually import an HDF5 file containing data from the Laser Interferometer Gravitational-Wave Observatory project that provided empirical support for Einstein’s Theory of Gravitational Waves in 2016. HDF5 files are becoming a more prevalent way to store large datasets, as demonstrated by the fact that the LIGO researchers use it to store their data.</p>
+<p><strong>3. Pickled files</strong></p>
+<p>Another file type you’ll learn about in this Chapter is that of a ‘pickled’ file. This is a file type native to Python. The concept of pickling a file is motivated by the following: while it may be easy to save a numpy array or a pandas dataframe to a flat file, there are many other datatypes, such as dictionaries and lists, for which it isn’t obvious how to store them. ‘Pickle’ to the rescue! If you want your files to be human readable, you may want to save them as text files in a clever manner (JSONs, which you will see in a later chapter, are appropriate for Python dictionaries). If, however, you merely want to be able to import them into Python, you can serialize them. All this means is converting the object into a sequence of bytes, or bytestream. As this is a course in Importing Data in Python,</p>
+<p><strong>4. Pickled files</strong></p>
+<p>you’ll learn how to import files that have already been pickled. As you have done before, when opening such a file, you’ll want to specify that it is read only; you’ll also want to specify that it is a binary file, meaning that it is computer-readable and not human-readable. To specify both read only and binary, you’ll want pass the string ‘rb’ as the second argument of open.</p>
+<p><strong>5. Importing Excel spreadsheets</strong></p>
+<p>You’ll then dive head-first into Excel spreadsheets, the use of which is so widespread that they need next to no introduction at all. An Excel file generally consists of a number of sheets. There are many ways to import Excel files and you’ll use pandas to do so because it produces dataframes natively, which is great for your practice as a Data Scientist. As you can see in this example, you can use the functionExcelfile to assign an Excel file to a variable data. As an Excel file consists of sheets, the first thing to do is figure out what the sheets are. This is straightforward with the command ‘data dot sheet_names’. To then load a particular sheet as a dataframe, you need only apply the method parse to the object data with a single argument, which is either the name as a string or the index as a float of the sheet that you wish to load: pandas is clever enough to know if you’re telling it the sheet name or the index!</p>
+<p><strong>6. You’ll learn:</strong></p>
+<p>You’ll also learn how to customize your spreadsheet import in order to skip rows, import only certain columns and to change the column names. That’s enough from me,</p>
+<p><strong>7. Let’s practice!</strong></p>
+<p>it’s now time to get your hands dirty with pickled files and Excel spreadsheets. Enjoy!</p>
+<div id="not-so-flat-any-more" class="section level3">
+<h3><strong>Not so flat any more</strong></h3>
+<p>In Chapter 1, you learned how to use the IPython magic command <code>! ls</code> to explore your current working directory. You can also do this natively in Python using the <a href="https://docs.python.org/2/library/os.html">library</a> <code>os</code>, which consists of miscellaneous operating system interfaces.</p>
+<p>The first line of the following code imports the library <code>os</code>, the second line stores the name of the current directory in a string called wd and the third outputs the contents of the directory in a list to the shell.</p>
+<p><code>import os</code> <code>wd = os.getcwd()</code> <code>os.listdir(wd)</code></p>
+<p>Run this code in the IPython shell and answer the following questions. Ignore the files that begin with <code>.</code>.</p>
+<p>Check out the contents of your current directory and answer the following questions: (1) which file is in your directory and NOT an example of a flat file; (2) why is it not a flat file?</p>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p><code>database.db</code> is not a flat file because relational databases contain structured relationships and flat files do not.</p></li>
+<li><p><code>battledeath.xlsx</code> is not a flat because it is a spreadsheet consisting of many sheets, not a single table.</p></li>
+<li><p><code>titanic.txt</code> is not a flat file because it is a <code>.txt</code>, not a <code>.csv</code>.</p></li>
+</ol>
+</div>
+<div id="loading-a-pickled-file" class="section level3">
+<h3><strong>Loading a pickled file</strong></h3>
+<p>There are a number of datatypes that cannot be saved easily to flat files, such as lists and dictionaries. If you want your files to be human readable, you may want to save them as text files in a clever manner. JSONs, which you will see in a later chapter, are appropriate for Python dictionaries.</p>
+<p>However, if you merely want to be able to import them into Python, you can <a href="https://en.wikipedia.org/wiki/Serialization">serialize</a> them. All this means is converting the object into a sequence of bytes, or a bytestream.</p>
+<p>In this exercise, you’ll import the <code>pickle</code> package, open a previously pickled data structure from a file and load it.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Import the <code>pickle</code> package.</li>
+<li>Complete the second argument of <code>open()</code> so that it is read only for a binary file. This argument will be a string of two letters, one signifying ‘read only’, the other ‘binary’.</li>
+<li>Pass the correct argument to <code>pickle.load()</code>; it should use the variable that is bound to <code>open</code>.</li>
+<li>Print the data, <code>d</code>.</li>
+<li>Print the datatype of <code>d</code>; take your mind back to your previous use of the function <code>type()</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwaWNrbGUgcGFja2FnZVxuXG5cbiMgT3BlbiBwaWNrbGUgZmlsZSBhbmQgbG9hZCBkYXRhOiBkXG53aXRoIG9wZW4oJ2RhdGEucGtsJywgX19fXykgYXMgZmlsZTpcbiAgICBkID0gcGlja2xlLmxvYWQoX19fXylcblxuIyBQcmludCBkXG5wcmludChfX19fKVxuXG4jIFByaW50IGRhdGF0eXBlIG9mIGRcbnByaW50KF9fX18pXG5gYGAifQ== -->
+<pre class="python"><code># Import pickle package
+
+
+# Open pickle file and load data: d
+with open(&#39;data.pkl&#39;, ____) as file:
+    d = pickle.load(____)
+
+# Print d
+print(____)
+
+# Print datatype of d
+print(____)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="listing-sheets-in-excel-files" class="section level3">
+<h3><strong>Listing sheets in Excel files</strong></h3>
+<p>Whether you like it or not, any working data scientist will need to deal with Excel spreadsheets at some point in time. You won’t always want to do so in Excel, however!</p>
+<p>Here, you’ll learn how to use <code>pandas</code> to import Excel spreadsheets and how to list the names of the sheets in any loaded .xlsx file.</p>
+<p>Recall from the video that, given an Excel file imported into a variable <code>spreadsheet</code>, you can retrieve a list of the sheet names using the attribute <code>spreadsheet.sheet_names</code>.</p>
+<p>Specifically, you’ll be loading and checking out the spreadsheet <code>&#39;battledeath.xlsx&#39;</code>, modified from the Peace Research Institute Oslo’s (PRIO) <a href="https://www.prio.org/Data/Armed-Conflict/Battle-Deaths/The-Battle-Deaths-Dataset-version-30/">dataset</a>. This data contains age-adjusted mortality rates due to war in various countries over several years.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Assign the spreadsheet filename (provided above) to the variable <code>file</code>.</li>
+<li>Pass the correct argument to <code>pd.ExcelFile()</code> to load the file using pandas, assigning the result to the variable <code>xls</code>.</li>
+<li>Print the sheetnames of the Excel spreadsheet by passing the necessary argument to the <code>print()</code> function.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwYW5kYXNcbmltcG9ydCBwYW5kYXMgYXMgcGRcblxuIyBBc3NpZ24gc3ByZWFkc2hlZXQgZmlsZW5hbWU6IGZpbGVcbmZpbGUgPSBfX19fXG5cbiMgTG9hZCBzcHJlYWRzaGVldDogeGxzXG54bHMgPSBwZC5FeGNlbEZpbGUoX19fXylcblxuIyBQcmludCBzaGVldCBuYW1lc1xucHJpbnQoX19fXylcblxuYGBgIn0= -->
+<pre class="python"><code># Import pandas
+import pandas as pd
+
+# Assign spreadsheet filename: file
+file = ____
+
+# Load spreadsheet: xls
+xls = pd.ExcelFile(____)
+
+# Print sheet names
+print(____)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="importing-sheets-from-excel-files" class="section level3">
+<h3><strong>Importing sheets from Excel files</strong></h3>
+<p>In the previous exercises, you saw that the Excel file contains two sheets, <code>&#39;2002&#39;</code> and <code>&#39;2004&#39;</code>. The next step is to import these.</p>
+<p>In this exercise, you’ll learn how to import any given sheet of your loaded .xlsx file as a DataFrame. You’ll be able to do so by specifying either the sheet’s name or its index.</p>
+<p>The spreadsheet <code>&#39;battledeath.xlsx&#39;</code> is already loaded as <code>xls</code>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Load the sheet <code>&#39;2004&#39;</code> into the DataFrame df1 using its name as a string.</li>
+<li>Print the head of <code>df1</code> to the shell.</li>
+<li>Load the sheet <code>2002</code> into the DataFrame <code>df2</code> using its index (<code>0</code>).</li>
+<li>Print the head of <code>df2</code> to the shell.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIExvYWQgYSBzaGVldCBpbnRvIGEgRGF0YUZyYW1lIGJ5IG5hbWU6IGRmMVxuZGYxID0geGxzLnBhcnNlKF9fX18pXG5cbiMgUHJpbnQgdGhlIGhlYWQgb2YgdGhlIERhdGFGcmFtZSBkZjFcbnByaW50KF9fX18pXG5cbiMgTG9hZCBhIHNoZWV0IGludG8gYSBEYXRhRnJhbWUgYnkgaW5kZXg6IGRmMlxuXG5cbiMgUHJpbnQgdGhlIGhlYWQgb2YgdGhlIERhdGFGcmFtZSBkZjJcbnByaW50KF9fX18pXG5cbmBgYCJ9 -->
+<pre class="python"><code># Load a sheet into a DataFrame by name: df1
+df1 = xls.parse(____)
+
+# Print the head of the DataFrame df1
+print(____)
+
+# Load a sheet into a DataFrame by index: df2
+
+
+# Print the head of the DataFrame df2
+print(____)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="customizing-your-spreadsheet-import" class="section level3">
+<h3><strong>Customizing your spreadsheet import</strong></h3>
+<p>Here, you’ll parse your spreadsheets and use additional arguments to skip rows, rename columns and select only particular columns.</p>
+<p>The spreadsheet <code>&#39;battledeath.xlsx&#39;</code> is already loaded as <code>xls</code>.</p>
+<p>As before, you’ll use the method <code>parse()</code>. This time, however, you’ll add the additional arguments <code>skiprows</code>, <code>names</code> and <code>usecols</code>. These skip rows, name the columns and designate which columns to parse, respectively. All these arguments can be assigned to lists containing the specific row numbers, strings and column numbers, as appropriate.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Parse the first sheet by index. In doing so, skip the first row of data and name the columns <code>&#39;Country&#39;</code> and <code>&#39;AAM due to War (2002)&#39;</code> using the argument <code>names</code>. The values passed to <code>skiprows</code> and <code>names</code> all need to be of type <code>list</code>.</li>
+<li>Parse the second sheet by index. In doing so, parse only the first column with the <code>usecols</code> parameter, skip the first row and rename the column <code>&#39;Country&#39;</code>. The argument passed to usecols also needs to be of type <code>list</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFBhcnNlIHRoZSBmaXJzdCBzaGVldCBhbmQgcmVuYW1lIHRoZSBjb2x1bW5zOiBkZjFcbmRmMSA9IHhscy5wYXJzZShfX19fLCBza2lwcm93cz1fX19fLCBuYW1lcz1fX19fKVxuXG4jIFByaW50IHRoZSBoZWFkIG9mIHRoZSBEYXRhRnJhbWUgZGYxXG5wcmludChkZjEuaGVhZCgpKVxuXG4jIFBhcnNlIHRoZSBmaXJzdCBjb2x1bW4gb2YgdGhlIHNlY29uZCBzaGVldCBhbmQgcmVuYW1lIHRoZSBjb2x1bW46IGRmMlxuZGYyID0geGxzLnBhcnNlKF9fX18sIHVzZWNvbHM9X19fXywgc2tpcHJvd3M9X19fXywgbmFtZXM9X19fXylcblxuIyBQcmludCB0aGUgaGVhZCBvZiB0aGUgRGF0YUZyYW1lIGRmMlxucHJpbnQoZGYyLmhlYWQoKSlcblxuYGBgIn0= -->
+<pre class="python"><code># Parse the first sheet and rename the columns: df1
+df1 = xls.parse(____, skiprows=____, names=____)
+
+# Print the head of the DataFrame df1
+print(df1.head())
+
+# Parse the first column of the second sheet and rename the column: df2
+df2 = xls.parse(____, usecols=____, skiprows=____, names=____)
+
+# Print the head of the DataFrame df2
+print(df2.head())
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="importing-sasstata-files-using-pandas" class="section level2">
+<h2><strong>Importing SAS/Stata files using pandas</strong></h2>
+<p><strong>1. Importing SAS/Stata files using pandas</strong></p>
+<p>There are many statistical software packages out there and, although you may not need to do so all the time, it will be important for you, as a working Data Scientist, to be able to import these files into your Python environment.</p>
+<p><strong>2. SAS and Stata files</strong></p>
+<p>The most common examples are SAS, which is an acronym for ‘Statistical Analysis System’, and Stata, which is a contraction of ‘Statistics’ and ‘Data’. The former is used a great deal in business analytics and biostatistics, while the latter is popular in academic social sciences research, such as economics and epidemiology.</p>
+<p><strong>3. SAS files</strong></p>
+<p>SAS files are important because SAS is a software suite that performs advanced analytics, multivariate analyses, business intelligence, data management, predictive analytics and is a standard for statisticians to do computational analysis.</p>
+<p><strong>4. Importing SAS files</strong></p>
+<p>The most common SAS files have the extension dot sas7bdat and dot sas7bcat, which are dataset files and catalog files respectively. You’ll learn how to import the former as dataframes using the function SAS7BDAT (upper case) from the package sas7bdat (lower case). In this case, you can bind the variable file to a connection to the file ‘urbanpop dot sas7bdat’ in a context manager. Within this context, you can assign to a variable df_sas the result of applying method to_data_frame to file.</p>
+<p><strong>5. Importing Stata files</strong></p>
+<p>Stata files have extension dot dta and we can import them using pandas. We don’t even need to initialize a context manager in this case! We merely pass the filename to the function read_stata and assign it to a variable, just like this. In the following exercises, you’ll gain invaluable experience at importing these important file formats in Python as pandas dataframes and then seeing what was inside them.</p>
+<p><strong>6. Let’s practice!</strong></p>
+<p>Now it’s your turn, happy importing!</p>
+<div id="how-to-import-sas7bdat" class="section level3">
+<h3><strong>How to import SAS7BDAT</strong></h3>
+<p>How do you correctly import the function <code>SAS7BDAT()</code> from the package sas7bdat?</p>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p><code>import SAS7BDAT from sas7bdat</code></p></li>
+<li><p><code>from SAS7BDAT import sas7bdat</code></p></li>
+<li><p><code>import sas7bdat from SAS7BDAT</code></p></li>
+<li><p><code>from sas7bdat import SAS7BDAT</code></p></li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="importing-sas-files" class="section level3">
+<h3><strong>Importing SAS files</strong></h3>
+<p>In this exercise, you’ll figure out how to import a SAS file as a DataFrame using <code>SAS7BDAT</code> and <code>pandas</code>. The file <code>&#39;sales.sas7bdat&#39;</code> is already in your working directory and both <code>pandas</code> and <code>matplotlib.pyplot</code> have already been imported as follows:</p>
+<p><code>import pandas as pd</code> <code>import matplotlib.pyplot as plt</code></p>
+<p>The data are adapted from the website of the undergraduate text book <a href="http://www.principlesofeconometrics.com/">Principles of Econometrics</a> by Hill, Griffiths and Lim.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Import the module <code>SAS7BDAT</code> from the library <code>sas7bdat</code>.</li>
+<li>In the context of the file <code>&#39;sales.sas7bdat&#39;</code>, load its contents to a DataFrame <code>df_sas</code>, using the method <code>to_data_frame()</code> on the object <code>file</code>.</li>
+<li>Print the head of the DataFrame <code>df_sas</code>.</li>
+<li>Execute your entire script to produce a histogram plot!</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBzYXM3YmRhdCBwYWNrYWdlXG5mcm9tIF9fX18gaW1wb3J0IF9fX19cblxuIyBTYXZlIGZpbGUgdG8gYSBEYXRhRnJhbWU6IGRmX3Nhc1xud2l0aCBTQVM3QkRBVCgnc2FsZXMuc2FzN2JkYXQnKSBhcyBmaWxlOlxuICAgIF9fX19cblxuIyBQcmludCBoZWFkIG9mIERhdGFGcmFtZVxuXG5cbiMgUGxvdCBoaXN0b2dyYW0gb2YgRGF0YUZyYW1lIGZlYXR1cmVzIChwYW5kYXMgYW5kIHB5cGxvdCBhbHJlYWR5IGltcG9ydGVkKVxucGQuRGF0YUZyYW1lLmhpc3QoZGZfc2FzW1snUCddXSlcbnBsdC55bGFiZWwoJ2NvdW50JylcbnBsdC5zaG93KClcbmBgYCJ9 -->
+<pre class="python"><code># Import sas7bdat package
+from ____ import ____
+
+# Save file to a DataFrame: df_sas
+with SAS7BDAT(&#39;sales.sas7bdat&#39;) as file:
+    ____
+
+# Print head of DataFrame
+
+
+# Plot histogram of DataFrame features (pandas and pyplot already imported)
+pd.DataFrame.hist(df_sas[[&#39;P&#39;]])
+plt.ylabel(&#39;count&#39;)
+plt.show()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="using-read_stata-to-import-stata-files" class="section level2">
+<h2><strong>Using read_stata to import Stata files</strong></h2>
+<p>The <code>pandas</code> package has been imported in the environment as <code>pd</code> and the file <code>disarea.dta</code> is in your working directory. The data consist of disease extents for several diseases in various countries (more information can be found <a href="http://www.cid.harvard.edu/ciddata/geog/readme_disarea.html">here</a>).</p>
+<p>What is the correct way of using the <code>read_stata()</code> function to import <code>disarea.dta</code> into the object <code>df</code>?</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li><p><code>df = &#39;disarea.dta&#39;</code></p></li>
+<li><p><code>df = read_stata.pd(&#39;disarea.dta&#39;)</code></p></li>
+<li><p><code>df = pd.read_stata(&#39;disarea.dta&#39;)</code></p></li>
+<li><p><code>df = pd.read_stata(disarea.dta)</code></p></li>
+</ol>
+<p>Answer:</p>
+<div id="importing-stata-files" class="section level3">
+<h3><strong>Importing Stata files</strong></h3>
+<p>Here, you’ll gain expertise in importing Stata files as DataFrames using the <code>pd.read_stata()</code> function from pandas. The last exercise’s file, <code>&#39;disarea.dta&#39;</code>, is still in your working directory.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use <code>pd.read_stata()</code> to load the file <code>&#39;disarea.dta&#39;</code> into the DataFrame <code>df</code>.</li>
+<li>Print the head of the DataFrame <code>df</code>.</li>
+<li>Visualize your results by plotting a histogram of the column <code>disa10</code>. We’ve already provided this code for you, so just run it!</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwYW5kYXNcbmltcG9ydCBwYW5kYXMgYXMgcGRcblxuIyBMb2FkIFN0YXRhIGZpbGUgaW50byBhIHBhbmRhcyBEYXRhRnJhbWU6IGRmXG5cblxuIyBQcmludCB0aGUgaGVhZCBvZiB0aGUgRGF0YUZyYW1lIGRmXG5cblxuIyBQbG90IGhpc3RvZ3JhbSBvZiBvbmUgY29sdW1uIG9mIHRoZSBEYXRhRnJhbWVcbnBkLkRhdGFGcmFtZS5oaXN0KGRmW1snZGlzYTEwJ11dKVxucGx0LnhsYWJlbCgnRXh0ZW50IG9mIGRpc2Vhc2UnKVxucGx0LnlsYWJlbCgnTnVtYmVyIG9mIGNvdW50cmllcycpXG5wbHQuc2hvdygpXG5cbmBgYCJ9 -->
+<pre class="python"><code># Import pandas
+import pandas as pd
+
+# Load Stata file into a pandas DataFrame: df
+
+
+# Print the head of the DataFrame df
+
+
+# Plot histogram of one column of the DataFrame
+pd.DataFrame.hist(df[[&#39;disa10&#39;]])
+plt.xlabel(&#39;Extent of disease&#39;)
+plt.ylabel(&#39;Number of countries&#39;)
+plt.show()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="importing-hdf5-files" class="section level2">
+<h2><strong>Importing HDF5 files</strong></h2>
+<p><strong>1. Importing HDF5 files</strong></p>
+<p>According to the 2013 O’Reilly book Python and HDF5 by Andrew Collette,</p>
+<p><strong>2. HDF5 files</strong></p>
+<p>“In the Python world, consensus is rapidly converging on Hierarchical Data Format version 5, or ‘HDF5,’ as the standard mechanism for storing large quantities of numerical data.” How large are we talking here? According to Collette, “It’s now relatively common to deal with datasets hundreds of gigabytes or even terabytes in size; HDF5 itself can scale up to exabytes.” Let’s explore with a concrete example from LIGO, the Laser Interferometer Gravitational-Wave Observatory project.</p>
+<p><strong>3. Importing HDF5 files</strong></p>
+<p>You import the package h5py and then import the file using ‘h5py dot File’, remembering to use ‘r’ in order to specify read only. Printing the datatype to the shell reveals that we are dealing with an h5py.</p>
+<p><strong>4. The structure of HDF5 files</strong></p>
+<p>But what is the structure of this file? You can explore it’s hierarchical structure as you would that of a Python dictionary using the method keys. You see that there are three keys, meta, quality and strain. Each of these is an HDF group. You can think of these groups as directories. The LIGO documentation tells us that ‘meta’ contains meta-data for the file, ‘quality’ contains information about data quality and ‘strain’ contains ‘strain data from the interferometer’, the main measurement performed by LIGO, the data of interest. If you knew what data and metadata should be in each group, you could access it straightforwardly. However, if not, due to the hierarchical nature of the file structure, it is easy to explore. For example,</p>
+<p><strong>5. The structure of HDF5 files</strong></p>
+<p>let’s say you wanted to find out what type of metadata there is, you could easily print out the keys. Now you know the keys, you can access any metadata of interest. If you’re interested in ‘Description’ and ‘Detector’, all you need to do is print the corresponding values. You see that the data in the file is ‘Strain data time series from LIGO’ and that the detector used was ‘H1’. Next perhaps you would like to check out the actual data? Great idea and that’s precisely what you’re going to do in the upcoming exercises!</p>
+<p><strong>6. The HDF Project</strong></p>
+<p>Before you do so, it is also worth noting that the HDF project is actively maintained byt the HDF group, based in Champaign, Illinois and formerly part of the University of Illinois Urbana-Champaign.</p>
+<p><strong>7. Let’s practice!</strong></p>
+<p>Now it’s time for you to import and visualize some of the data that led to the validation of Einstein’s Theory of Gravitational Waves, enjoy!</p>
+<div id="using-file-to-import-hdf5-files" class="section level3">
+<h3><strong>Using File to import HDF5 files</strong></h3>
+<p>The <code>h5py</code> package has been imported in the environment and the file <code>LIGO_data.hdf5</code> is loaded in the object <code>h5py_file</code>.</p>
+<p>What is the correct way of using the h5py function, <code>File()</code>, to import the file in <code>h5py_file</code> into an object, <code>h5py_data</code>, for reading only?</p>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p><code>h5py_data = File(h5py_file, &#39;r&#39;)</code></p></li>
+<li><p><code>h5py_data = h5py.File(h5py_file, &#39;r&#39;)</code></p></li>
+<li><p><code>h5py_data = h5py.File(h5py_file, read)</code></p></li>
+<li><p><code>h5py_data = h5py.File(h5py_file, &#39;read&#39;)</code></p></li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="using-h5py-to-import-hdf5-files" class="section level3">
+<h3><strong>Using h5py to import HDF5 files</strong></h3>
+<p>The file <code>&#39;LIGO_data.hdf5&#39;</code> is already in your working directory. In this exercise, you’ll import it using the <code>h5py</code> library. You’ll also print out its datatype to confirm you have imported it correctly. You’ll then study the structure of the file in order to see precisely what HDF groups it contains.</p>
+<p>You can find the LIGO data plus loads of documentation and tutorials <a href="https://losc.ligo.org/events/GW150914/">here</a>. There is also a great tutorial on Signal Processing with the data <a href="https://www.gw-openscience.org/GW150914data/LOSC_Event_tutorial_GW150914.html">here</a>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Import the package <code>h5py</code>.</li>
+<li>Assign the name of the file to the variable <code>file</code>.</li>
+<li>Load the file as read only into the variable <code>data</code>.</li>
+<li>Print the datatype of <code>data</code>.</li>
+<li>Print the names of the groups in the HDF5 file <code>&#39;LIGO_data.hdf5&#39;</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwYWNrYWdlc1xuaW1wb3J0IG51bXB5IGFzIG5wXG5pbXBvcnQgX19fX1xuXG4jIEFzc2lnbiBmaWxlbmFtZTogZmlsZVxuXG5cbiMgTG9hZCBmaWxlOiBkYXRhXG5kYXRhID0gaDVweS5GaWxlKF9fX18sIF9fX18pXG5cbiMgUHJpbnQgdGhlIGRhdGF0eXBlIG9mIHRoZSBsb2FkZWQgZmlsZVxuXG5cbiMgUHJpbnQgdGhlIGtleXMgb2YgdGhlIGZpbGVcbmZvciBrZXkgaW4gX19fXzpcbiAgICBwcmludChfX19fKVxuXG5gYGAifQ== -->
+<pre class="python"><code># Import packages
+import numpy as np
+import ____
+
+# Assign filename: file
+
+
+# Load file: data
+data = h5py.File(____, ____)
+
+# Print the datatype of the loaded file
+
+
+# Print the keys of the file
+for key in ____:
+    print(____)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="extracting-data-from-your-hdf5-file" class="section level3">
+<h3><strong>Extracting data from your HDF5 file</strong></h3>
+<p>In this exercise, you’ll extract some of the LIGO experiment’s actual data from the HDF5 file and you’ll visualize it.</p>
+<p>To do so, you’ll need to first explore the HDF5 group <code>&#39;strain&#39;</code>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Assign the HDF5 group <code>data[&#39;strain&#39;]</code> to <code>group</code>.</li>
+<li>In the <code>for</code> loop, print out the keys of the HDF5 group in <code>group</code>.</li>
+<li>Assign to the variable <code>strain</code> the values of the time series data <code>data[&#39;strain&#39;][&#39;Strain&#39;]</code> using the attribute <code>.value</code>.</li>
+<li>Set <code>num_samples</code> equal to <code>10000</code>, the number of time points we wish to sample.</li>
+<li>Execute the rest of the code to produce a plot of the time series data in <code>LIGO_data.hdf5</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEdldCB0aGUgSERGNSBncm91cDogZ3JvdXBcblxuXG4jIENoZWNrIG91dCBrZXlzIG9mIGdyb3VwXG5mb3Iga2V5IGluIF9fX186XG4gICAgcHJpbnQoX19fXylcblxuIyBTZXQgdmFyaWFibGUgZXF1YWwgdG8gdGltZSBzZXJpZXMgZGF0YTogc3RyYWluXG5cblxuIyBTZXQgbnVtYmVyIG9mIHRpbWUgcG9pbnRzIHRvIHNhbXBsZTogbnVtX3NhbXBsZXNcblxuXG4jIFNldCB0aW1lIHZlY3RvclxudGltZSA9IG5wLmFyYW5nZSgwLCAxLCAxL251bV9zYW1wbGVzKVxuXG4jIFBsb3QgZGF0YVxucGx0LnBsb3QodGltZSwgc3RyYWluWzpudW1fc2FtcGxlc10pXG5wbHQueGxhYmVsKCdHUFMgVGltZSAocyknKVxucGx0LnlsYWJlbCgnc3RyYWluJylcbnBsdC5zaG93KClcblxuYGBgIn0= -->
+<pre class="python"><code># Get the HDF5 group: group
+
+
+# Check out keys of group
+for key in ____:
+    print(____)
+
+# Set variable equal to time series data: strain
+
+
+# Set number of time points to sample: num_samples
+
+
+# Set time vector
+time = np.arange(0, 1, 1/num_samples)
+
+# Plot data
+plt.plot(time, strain[:num_samples])
+plt.xlabel(&#39;GPS Time (s)&#39;)
+plt.ylabel(&#39;strain&#39;)
+plt.show()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="importing-matlab-files" class="section level2">
+<h2><strong>Importing MATLAB files</strong></h2>
+<p><strong>1. Importing MATLAB files</strong></p>
+<p>MATLAB, which is short</p>
+<p><strong>2. MATLAB</strong></p>
+<p>for Matrix Laboratory, is a numerical computing environment that is an industry standard in the disciplines of engineering and science. This is due in part to its powerful linear algebra and matrix capabilities, in part to its proprietary nature and in part to how difficult the academic world finds it to shake off old habits. Regardless of the reasons for its widespread use, the fact of the matter is that a lot of people use MATLAB and save their data as ‘dot mat’ files, the file format native to MATLAB. How can you import these into Python?</p>
+<p><strong>3. SciPy to the rescue!</strong></p>
+<p>Luckily for us Python afficionados, the standard library scipy has functions loadmat and savemat, which allow us to read and write dot mat files, respectively.</p>
+<p><strong>4. What is a .mat file?</strong></p>
+<p>“What exactly is in a dot mat file?” you may ask. To answer this, lets look at the MATLAB IDE. In particular,</p>
+<p><strong>5. What is a .mat file?</strong></p>
+<p>check out the MATLAB workspace where all your variables are stored. This workspace can contain strings, floats, vectors and arrays, among many other objects. A dot mat file is simply a collection of such objects.</p>
+<p><strong>6. Importing a .mat file</strong></p>
+<p>Now this means when importing a dot mat file in Python, we should expect to see a number of different variables and objects. In this code, I first import scipy-dot-io and then load the file ‘workspace dot mat’. Checking out what type of object results tells me that it’s a dictionary. How this dictionary relates to a MATLAB workspace is straightforward: the keys of the Python dictionary are the MATLAB variable names and the values of the Python dictionary are the objects that are assigned to the variables. In the example above, mat[‘x’] is a numpy corresponding to the MATLAB array x in your MATLAB workspace. It’s that easy.</p>
+<p><strong>7. Let’s practice!</strong></p>
+<p>Now it’s your turn to import a MATLAB workspace and check out what it contains, happy exploring!</p>
+<div id="loading-.mat-files" class="section level3">
+<h3><strong>Loading .mat files</strong></h3>
+<p>In this exercise, you’ll figure out how to load a MATLAB file using <code>scipy.io.loadmat()</code> and you’ll discover what Python datatype it yields.</p>
+<p>The file <code>&#39;albeck_gene_expression.mat&#39;</code> is in your working directory. This file contains <a href="https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm">gene expression data</a> from the Albeck Lab at UC Davis. You can find the data and some great documentation <a href="https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm">here</a>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Import the package <code>scipy.io</code>.</li>
+<li>Load the file <code>&#39;albeck_gene_expression.mat&#39;</code> into the variable <code>mat</code>; do so using the function <code>scipy.io.loadmat()</code>.</li>
+<li>Use the function <code>type()</code> to print the datatype of <code>mat</code> to the IPython shell.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwYWNrYWdlXG5cblxuIyBMb2FkIE1BVExBQiBmaWxlOiBtYXRcblxuXG4jIFByaW50IHRoZSBkYXRhdHlwZSB0eXBlIG9mIG1hdFxucHJpbnQoX19fXylcblxuYGBgIn0= -->
+<pre class="python"><code># Import package
+
+
+# Load MATLAB file: mat
+
+
+# Print the datatype type of mat
+print(____)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="the-structure-of-.mat-in-python" class="section level3">
+<h3><strong>The structure of .mat in Python</strong></h3>
+<p>Here, you’ll discover what is in the MATLAB dictionary that you loaded in the previous exercise.</p>
+<p>The file <code>&#39;albeck_gene_expression.mat&#39;</code> is already loaded into the variable <code>mat</code>. The following libraries have already been imported as follows:</p>
+<p><code>import scipy.io</code> <code>import matplotlib.pyplot as plt</code> <code>import numpy as np</code></p>
+<p>Once again, this file contains <a href="https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm">gene expression data</a> from the Albeck Lab at UCDavis. You can find the data and some great documentation <a href="https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm">here</a>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use the method <code>.keys()</code> on the dictionary <code>mat</code> to print the keys. Most of these keys (in fact the ones that do NOT begin and end with ’__’) are variables from the corresponding MATLAB environment.</li>
+<li>Print the type of the value corresponding to the key ’<code>CYratioCyt&#39;</code> in <code>mat</code>. Recall that <code>mat[&#39;CYratioCyt&#39;]</code> accesses the value.</li>
+<li>Print the shape of the value corresponding to the key <code>&#39;CYratioCyt&#39;</code> using the <code>numpy</code> function <code>shape()</code>.</li>
+<li>Execute the entire script to see some oscillatory gene expression data!</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFByaW50IHRoZSBrZXlzIG9mIHRoZSBNQVRMQUIgZGljdGlvbmFyeVxucHJpbnQoX19fXylcblxuIyBQcmludCB0aGUgdHlwZSBvZiB0aGUgdmFsdWUgY29ycmVzcG9uZGluZyB0byB0aGUga2V5ICdDWXJhdGlvQ3l0J1xuXG5cbiMgUHJpbnQgdGhlIHNoYXBlIG9mIHRoZSB2YWx1ZSBjb3JyZXNwb25kaW5nIHRvIHRoZSBrZXkgJ0NZcmF0aW9DeXQnXG5cblxuIyBTdWJzZXQgdGhlIGFycmF5IGFuZCBwbG90IGl0XG5kYXRhID0gbWF0WydDWXJhdGlvQ3l0J11bMjUsIDU6XVxuZmlnID0gcGx0LmZpZ3VyZSgpXG5wbHQucGxvdChkYXRhKVxucGx0LnhsYWJlbCgndGltZSAobWluLiknKVxucGx0LnlsYWJlbCgnbm9ybWFsaXplZCBmbHVvcmVzY2VuY2UgKG1lYXN1cmUgb2YgZXhwcmVzc2lvbiknKVxucGx0LnNob3coKVxuXG5gYGAifQ== -->
+<pre class="python"><code># Print the keys of the MATLAB dictionary
+print(____)
+
+# Print the type of the value corresponding to the key &#39;CYratioCyt&#39;
+
+
+# Print the shape of the value corresponding to the key &#39;CYratioCyt&#39;
+
+
+# Subset the array and plot it
+data = mat[&#39;CYratioCyt&#39;][25, 5:]
+fig = plt.figure()
+plt.plot(data)
+plt.xlabel(&#39;time (min.)&#39;)
+plt.ylabel(&#39;normalized fluorescence (measure of expression)&#39;)
+plt.show()
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+</div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDIgLSBJbXBvcnRpbmcgZGF0YSBmcm9tIG90aGVyIGZpbGUgdHlwZXMiCm91dHB1dDogCiAgaHRtbF9ub3RlYm9vazoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiBmYWxzZQogICAgdG9jX2RlcHRoOiA0CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKLS0tCgpgYGB7cHl0aG9uIHNldHVwfQoKYGBgCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDIgLSBJbXBvcnRpbmcgZGF0YSBmcm9tIG90aGVyIGZpbGUgdHlwZXMiCm91dHB1dDogCiAgaHRtbF9ub3RlYm9vazoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiBmYWxzZQogICAgdG9jX2RlcHRoOiA0CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKLS0tCgpgYGB7cHl0aG9uIHNldHVwfQppbXBvcnQgcGFuZGFzIGFzIHBkCmltcG9ydCBudW1weSBhcyBucAppbXBvcnQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0CmBgYAoKIyMgKipJbnRyb2R1Y3Rpb24gdG8gb2h0ZXIgZmlsZSB0eXBlcyoqCgoqKjEuIEludHJvZHVjdGlvbiB0byBvdGhlciBmaWxlIHR5cGVzKioKCk5vdyB0aGF0IHlvdSBoYXZlIG1hc3RlcmVkIHRoZSBhcnQgb2YgaW1wb3J0aW5nIGZsYXQgZmlsZXMgaW4gUHl0aG9uLCBpdCBpcyB0aW1lIHRvIGNoZWNrIG91dCBhIG51bWJlciBvZiBvdGhlciBmaWxlIHR5cGVzIHRoYXQgeW91IHdpbGwgZmluZCB5b3Vyc2VsZiBuZWVkaW5nIHRvIHdvcmsgd2l0aCBhcyBhIGRhdGEgc2NpZW50aXN0LgoKKioyLiBPdGhlciBmaWxlIHR5cGVzKioKCkluIHRoaXMgY2hhcHRlciwgeW91IHdpbGwgbGVhcm4gaG93IHRvIGltcG9ydCBFeGNlbCBzcHJlYWRzaGVldHMsIHdoaWNoIHByb2Zlc3Npb25hbHMgZnJvbSBhbGwgZGlzY2lwbGluZXMgdXNlIHRvIHN0b3JlIHRoZWlyIGRhdGEuIFlvdSB3aWxsIGFsc28gZ2FpbiBmYW1pbGlhcml0eSB3aXRoIGltcG9ydGluZyBNQVRMQUIsIFNBUyBhbmQgU3RhdGEgZmlsZXMsIHdoaWNoIGFyZSBjb21tb25wbGFjZS4gWW91IHdpbGwgYWxzbyBsZWFybiBob3cgdG8gaW1wb3J0IEhERjUgZmlsZXMgYW5kIHlvdSdsbCBhY3R1YWxseSBpbXBvcnQgYW4gSERGNSBmaWxlIGNvbnRhaW5pbmcgZGF0YSBmcm9tIHRoZSBMYXNlciBJbnRlcmZlcm9tZXRlciBHcmF2aXRhdGlvbmFsLVdhdmUgT2JzZXJ2YXRvcnkgcHJvamVjdCB0aGF0IHByb3ZpZGVkIGVtcGlyaWNhbCBzdXBwb3J0IGZvciBFaW5zdGVpbidzIFRoZW9yeSBvZiBHcmF2aXRhdGlvbmFsIFdhdmVzIGluIDIwMTYuIEhERjUgZmlsZXMgYXJlIGJlY29taW5nIGEgbW9yZSBwcmV2YWxlbnQgd2F5IHRvIHN0b3JlIGxhcmdlIGRhdGFzZXRzLCBhcyBkZW1vbnN0cmF0ZWQgYnkgdGhlIGZhY3QgdGhhdCB0aGUgTElHTyByZXNlYXJjaGVycyB1c2UgaXQgdG8gc3RvcmUgdGhlaXIgZGF0YS4KCioqMy4gUGlja2xlZCBmaWxlcyoqCgpBbm90aGVyIGZpbGUgdHlwZSB5b3UnbGwgbGVhcm4gYWJvdXQgaW4gdGhpcyBDaGFwdGVyIGlzIHRoYXQgb2YgYSAncGlja2xlZCcgZmlsZS4gVGhpcyBpcyBhIGZpbGUgdHlwZSBuYXRpdmUgdG8gUHl0aG9uLiBUaGUgY29uY2VwdCBvZiBwaWNrbGluZyBhIGZpbGUgaXMgbW90aXZhdGVkIGJ5IHRoZSBmb2xsb3dpbmc6IHdoaWxlIGl0IG1heSBiZSBlYXN5IHRvIHNhdmUgYSBudW1weSBhcnJheSBvciBhIHBhbmRhcyBkYXRhZnJhbWUgdG8gYSBmbGF0IGZpbGUsIHRoZXJlIGFyZSBtYW55IG90aGVyIGRhdGF0eXBlcywgc3VjaCBhcyBkaWN0aW9uYXJpZXMgYW5kIGxpc3RzLCBmb3Igd2hpY2ggaXQgaXNuJ3Qgb2J2aW91cyBob3cgdG8gc3RvcmUgdGhlbS4gJ1BpY2tsZScgdG8gdGhlIHJlc2N1ZSEgSWYgeW91IHdhbnQgeW91ciBmaWxlcyB0byBiZSBodW1hbiByZWFkYWJsZSwgeW91IG1heSB3YW50IHRvIHNhdmUgdGhlbSBhcyB0ZXh0IGZpbGVzIGluIGEgY2xldmVyIG1hbm5lciAoSlNPTnMsIHdoaWNoIHlvdSB3aWxsIHNlZSBpbiBhIGxhdGVyIGNoYXB0ZXIsIGFyZSBhcHByb3ByaWF0ZSBmb3IgUHl0aG9uIGRpY3Rpb25hcmllcykuIElmLCBob3dldmVyLCB5b3UgbWVyZWx5IHdhbnQgdG8gYmUgYWJsZSB0byBpbXBvcnQgdGhlbSBpbnRvIFB5dGhvbiwgeW91IGNhbiBzZXJpYWxpemUgdGhlbS4gQWxsIHRoaXMgbWVhbnMgaXMgY29udmVydGluZyB0aGUgb2JqZWN0IGludG8gYSBzZXF1ZW5jZSBvZiBieXRlcywgb3IgYnl0ZXN0cmVhbS4gQXMgdGhpcyBpcyBhIGNvdXJzZSBpbiBJbXBvcnRpbmcgRGF0YSBpbiBQeXRob24sCgoqKjQuIFBpY2tsZWQgZmlsZXMqKgoKeW91J2xsIGxlYXJuIGhvdyB0byBpbXBvcnQgZmlsZXMgdGhhdCBoYXZlIGFscmVhZHkgYmVlbiBwaWNrbGVkLiBBcyB5b3UgaGF2ZSBkb25lIGJlZm9yZSwgd2hlbiBvcGVuaW5nIHN1Y2ggYSBmaWxlLCB5b3UnbGwgd2FudCB0byBzcGVjaWZ5IHRoYXQgaXQgaXMgcmVhZCBvbmx5OyB5b3UnbGwgYWxzbyB3YW50IHRvIHNwZWNpZnkgdGhhdCBpdCBpcyBhIGJpbmFyeSBmaWxlLCBtZWFuaW5nIHRoYXQgaXQgaXMgY29tcHV0ZXItcmVhZGFibGUgYW5kIG5vdCBodW1hbi1yZWFkYWJsZS4gVG8gc3BlY2lmeSBib3RoIHJlYWQgb25seSBhbmQgYmluYXJ5LCB5b3UnbGwgd2FudCBwYXNzIHRoZSBzdHJpbmcgJ3JiJyBhcyB0aGUgc2Vjb25kIGFyZ3VtZW50IG9mIG9wZW4uCgoqKjUuIEltcG9ydGluZyBFeGNlbCBzcHJlYWRzaGVldHMqKgoKWW91J2xsIHRoZW4gZGl2ZSBoZWFkLWZpcnN0IGludG8gRXhjZWwgc3ByZWFkc2hlZXRzLCB0aGUgdXNlIG9mIHdoaWNoIGlzIHNvIHdpZGVzcHJlYWQgdGhhdCB0aGV5IG5lZWQgbmV4dCB0byBubyBpbnRyb2R1Y3Rpb24gYXQgYWxsLiBBbiBFeGNlbCBmaWxlIGdlbmVyYWxseSBjb25zaXN0cyBvZiBhIG51bWJlciBvZiBzaGVldHMuIFRoZXJlIGFyZSBtYW55IHdheXMgdG8gaW1wb3J0IEV4Y2VsIGZpbGVzIGFuZCB5b3UnbGwgdXNlIHBhbmRhcyB0byBkbyBzbyBiZWNhdXNlIGl0IHByb2R1Y2VzIGRhdGFmcmFtZXMgbmF0aXZlbHksIHdoaWNoIGlzIGdyZWF0IGZvciB5b3VyIHByYWN0aWNlIGFzIGEgRGF0YSBTY2llbnRpc3QuIEFzIHlvdSBjYW4gc2VlIGluIHRoaXMgZXhhbXBsZSwgeW91IGNhbiB1c2UgdGhlIGZ1bmN0aW9uRXhjZWxmaWxlIHRvIGFzc2lnbiBhbiBFeGNlbCBmaWxlIHRvIGEgdmFyaWFibGUgZGF0YS4gQXMgYW4gRXhjZWwgZmlsZSBjb25zaXN0cyBvZiBzaGVldHMsIHRoZSBmaXJzdCB0aGluZyB0byBkbyBpcyBmaWd1cmUgb3V0IHdoYXQgdGhlIHNoZWV0cyBhcmUuIFRoaXMgaXMgc3RyYWlnaHRmb3J3YXJkIHdpdGggdGhlIGNvbW1hbmQgJ2RhdGEgZG90IHNoZWV0X25hbWVzJy4gVG8gdGhlbiBsb2FkIGEgcGFydGljdWxhciBzaGVldCBhcyBhIGRhdGFmcmFtZSwgeW91IG5lZWQgb25seSBhcHBseSB0aGUgbWV0aG9kIHBhcnNlIHRvIHRoZSBvYmplY3QgZGF0YSB3aXRoIGEgc2luZ2xlIGFyZ3VtZW50LCB3aGljaCBpcyBlaXRoZXIgdGhlIG5hbWUgYXMgYSBzdHJpbmcgb3IgdGhlIGluZGV4IGFzIGEgZmxvYXQgb2YgdGhlIHNoZWV0IHRoYXQgeW91IHdpc2ggdG8gbG9hZDogcGFuZGFzIGlzIGNsZXZlciBlbm91Z2ggdG8ga25vdyBpZiB5b3UncmUgdGVsbGluZyBpdCB0aGUgc2hlZXQgbmFtZSBvciB0aGUgaW5kZXghCgoqKjYuIFlvdeKAmWxsIGxlYXJuOioqCgpZb3UnbGwgYWxzbyBsZWFybiBob3cgdG8gY3VzdG9taXplIHlvdXIgc3ByZWFkc2hlZXQgaW1wb3J0IGluIG9yZGVyIHRvIHNraXAgcm93cywgaW1wb3J0IG9ubHkgY2VydGFpbiBjb2x1bW5zIGFuZCB0byBjaGFuZ2UgdGhlIGNvbHVtbiBuYW1lcy4gVGhhdCdzIGVub3VnaCBmcm9tIG1lLAoKKio3LiBMZXQncyBwcmFjdGljZSEqKgoKaXQncyBub3cgdGltZSB0byBnZXQgeW91ciBoYW5kcyBkaXJ0eSB3aXRoIHBpY2tsZWQgZmlsZXMgYW5kIEV4Y2VsIHNwcmVhZHNoZWV0cy4gRW5qb3khCgojIyMgKipOb3Qgc28gZmxhdCBhbnkgbW9yZSoqCgpJbiBDaGFwdGVyIDEsIHlvdSBsZWFybmVkIGhvdyB0byB1c2UgdGhlIElQeXRob24gbWFnaWMgY29tbWFuZCBgISBsc2AgdG8gZXhwbG9yZSB5b3VyIGN1cnJlbnQgd29ya2luZyBkaXJlY3RvcnkuIFlvdSBjYW4gYWxzbyBkbyB0aGlzIG5hdGl2ZWx5IGluIFB5dGhvbiB1c2luZyB0aGUgW2xpYnJhcnldKGh0dHBzOi8vZG9jcy5weXRob24ub3JnLzIvbGlicmFyeS9vcy5odG1sKSBgb3NgLCB3aGljaCBjb25zaXN0cyBvZiBtaXNjZWxsYW5lb3VzIG9wZXJhdGluZyBzeXN0ZW0gaW50ZXJmYWNlcy4KClRoZSBmaXJzdCBsaW5lIG9mIHRoZSBmb2xsb3dpbmcgY29kZSBpbXBvcnRzIHRoZSBsaWJyYXJ5IGBvc2AsIHRoZSBzZWNvbmQgbGluZSBzdG9yZXMgdGhlIG5hbWUgb2YgdGhlIGN1cnJlbnQgZGlyZWN0b3J5IGluIGEgc3RyaW5nIGNhbGxlZCB3ZCBhbmQgdGhlIHRoaXJkIG91dHB1dHMgdGhlIGNvbnRlbnRzIG9mIHRoZSBkaXJlY3RvcnkgaW4gYSBsaXN0IHRvIHRoZSBzaGVsbC4KCmBpbXBvcnQgb3NgCmB3ZCA9IG9zLmdldGN3ZCgpYApgb3MubGlzdGRpcih3ZClgCgpSdW4gdGhpcyBjb2RlIGluIHRoZSBJUHl0aG9uIHNoZWxsIGFuZCBhbnN3ZXIgdGhlIGZvbGxvd2luZyBxdWVzdGlvbnMuIElnbm9yZSB0aGUgZmlsZXMgdGhhdCBiZWdpbiB3aXRoIGAuYC4KCkNoZWNrIG91dCB0aGUgY29udGVudHMgb2YgeW91ciBjdXJyZW50IGRpcmVjdG9yeSBhbmQgYW5zd2VyIHRoZSBmb2xsb3dpbmcgcXVlc3Rpb25zOiAoMSkgd2hpY2ggZmlsZSBpcyBpbiB5b3VyIGRpcmVjdG9yeSBhbmQgTk9UIGFuIGV4YW1wbGUgb2YgYSBmbGF0IGZpbGU7ICgyKSB3aHkgaXMgaXQgbm90IGEgZmxhdCBmaWxlPwoKKipQb3NzaWJsZSBBbnN3ZXJzKioKCjEuIGBkYXRhYmFzZS5kYmAgaXMgbm90IGEgZmxhdCBmaWxlIGJlY2F1c2UgcmVsYXRpb25hbCBkYXRhYmFzZXMgY29udGFpbiBzdHJ1Y3R1cmVkIHJlbGF0aW9uc2hpcHMgYW5kIGZsYXQgZmlsZXMgZG8gbm90LgoKMi4gYGJhdHRsZWRlYXRoLnhsc3hgIGlzIG5vdCBhIGZsYXQgYmVjYXVzZSBpdCBpcyBhIHNwcmVhZHNoZWV0IGNvbnNpc3Rpbmcgb2YgbWFueSBzaGVldHMsIG5vdCBhIHNpbmdsZSB0YWJsZS4KCjMuIGB0aXRhbmljLnR4dGAgaXMgbm90IGEgZmxhdCBmaWxlIGJlY2F1c2UgaXQgaXMgYSBgLnR4dGAsIG5vdCBhIGAuY3N2YC4KCiMjIyAqKkxvYWRpbmcgYSBwaWNrbGVkIGZpbGUqKgoKVGhlcmUgYXJlIGEgbnVtYmVyIG9mIGRhdGF0eXBlcyB0aGF0IGNhbm5vdCBiZSBzYXZlZCBlYXNpbHkgdG8gZmxhdCBmaWxlcywgc3VjaCBhcyBsaXN0cyBhbmQgZGljdGlvbmFyaWVzLiBJZiB5b3Ugd2FudCB5b3VyIGZpbGVzIHRvIGJlIGh1bWFuIHJlYWRhYmxlLCB5b3UgbWF5IHdhbnQgdG8gc2F2ZSB0aGVtIGFzIHRleHQgZmlsZXMgaW4gYSBjbGV2ZXIgbWFubmVyLiBKU09Ocywgd2hpY2ggeW91IHdpbGwgc2VlIGluIGEgbGF0ZXIgY2hhcHRlciwgYXJlIGFwcHJvcHJpYXRlIGZvciBQeXRob24gZGljdGlvbmFyaWVzLgoKSG93ZXZlciwgaWYgeW91IG1lcmVseSB3YW50IHRvIGJlIGFibGUgdG8gaW1wb3J0IHRoZW0gaW50byBQeXRob24sIHlvdSBjYW4gW3NlcmlhbGl6ZV0oaHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvU2VyaWFsaXphdGlvbikgdGhlbS4gQWxsIHRoaXMgbWVhbnMgaXMgY29udmVydGluZyB0aGUgb2JqZWN0IGludG8gYSBzZXF1ZW5jZSBvZiBieXRlcywgb3IgYSBieXRlc3RyZWFtLgoKSW4gdGhpcyBleGVyY2lzZSwgeW91J2xsIGltcG9ydCB0aGUgYHBpY2tsZWAgcGFja2FnZSwgb3BlbiBhIHByZXZpb3VzbHkgcGlja2xlZCBkYXRhIHN0cnVjdHVyZSBmcm9tIGEgZmlsZSBhbmQgbG9hZCBpdC4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gSW1wb3J0IHRoZSBgcGlja2xlYCBwYWNrYWdlLgotIENvbXBsZXRlIHRoZSBzZWNvbmQgYXJndW1lbnQgb2YgYG9wZW4oKWAgc28gdGhhdCBpdCBpcyByZWFkIG9ubHkgZm9yIGEgYmluYXJ5IGZpbGUuIFRoaXMgYXJndW1lbnQgd2lsbCBiZSBhIHN0cmluZyBvZiB0d28gbGV0dGVycywgb25lIHNpZ25pZnlpbmcgJ3JlYWQgb25seScsIHRoZSBvdGhlciAnYmluYXJ5Jy4KLSBQYXNzIHRoZSBjb3JyZWN0IGFyZ3VtZW50IHRvIGBwaWNrbGUubG9hZCgpYDsgaXQgc2hvdWxkIHVzZSB0aGUgdmFyaWFibGUgdGhhdCBpcyBib3VuZCB0byBgb3BlbmAuCi0gUHJpbnQgdGhlIGRhdGEsIGBkYC4KLSBQcmludCB0aGUgZGF0YXR5cGUgb2YgYGRgOyB0YWtlIHlvdXIgbWluZCBiYWNrIHRvIHlvdXIgcHJldmlvdXMgdXNlIG9mIHRoZSBmdW5jdGlvbiBgdHlwZSgpYC4KCmBgYHtweXRob259CiMgSW1wb3J0IHBpY2tsZSBwYWNrYWdlCgoKIyBPcGVuIHBpY2tsZSBmaWxlIGFuZCBsb2FkIGRhdGE6IGQKd2l0aCBvcGVuKCdkYXRhLnBrbCcsIF9fX18pIGFzIGZpbGU6CiAgICBkID0gcGlja2xlLmxvYWQoX19fXykKCiMgUHJpbnQgZApwcmludChfX19fKQoKIyBQcmludCBkYXRhdHlwZSBvZiBkCnByaW50KF9fX18pCmBgYAoKIyMjICoqTGlzdGluZyBzaGVldHMgaW4gRXhjZWwgZmlsZXMqKgoKV2hldGhlciB5b3UgbGlrZSBpdCBvciBub3QsIGFueSB3b3JraW5nIGRhdGEgc2NpZW50aXN0IHdpbGwgbmVlZCB0byBkZWFsIHdpdGggRXhjZWwgc3ByZWFkc2hlZXRzIGF0IHNvbWUgcG9pbnQgaW4gdGltZS4gWW91IHdvbid0IGFsd2F5cyB3YW50IHRvIGRvIHNvIGluIEV4Y2VsLCBob3dldmVyIQoKSGVyZSwgeW91J2xsIGxlYXJuIGhvdyB0byB1c2UgYHBhbmRhc2AgdG8gaW1wb3J0IEV4Y2VsIHNwcmVhZHNoZWV0cyBhbmQgaG93IHRvIGxpc3QgdGhlIG5hbWVzIG9mIHRoZSBzaGVldHMgaW4gYW55IGxvYWRlZCAueGxzeCBmaWxlLgoKUmVjYWxsIGZyb20gdGhlIHZpZGVvIHRoYXQsIGdpdmVuIGFuIEV4Y2VsIGZpbGUgaW1wb3J0ZWQgaW50byBhIHZhcmlhYmxlIGBzcHJlYWRzaGVldGAsIHlvdSBjYW4gcmV0cmlldmUgYSBsaXN0IG9mIHRoZSBzaGVldCBuYW1lcyB1c2luZyB0aGUgYXR0cmlidXRlIGBzcHJlYWRzaGVldC5zaGVldF9uYW1lc2AuCgpTcGVjaWZpY2FsbHksIHlvdSdsbCBiZSBsb2FkaW5nIGFuZCBjaGVja2luZyBvdXQgdGhlIHNwcmVhZHNoZWV0IGAnYmF0dGxlZGVhdGgueGxzeCdgLCBtb2RpZmllZCBmcm9tIHRoZSBQZWFjZSBSZXNlYXJjaCBJbnN0aXR1dGUgT3NsbydzIChQUklPKSBbZGF0YXNldF0oaHR0cHM6Ly93d3cucHJpby5vcmcvRGF0YS9Bcm1lZC1Db25mbGljdC9CYXR0bGUtRGVhdGhzL1RoZS1CYXR0bGUtRGVhdGhzLURhdGFzZXQtdmVyc2lvbi0zMC8pLiBUaGlzIGRhdGEgY29udGFpbnMgYWdlLWFkanVzdGVkIG1vcnRhbGl0eSByYXRlcyBkdWUgdG8gd2FyIGluIHZhcmlvdXMgY291bnRyaWVzIG92ZXIgc2V2ZXJhbCB5ZWFycy4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gQXNzaWduIHRoZSBzcHJlYWRzaGVldCBmaWxlbmFtZSAocHJvdmlkZWQgYWJvdmUpIHRvIHRoZSB2YXJpYWJsZSBgZmlsZWAuCi0gUGFzcyB0aGUgY29ycmVjdCBhcmd1bWVudCB0byBgcGQuRXhjZWxGaWxlKClgIHRvIGxvYWQgdGhlIGZpbGUgdXNpbmcgcGFuZGFzLCBhc3NpZ25pbmcgdGhlIHJlc3VsdCB0byB0aGUgdmFyaWFibGUgYHhsc2AuCi0gUHJpbnQgdGhlIHNoZWV0bmFtZXMgb2YgdGhlIEV4Y2VsIHNwcmVhZHNoZWV0IGJ5IHBhc3NpbmcgdGhlIG5lY2Vzc2FyeSBhcmd1bWVudCB0byB0aGUgYHByaW50KClgIGZ1bmN0aW9uLgoKYGBge3B5dGhvbn0KIyBJbXBvcnQgcGFuZGFzCmltcG9ydCBwYW5kYXMgYXMgcGQKCiMgQXNzaWduIHNwcmVhZHNoZWV0IGZpbGVuYW1lOiBmaWxlCmZpbGUgPSBfX19fCgojIExvYWQgc3ByZWFkc2hlZXQ6IHhscwp4bHMgPSBwZC5FeGNlbEZpbGUoX19fXykKCiMgUHJpbnQgc2hlZXQgbmFtZXMKcHJpbnQoX19fXykKCmBgYAoKIyMjICoqSW1wb3J0aW5nIHNoZWV0cyBmcm9tIEV4Y2VsIGZpbGVzKioKCkluIHRoZSBwcmV2aW91cyBleGVyY2lzZXMsIHlvdSBzYXcgdGhhdCB0aGUgRXhjZWwgZmlsZSBjb250YWlucyB0d28gc2hlZXRzLCBgJzIwMDInYCBhbmQgYCcyMDA0J2AuIFRoZSBuZXh0IHN0ZXAgaXMgdG8gaW1wb3J0IHRoZXNlLgoKSW4gdGhpcyBleGVyY2lzZSwgeW91J2xsIGxlYXJuIGhvdyB0byBpbXBvcnQgYW55IGdpdmVuIHNoZWV0IG9mIHlvdXIgbG9hZGVkIC54bHN4IGZpbGUgYXMgYSBEYXRhRnJhbWUuIFlvdSdsbCBiZSBhYmxlIHRvIGRvIHNvIGJ5IHNwZWNpZnlpbmcgZWl0aGVyIHRoZSBzaGVldCdzIG5hbWUgb3IgaXRzIGluZGV4LgoKVGhlIHNwcmVhZHNoZWV0IGAnYmF0dGxlZGVhdGgueGxzeCdgIGlzIGFscmVhZHkgbG9hZGVkIGFzIGB4bHNgLgoKKipJbnN0cnVjdGlvbnMqKgoKLSBMb2FkIHRoZSBzaGVldCBgJzIwMDQnYCBpbnRvIHRoZSBEYXRhRnJhbWUgZGYxIHVzaW5nIGl0cyBuYW1lIGFzIGEgc3RyaW5nLgotIFByaW50IHRoZSBoZWFkIG9mIGBkZjFgIHRvIHRoZSBzaGVsbC4KLSBMb2FkIHRoZSBzaGVldCBgMjAwMmAgaW50byB0aGUgRGF0YUZyYW1lIGBkZjJgIHVzaW5nIGl0cyBpbmRleCAoYDBgKS4KLSBQcmludCB0aGUgaGVhZCBvZiBgZGYyYCB0byB0aGUgc2hlbGwuCgpgYGB7cHl0aG9ufQojIExvYWQgYSBzaGVldCBpbnRvIGEgRGF0YUZyYW1lIGJ5IG5hbWU6IGRmMQpkZjEgPSB4bHMucGFyc2UoX19fXykKCiMgUHJpbnQgdGhlIGhlYWQgb2YgdGhlIERhdGFGcmFtZSBkZjEKcHJpbnQoX19fXykKCiMgTG9hZCBhIHNoZWV0IGludG8gYSBEYXRhRnJhbWUgYnkgaW5kZXg6IGRmMgoKCiMgUHJpbnQgdGhlIGhlYWQgb2YgdGhlIERhdGFGcmFtZSBkZjIKcHJpbnQoX19fXykKCmBgYAoKIyMjICoqQ3VzdG9taXppbmcgeW91ciBzcHJlYWRzaGVldCBpbXBvcnQqKgoKSGVyZSwgeW91J2xsIHBhcnNlIHlvdXIgc3ByZWFkc2hlZXRzIGFuZCB1c2UgYWRkaXRpb25hbCBhcmd1bWVudHMgdG8gc2tpcCByb3dzLCByZW5hbWUgY29sdW1ucyBhbmQgc2VsZWN0IG9ubHkgcGFydGljdWxhciBjb2x1bW5zLgoKVGhlIHNwcmVhZHNoZWV0IGAnYmF0dGxlZGVhdGgueGxzeCdgIGlzIGFscmVhZHkgbG9hZGVkIGFzIGB4bHNgLgoKQXMgYmVmb3JlLCB5b3UnbGwgdXNlIHRoZSBtZXRob2QgYHBhcnNlKClgLiBUaGlzIHRpbWUsIGhvd2V2ZXIsIHlvdSdsbCBhZGQgdGhlIGFkZGl0aW9uYWwgYXJndW1lbnRzIGBza2lwcm93c2AsIGBuYW1lc2AgYW5kIGB1c2Vjb2xzYC4gVGhlc2Ugc2tpcCByb3dzLCBuYW1lIHRoZSBjb2x1bW5zIGFuZCBkZXNpZ25hdGUgd2hpY2ggY29sdW1ucyB0byBwYXJzZSwgcmVzcGVjdGl2ZWx5LiBBbGwgdGhlc2UgYXJndW1lbnRzIGNhbiBiZSBhc3NpZ25lZCB0byBsaXN0cyBjb250YWluaW5nIHRoZSBzcGVjaWZpYyByb3cgbnVtYmVycywgc3RyaW5ncyBhbmQgY29sdW1uIG51bWJlcnMsIGFzIGFwcHJvcHJpYXRlLgoKKipJbnN0cnVjdGlvbnMqKgoKLSBQYXJzZSB0aGUgZmlyc3Qgc2hlZXQgYnkgaW5kZXguIEluIGRvaW5nIHNvLCBza2lwIHRoZSBmaXJzdCByb3cgb2YgZGF0YSBhbmQgbmFtZSB0aGUgY29sdW1ucyBgJ0NvdW50cnknYCBhbmQgYCdBQU0gZHVlIHRvIFdhciAoMjAwMiknYCB1c2luZyB0aGUgYXJndW1lbnQgYG5hbWVzYC4gVGhlIHZhbHVlcyBwYXNzZWQgdG8gYHNraXByb3dzYCBhbmQgYG5hbWVzYCBhbGwgbmVlZCB0byBiZSBvZiB0eXBlIGBsaXN0YC4KLSBQYXJzZSB0aGUgc2Vjb25kIHNoZWV0IGJ5IGluZGV4LiBJbiBkb2luZyBzbywgcGFyc2Ugb25seSB0aGUgZmlyc3QgY29sdW1uIHdpdGggdGhlIGB1c2Vjb2xzYCBwYXJhbWV0ZXIsIHNraXAgdGhlIGZpcnN0IHJvdyBhbmQgcmVuYW1lIHRoZSBjb2x1bW4gYCdDb3VudHJ5J2AuIFRoZSBhcmd1bWVudCBwYXNzZWQgdG8gdXNlY29scyBhbHNvIG5lZWRzIHRvIGJlIG9mIHR5cGUgYGxpc3RgLgoKYGBge3B5dGhvbn0KIyBQYXJzZSB0aGUgZmlyc3Qgc2hlZXQgYW5kIHJlbmFtZSB0aGUgY29sdW1uczogZGYxCmRmMSA9IHhscy5wYXJzZShfX19fLCBza2lwcm93cz1fX19fLCBuYW1lcz1fX19fKQoKIyBQcmludCB0aGUgaGVhZCBvZiB0aGUgRGF0YUZyYW1lIGRmMQpwcmludChkZjEuaGVhZCgpKQoKIyBQYXJzZSB0aGUgZmlyc3QgY29sdW1uIG9mIHRoZSBzZWNvbmQgc2hlZXQgYW5kIHJlbmFtZSB0aGUgY29sdW1uOiBkZjIKZGYyID0geGxzLnBhcnNlKF9fX18sIHVzZWNvbHM9X19fXywgc2tpcHJvd3M9X19fXywgbmFtZXM9X19fXykKCiMgUHJpbnQgdGhlIGhlYWQgb2YgdGhlIERhdGFGcmFtZSBkZjIKcHJpbnQoZGYyLmhlYWQoKSkKCmBgYAoKIyMgKipJbXBvcnRpbmcgU0FTL1N0YXRhIGZpbGVzIHVzaW5nIHBhbmRhcyoqCgoqKjEuIEltcG9ydGluZyBTQVMvU3RhdGEgZmlsZXMgdXNpbmcgcGFuZGFzKioKClRoZXJlIGFyZSBtYW55IHN0YXRpc3RpY2FsIHNvZnR3YXJlIHBhY2thZ2VzIG91dCB0aGVyZSBhbmQsIGFsdGhvdWdoIHlvdSBtYXkgbm90IG5lZWQgdG8gZG8gc28gYWxsIHRoZSB0aW1lLCBpdCB3aWxsIGJlIGltcG9ydGFudCBmb3IgeW91LCBhcyBhIHdvcmtpbmcgRGF0YSBTY2llbnRpc3QsIHRvIGJlIGFibGUgdG8gaW1wb3J0IHRoZXNlIGZpbGVzIGludG8geW91ciBQeXRob24gZW52aXJvbm1lbnQuCgoqKjIuIFNBUyBhbmQgU3RhdGEgZmlsZXMqKgoKVGhlIG1vc3QgY29tbW9uIGV4YW1wbGVzIGFyZSBTQVMsIHdoaWNoIGlzIGFuIGFjcm9ueW0gZm9yICdTdGF0aXN0aWNhbCBBbmFseXNpcyBTeXN0ZW0nLCBhbmQgU3RhdGEsIHdoaWNoIGlzIGEgY29udHJhY3Rpb24gb2YgJ1N0YXRpc3RpY3MnIGFuZCAnRGF0YScuIFRoZSBmb3JtZXIgaXMgdXNlZCBhIGdyZWF0IGRlYWwgaW4gYnVzaW5lc3MgYW5hbHl0aWNzIGFuZCBiaW9zdGF0aXN0aWNzLCB3aGlsZSB0aGUgbGF0dGVyIGlzIHBvcHVsYXIgaW4gYWNhZGVtaWMgc29jaWFsIHNjaWVuY2VzIHJlc2VhcmNoLCBzdWNoIGFzIGVjb25vbWljcyBhbmQgZXBpZGVtaW9sb2d5LgoKKiozLiBTQVMgZmlsZXMqKgoKU0FTIGZpbGVzIGFyZSBpbXBvcnRhbnQgYmVjYXVzZSBTQVMgaXMgYSBzb2Z0d2FyZSBzdWl0ZSB0aGF0IHBlcmZvcm1zIGFkdmFuY2VkIGFuYWx5dGljcywgbXVsdGl2YXJpYXRlIGFuYWx5c2VzLCBidXNpbmVzcyBpbnRlbGxpZ2VuY2UsIGRhdGEgbWFuYWdlbWVudCwgcHJlZGljdGl2ZSBhbmFseXRpY3MgYW5kIGlzIGEgc3RhbmRhcmQgZm9yIHN0YXRpc3RpY2lhbnMgdG8gZG8gY29tcHV0YXRpb25hbCBhbmFseXNpcy4KCioqNC4gSW1wb3J0aW5nIFNBUyBmaWxlcyoqCgpUaGUgbW9zdCBjb21tb24gU0FTIGZpbGVzIGhhdmUgdGhlIGV4dGVuc2lvbiBkb3Qgc2FzN2JkYXQgYW5kIGRvdCBzYXM3YmNhdCwgd2hpY2ggYXJlIGRhdGFzZXQgZmlsZXMgYW5kIGNhdGFsb2cgZmlsZXMgcmVzcGVjdGl2ZWx5LiBZb3UnbGwgbGVhcm4gaG93IHRvIGltcG9ydCB0aGUgZm9ybWVyIGFzIGRhdGFmcmFtZXMgdXNpbmcgdGhlIGZ1bmN0aW9uIFNBUzdCREFUICh1cHBlciBjYXNlKSBmcm9tIHRoZSBwYWNrYWdlIHNhczdiZGF0IChsb3dlciBjYXNlKS4gSW4gdGhpcyBjYXNlLCB5b3UgY2FuIGJpbmQgdGhlIHZhcmlhYmxlIGZpbGUgdG8gYSBjb25uZWN0aW9uIHRvIHRoZSBmaWxlICd1cmJhbnBvcCBkb3Qgc2FzN2JkYXQnIGluIGEgY29udGV4dCBtYW5hZ2VyLiBXaXRoaW4gdGhpcyBjb250ZXh0LCB5b3UgY2FuIGFzc2lnbiB0byBhIHZhcmlhYmxlIGRmX3NhcyB0aGUgcmVzdWx0IG9mIGFwcGx5aW5nIG1ldGhvZCB0b19kYXRhX2ZyYW1lIHRvIGZpbGUuCgoqKjUuIEltcG9ydGluZyBTdGF0YSBmaWxlcyoqCgpTdGF0YSBmaWxlcyBoYXZlIGV4dGVuc2lvbiBkb3QgZHRhIGFuZCB3ZSBjYW4gaW1wb3J0IHRoZW0gdXNpbmcgcGFuZGFzLiBXZSBkb24ndCBldmVuIG5lZWQgdG8gaW5pdGlhbGl6ZSBhIGNvbnRleHQgbWFuYWdlciBpbiB0aGlzIGNhc2UhIFdlIG1lcmVseSBwYXNzIHRoZSBmaWxlbmFtZSB0byB0aGUgZnVuY3Rpb24gcmVhZF9zdGF0YSBhbmQgYXNzaWduIGl0IHRvIGEgdmFyaWFibGUsIGp1c3QgbGlrZSB0aGlzLiBJbiB0aGUgZm9sbG93aW5nIGV4ZXJjaXNlcywgeW91J2xsIGdhaW4gaW52YWx1YWJsZSBleHBlcmllbmNlIGF0IGltcG9ydGluZyB0aGVzZSBpbXBvcnRhbnQgZmlsZSBmb3JtYXRzIGluIFB5dGhvbiBhcyBwYW5kYXMgZGF0YWZyYW1lcyBhbmQgdGhlbiBzZWVpbmcgd2hhdCB3YXMgaW5zaWRlIHRoZW0uCgoqKjYuIExldCdzIHByYWN0aWNlISoqCgpOb3cgaXQncyB5b3VyIHR1cm4sIGhhcHB5IGltcG9ydGluZyEKCiMjIyAqKkhvdyB0byBpbXBvcnQgU0FTN0JEQVQqKgoKSG93IGRvIHlvdSBjb3JyZWN0bHkgaW1wb3J0IHRoZSBmdW5jdGlvbiBgU0FTN0JEQVQoKWAgZnJvbSB0aGUgcGFja2FnZSBzYXM3YmRhdD8KCioqUG9zc2libGUgQW5zd2VycyoqCgoxLiBgaW1wb3J0IFNBUzdCREFUIGZyb20gc2FzN2JkYXRgCgoyLiBgZnJvbSBTQVM3QkRBVCBpbXBvcnQgc2FzN2JkYXRgCgozLiBgaW1wb3J0IHNhczdiZGF0IGZyb20gU0FTN0JEQVRgCgo0LiBgZnJvbSBzYXM3YmRhdCBpbXBvcnQgU0FTN0JEQVRgCgpBbnN3ZXI6CgojIyMgKipJbXBvcnRpbmcgU0FTIGZpbGVzKioKCkluIHRoaXMgZXhlcmNpc2UsIHlvdSdsbCBmaWd1cmUgb3V0IGhvdyB0byBpbXBvcnQgYSBTQVMgZmlsZSBhcyBhIERhdGFGcmFtZSB1c2luZyBgU0FTN0JEQVRgIGFuZCBgcGFuZGFzYC4gVGhlIGZpbGUgYCdzYWxlcy5zYXM3YmRhdCdgIGlzIGFscmVhZHkgaW4geW91ciB3b3JraW5nIGRpcmVjdG9yeSBhbmQgYm90aCBgcGFuZGFzYCBhbmQgYG1hdHBsb3RsaWIucHlwbG90YCBoYXZlIGFscmVhZHkgYmVlbiBpbXBvcnRlZCBhcyBmb2xsb3dzOgoKYGltcG9ydCBwYW5kYXMgYXMgcGRgCmBpbXBvcnQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0YAoKVGhlIGRhdGEgYXJlIGFkYXB0ZWQgZnJvbSB0aGUgd2Vic2l0ZSBvZiB0aGUgdW5kZXJncmFkdWF0ZSB0ZXh0IGJvb2sgW1ByaW5jaXBsZXMgb2YgRWNvbm9tZXRyaWNzXShodHRwOi8vd3d3LnByaW5jaXBsZXNvZmVjb25vbWV0cmljcy5jb20vKSBieSBIaWxsLCBHcmlmZml0aHMgYW5kIExpbS4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gSW1wb3J0IHRoZSBtb2R1bGUgYFNBUzdCREFUYCBmcm9tIHRoZSBsaWJyYXJ5IGBzYXM3YmRhdGAuCi0gSW4gdGhlIGNvbnRleHQgb2YgdGhlIGZpbGUgYCdzYWxlcy5zYXM3YmRhdCdgLCBsb2FkIGl0cyBjb250ZW50cyB0byBhIERhdGFGcmFtZSBgZGZfc2FzYCwgdXNpbmcgdGhlIG1ldGhvZCBgdG9fZGF0YV9mcmFtZSgpYCBvbiB0aGUgb2JqZWN0IGBmaWxlYC4KLSBQcmludCB0aGUgaGVhZCBvZiB0aGUgRGF0YUZyYW1lIGBkZl9zYXNgLgotIEV4ZWN1dGUgeW91ciBlbnRpcmUgc2NyaXB0IHRvIHByb2R1Y2UgYSBoaXN0b2dyYW0gcGxvdCEKCmBgYHtweXRob259CiMgSW1wb3J0IHNhczdiZGF0IHBhY2thZ2UKZnJvbSBfX19fIGltcG9ydCBfX19fCgojIFNhdmUgZmlsZSB0byBhIERhdGFGcmFtZTogZGZfc2FzCndpdGggU0FTN0JEQVQoJ3NhbGVzLnNhczdiZGF0JykgYXMgZmlsZToKICAgIF9fX18KCiMgUHJpbnQgaGVhZCBvZiBEYXRhRnJhbWUKCgojIFBsb3QgaGlzdG9ncmFtIG9mIERhdGFGcmFtZSBmZWF0dXJlcyAocGFuZGFzIGFuZCBweXBsb3QgYWxyZWFkeSBpbXBvcnRlZCkKcGQuRGF0YUZyYW1lLmhpc3QoZGZfc2FzW1snUCddXSkKcGx0LnlsYWJlbCgnY291bnQnKQpwbHQuc2hvdygpCmBgYAoKIyMgKipVc2luZyByZWFkX3N0YXRhIHRvIGltcG9ydCBTdGF0YSBmaWxlcyoqCgpUaGUgYHBhbmRhc2AgcGFja2FnZSBoYXMgYmVlbiBpbXBvcnRlZCBpbiB0aGUgZW52aXJvbm1lbnQgYXMgYHBkYCBhbmQgdGhlIGZpbGUgYGRpc2FyZWEuZHRhYCBpcyBpbiB5b3VyIHdvcmtpbmcgZGlyZWN0b3J5LiBUaGUgZGF0YSBjb25zaXN0IG9mIGRpc2Vhc2UgZXh0ZW50cyBmb3Igc2V2ZXJhbCBkaXNlYXNlcyBpbiB2YXJpb3VzIGNvdW50cmllcyAobW9yZSBpbmZvcm1hdGlvbiBjYW4gYmUgZm91bmQgW2hlcmVdKGh0dHA6Ly93d3cuY2lkLmhhcnZhcmQuZWR1L2NpZGRhdGEvZ2VvZy9yZWFkbWVfZGlzYXJlYS5odG1sKSkuCgpXaGF0IGlzIHRoZSBjb3JyZWN0IHdheSBvZiB1c2luZyB0aGUgYHJlYWRfc3RhdGEoKWAgZnVuY3Rpb24gdG8gaW1wb3J0IGBkaXNhcmVhLmR0YWAgaW50byB0aGUgb2JqZWN0IGBkZmA/CgoqKkluc3RydWN0aW9ucyoqCgoxLiBgZGYgPSAnZGlzYXJlYS5kdGEnYAoKMi4gYGRmID0gcmVhZF9zdGF0YS5wZCgnZGlzYXJlYS5kdGEnKWAKCjMuIGBkZiA9IHBkLnJlYWRfc3RhdGEoJ2Rpc2FyZWEuZHRhJylgCgo0LiBgZGYgPSBwZC5yZWFkX3N0YXRhKGRpc2FyZWEuZHRhKWAKCkFuc3dlcjoKCiMjIyAqKkltcG9ydGluZyBTdGF0YSBmaWxlcyoqCgpIZXJlLCB5b3UnbGwgZ2FpbiBleHBlcnRpc2UgaW4gaW1wb3J0aW5nIFN0YXRhIGZpbGVzIGFzIERhdGFGcmFtZXMgdXNpbmcgdGhlIGBwZC5yZWFkX3N0YXRhKClgIGZ1bmN0aW9uIGZyb20gcGFuZGFzLiBUaGUgbGFzdCBleGVyY2lzZSdzIGZpbGUsIGAnZGlzYXJlYS5kdGEnYCwgaXMgc3RpbGwgaW4geW91ciB3b3JraW5nIGRpcmVjdG9yeS4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gVXNlIGBwZC5yZWFkX3N0YXRhKClgIHRvIGxvYWQgdGhlIGZpbGUgYCdkaXNhcmVhLmR0YSdgIGludG8gdGhlIERhdGFGcmFtZSBgZGZgLgotIFByaW50IHRoZSBoZWFkIG9mIHRoZSBEYXRhRnJhbWUgYGRmYC4KLSBWaXN1YWxpemUgeW91ciByZXN1bHRzIGJ5IHBsb3R0aW5nIGEgaGlzdG9ncmFtIG9mIHRoZSBjb2x1bW4gYGRpc2ExMGAuIFdl4oCZdmUgYWxyZWFkeSBwcm92aWRlZCB0aGlzIGNvZGUgZm9yIHlvdSwgc28ganVzdCBydW4gaXQhCgpgYGB7cHl0aG9ufQojIEltcG9ydCBwYW5kYXMKaW1wb3J0IHBhbmRhcyBhcyBwZAoKIyBMb2FkIFN0YXRhIGZpbGUgaW50byBhIHBhbmRhcyBEYXRhRnJhbWU6IGRmCgoKIyBQcmludCB0aGUgaGVhZCBvZiB0aGUgRGF0YUZyYW1lIGRmCgoKIyBQbG90IGhpc3RvZ3JhbSBvZiBvbmUgY29sdW1uIG9mIHRoZSBEYXRhRnJhbWUKcGQuRGF0YUZyYW1lLmhpc3QoZGZbWydkaXNhMTAnXV0pCnBsdC54bGFiZWwoJ0V4dGVudCBvZiBkaXNlYXNlJykKcGx0LnlsYWJlbCgnTnVtYmVyIG9mIGNvdW50cmllcycpCnBsdC5zaG93KCkKCmBgYAoKIyMgKipJbXBvcnRpbmcgSERGNSBmaWxlcyoqCgoqKjEuIEltcG9ydGluZyBIREY1IGZpbGVzKioKCkFjY29yZGluZyB0byB0aGUgMjAxMyBPJ1JlaWxseSBib29rIFB5dGhvbiBhbmQgSERGNSBieSBBbmRyZXcgQ29sbGV0dGUsCgoqKjIuIEhERjUgZmlsZXMqKgoKIkluIHRoZSBQeXRob24gd29ybGQsIGNvbnNlbnN1cyBpcyByYXBpZGx5IGNvbnZlcmdpbmcgb24gSGllcmFyY2hpY2FsIERhdGEgRm9ybWF0IHZlcnNpb24gNSwgb3IgJ0hERjUsJyBhcyB0aGUgc3RhbmRhcmQgbWVjaGFuaXNtIGZvciBzdG9yaW5nIGxhcmdlIHF1YW50aXRpZXMgb2YgbnVtZXJpY2FsIGRhdGEuIiBIb3cgbGFyZ2UgYXJlIHdlIHRhbGtpbmcgaGVyZT8gQWNjb3JkaW5nIHRvIENvbGxldHRlLCAiSXTigJlzIG5vdyByZWxhdGl2ZWx5IGNvbW1vbiB0byBkZWFsIHdpdGggZGF0YXNldHMgaHVuZHJlZHMgb2YgZ2lnYWJ5dGVzIG9yIGV2ZW4gdGVyYWJ5dGVzIGluIHNpemU7IEhERjUgaXRzZWxmIGNhbiBzY2FsZSB1cCB0byBleGFieXRlcy4iIExldCdzIGV4cGxvcmUgd2l0aCBhIGNvbmNyZXRlIGV4YW1wbGUgZnJvbSBMSUdPLCB0aGUgTGFzZXIgSW50ZXJmZXJvbWV0ZXIgR3Jhdml0YXRpb25hbC1XYXZlIE9ic2VydmF0b3J5IHByb2plY3QuCgoqKjMuIEltcG9ydGluZyBIREY1IGZpbGVzKioKCllvdSBpbXBvcnQgdGhlIHBhY2thZ2UgaDVweSBhbmQgdGhlbiBpbXBvcnQgdGhlIGZpbGUgdXNpbmcgJ2g1cHkgZG90IEZpbGUnLCByZW1lbWJlcmluZyB0byB1c2UgJ3InIGluIG9yZGVyIHRvIHNwZWNpZnkgcmVhZCBvbmx5LiBQcmludGluZyB0aGUgZGF0YXR5cGUgdG8gdGhlIHNoZWxsIHJldmVhbHMgdGhhdCB3ZSBhcmUgZGVhbGluZyB3aXRoIGFuIGg1cHkuCgoqKjQuIFRoZSBzdHJ1Y3R1cmUgb2YgSERGNSBmaWxlcyoqCgpCdXQgd2hhdCBpcyB0aGUgc3RydWN0dXJlIG9mIHRoaXMgZmlsZT8gWW91IGNhbiBleHBsb3JlIGl0J3MgaGllcmFyY2hpY2FsIHN0cnVjdHVyZSBhcyB5b3Ugd291bGQgdGhhdCBvZiBhIFB5dGhvbiBkaWN0aW9uYXJ5IHVzaW5nIHRoZSBtZXRob2Qga2V5cy4gWW91IHNlZSB0aGF0IHRoZXJlIGFyZSB0aHJlZSBrZXlzLCBtZXRhLCBxdWFsaXR5IGFuZCBzdHJhaW4uIEVhY2ggb2YgdGhlc2UgaXMgYW4gSERGIGdyb3VwLiBZb3UgY2FuIHRoaW5rIG9mIHRoZXNlIGdyb3VwcyBhcyBkaXJlY3Rvcmllcy4gVGhlIExJR08gZG9jdW1lbnRhdGlvbiB0ZWxscyB1cyB0aGF0ICdtZXRhJyBjb250YWlucyBtZXRhLWRhdGEgZm9yIHRoZSBmaWxlLCAncXVhbGl0eScgY29udGFpbnMgaW5mb3JtYXRpb24gYWJvdXQgZGF0YSBxdWFsaXR5IGFuZCAnc3RyYWluJyBjb250YWlucyAnc3RyYWluIGRhdGEgZnJvbSB0aGUgaW50ZXJmZXJvbWV0ZXInLCB0aGUgbWFpbiBtZWFzdXJlbWVudCBwZXJmb3JtZWQgYnkgTElHTywgdGhlIGRhdGEgb2YgaW50ZXJlc3QuIElmIHlvdSBrbmV3IHdoYXQgZGF0YSBhbmQgbWV0YWRhdGEgc2hvdWxkIGJlIGluIGVhY2ggZ3JvdXAsIHlvdSBjb3VsZCBhY2Nlc3MgaXQgc3RyYWlnaHRmb3J3YXJkbHkuIEhvd2V2ZXIsIGlmIG5vdCwgZHVlIHRvIHRoZSBoaWVyYXJjaGljYWwgbmF0dXJlIG9mIHRoZSBmaWxlIHN0cnVjdHVyZSwgaXQgaXMgZWFzeSB0byBleHBsb3JlLiBGb3IgZXhhbXBsZSwKCioqNS4gVGhlIHN0cnVjdHVyZSBvZiBIREY1IGZpbGVzKioKCmxldCdzIHNheSB5b3Ugd2FudGVkIHRvIGZpbmQgb3V0IHdoYXQgdHlwZSBvZiBtZXRhZGF0YSB0aGVyZSBpcywgeW91IGNvdWxkIGVhc2lseSBwcmludCBvdXQgdGhlIGtleXMuIE5vdyB5b3Uga25vdyB0aGUga2V5cywgeW91IGNhbiBhY2Nlc3MgYW55IG1ldGFkYXRhIG9mIGludGVyZXN0LiBJZiB5b3UncmUgaW50ZXJlc3RlZCBpbiAnRGVzY3JpcHRpb24nIGFuZCAnRGV0ZWN0b3InLCBhbGwgeW91IG5lZWQgdG8gZG8gaXMgcHJpbnQgdGhlIGNvcnJlc3BvbmRpbmcgdmFsdWVzLiBZb3Ugc2VlIHRoYXQgdGhlIGRhdGEgaW4gdGhlIGZpbGUgaXMgJ1N0cmFpbiBkYXRhIHRpbWUgc2VyaWVzIGZyb20gTElHTycgYW5kIHRoYXQgdGhlIGRldGVjdG9yIHVzZWQgd2FzICdIMScuIE5leHQgcGVyaGFwcyB5b3Ugd291bGQgbGlrZSB0byBjaGVjayBvdXQgdGhlIGFjdHVhbCBkYXRhPyBHcmVhdCBpZGVhIGFuZCB0aGF0J3MgcHJlY2lzZWx5IHdoYXQgeW91J3JlIGdvaW5nIHRvIGRvIGluIHRoZSB1cGNvbWluZyBleGVyY2lzZXMhCgoqKjYuIFRoZSBIREYgUHJvamVjdCoqCgpCZWZvcmUgeW91IGRvIHNvLCBpdCBpcyBhbHNvIHdvcnRoIG5vdGluZyB0aGF0IHRoZSBIREYgcHJvamVjdCBpcyBhY3RpdmVseSBtYWludGFpbmVkIGJ5dCB0aGUgSERGIGdyb3VwLCBiYXNlZCBpbiBDaGFtcGFpZ24sIElsbGlub2lzIGFuZCBmb3JtZXJseSBwYXJ0IG9mIHRoZSBVbml2ZXJzaXR5IG9mIElsbGlub2lzIFVyYmFuYS1DaGFtcGFpZ24uCgoqKjcuIExldCdzIHByYWN0aWNlISoqCgpOb3cgaXQncyB0aW1lIGZvciB5b3UgdG8gaW1wb3J0IGFuZCB2aXN1YWxpemUgc29tZSBvZiB0aGUgZGF0YSB0aGF0IGxlZCB0byB0aGUgdmFsaWRhdGlvbiBvZiBFaW5zdGVpbidzIFRoZW9yeSBvZiBHcmF2aXRhdGlvbmFsIFdhdmVzLCBlbmpveSEKCiMjIyAqKlVzaW5nIEZpbGUgdG8gaW1wb3J0IEhERjUgZmlsZXMqKgoKVGhlIGBoNXB5YCBwYWNrYWdlIGhhcyBiZWVuIGltcG9ydGVkIGluIHRoZSBlbnZpcm9ubWVudCBhbmQgdGhlIGZpbGUgYExJR09fZGF0YS5oZGY1YCBpcyBsb2FkZWQgaW4gdGhlIG9iamVjdCBgaDVweV9maWxlYC4KCldoYXQgaXMgdGhlIGNvcnJlY3Qgd2F5IG9mIHVzaW5nIHRoZSBoNXB5IGZ1bmN0aW9uLCBgRmlsZSgpYCwgdG8gaW1wb3J0IHRoZSBmaWxlIGluIGBoNXB5X2ZpbGVgIGludG8gYW4gb2JqZWN0LCBgaDVweV9kYXRhYCwgZm9yIHJlYWRpbmcgb25seT8KCioqUG9zc2libGUgQW5zd2VycyoqCgoxLiBgaDVweV9kYXRhID0gRmlsZShoNXB5X2ZpbGUsICdyJylgCgoyLiBgaDVweV9kYXRhID0gaDVweS5GaWxlKGg1cHlfZmlsZSwgJ3InKWAKCjMuIGBoNXB5X2RhdGEgPSBoNXB5LkZpbGUoaDVweV9maWxlLCByZWFkKWAKCjQuIGBoNXB5X2RhdGEgPSBoNXB5LkZpbGUoaDVweV9maWxlLCAncmVhZCcpYAoKQW5zd2VyOgoKIyMjICoqVXNpbmcgaDVweSB0byBpbXBvcnQgSERGNSBmaWxlcyoqCgpUaGUgZmlsZSBgJ0xJR09fZGF0YS5oZGY1J2AgaXMgYWxyZWFkeSBpbiB5b3VyIHdvcmtpbmcgZGlyZWN0b3J5LiBJbiB0aGlzIGV4ZXJjaXNlLCB5b3UnbGwgaW1wb3J0IGl0IHVzaW5nIHRoZSBgaDVweWAgbGlicmFyeS4gWW91J2xsIGFsc28gcHJpbnQgb3V0IGl0cyBkYXRhdHlwZSB0byBjb25maXJtIHlvdSBoYXZlIGltcG9ydGVkIGl0IGNvcnJlY3RseS4gWW91J2xsIHRoZW4gc3R1ZHkgdGhlIHN0cnVjdHVyZSBvZiB0aGUgZmlsZSBpbiBvcmRlciB0byBzZWUgcHJlY2lzZWx5IHdoYXQgSERGIGdyb3VwcyBpdCBjb250YWlucy4KCllvdSBjYW4gZmluZCB0aGUgTElHTyBkYXRhIHBsdXMgbG9hZHMgb2YgZG9jdW1lbnRhdGlvbiBhbmQgdHV0b3JpYWxzIFtoZXJlXShodHRwczovL2xvc2MubGlnby5vcmcvZXZlbnRzL0dXMTUwOTE0LykuIFRoZXJlIGlzIGFsc28gYSBncmVhdCB0dXRvcmlhbCBvbiBTaWduYWwgUHJvY2Vzc2luZyB3aXRoIHRoZSBkYXRhIFtoZXJlXShodHRwczovL3d3dy5ndy1vcGVuc2NpZW5jZS5vcmcvR1cxNTA5MTRkYXRhL0xPU0NfRXZlbnRfdHV0b3JpYWxfR1cxNTA5MTQuaHRtbCkuCgoqKkluc3RydWN0aW9ucyoqCgotIEltcG9ydCB0aGUgcGFja2FnZSBgaDVweWAuCi0gQXNzaWduIHRoZSBuYW1lIG9mIHRoZSBmaWxlIHRvIHRoZSB2YXJpYWJsZSBgZmlsZWAuCi0gTG9hZCB0aGUgZmlsZSBhcyByZWFkIG9ubHkgaW50byB0aGUgdmFyaWFibGUgYGRhdGFgLgotIFByaW50IHRoZSBkYXRhdHlwZSBvZiBgZGF0YWAuCi0gUHJpbnQgdGhlIG5hbWVzIG9mIHRoZSBncm91cHMgaW4gdGhlIEhERjUgZmlsZSBgJ0xJR09fZGF0YS5oZGY1J2AuCgpgYGB7cHl0aG9ufQojIEltcG9ydCBwYWNrYWdlcwppbXBvcnQgbnVtcHkgYXMgbnAKaW1wb3J0IF9fX18KCiMgQXNzaWduIGZpbGVuYW1lOiBmaWxlCgoKIyBMb2FkIGZpbGU6IGRhdGEKZGF0YSA9IGg1cHkuRmlsZShfX19fLCBfX19fKQoKIyBQcmludCB0aGUgZGF0YXR5cGUgb2YgdGhlIGxvYWRlZCBmaWxlCgoKIyBQcmludCB0aGUga2V5cyBvZiB0aGUgZmlsZQpmb3Iga2V5IGluIF9fX186CiAgICBwcmludChfX19fKQoKYGBgCgojIyMgKipFeHRyYWN0aW5nIGRhdGEgZnJvbSB5b3VyIEhERjUgZmlsZSoqCgpJbiB0aGlzIGV4ZXJjaXNlLCB5b3UnbGwgZXh0cmFjdCBzb21lIG9mIHRoZSBMSUdPIGV4cGVyaW1lbnQncyBhY3R1YWwgZGF0YSBmcm9tIHRoZSBIREY1IGZpbGUgYW5kIHlvdSdsbCB2aXN1YWxpemUgaXQuCgpUbyBkbyBzbywgeW91J2xsIG5lZWQgdG8gZmlyc3QgZXhwbG9yZSB0aGUgSERGNSBncm91cCBgJ3N0cmFpbidgLgoKKipJbnN0cnVjdGlvbnMqKgoKLSBBc3NpZ24gdGhlIEhERjUgZ3JvdXAgYGRhdGFbJ3N0cmFpbiddYCB0byBgZ3JvdXBgLgotIEluIHRoZSBgZm9yYCBsb29wLCBwcmludCBvdXQgdGhlIGtleXMgb2YgdGhlIEhERjUgZ3JvdXAgaW4gYGdyb3VwYC4KLSBBc3NpZ24gdG8gdGhlIHZhcmlhYmxlIGBzdHJhaW5gIHRoZSB2YWx1ZXMgb2YgdGhlIHRpbWUgc2VyaWVzIGRhdGEgYGRhdGFbJ3N0cmFpbiddWydTdHJhaW4nXWAgdXNpbmcgdGhlIGF0dHJpYnV0ZSBgLnZhbHVlYC4KLSBTZXQgYG51bV9zYW1wbGVzYCBlcXVhbCB0byBgMTAwMDBgLCB0aGUgbnVtYmVyIG9mIHRpbWUgcG9pbnRzIHdlIHdpc2ggdG8gc2FtcGxlLgotIEV4ZWN1dGUgdGhlIHJlc3Qgb2YgdGhlIGNvZGUgdG8gcHJvZHVjZSBhIHBsb3Qgb2YgdGhlIHRpbWUgc2VyaWVzIGRhdGEgaW4gYExJR09fZGF0YS5oZGY1YC4KCmBgYHtweXRob259CiMgR2V0IHRoZSBIREY1IGdyb3VwOiBncm91cAoKCiMgQ2hlY2sgb3V0IGtleXMgb2YgZ3JvdXAKZm9yIGtleSBpbiBfX19fOgogICAgcHJpbnQoX19fXykKCiMgU2V0IHZhcmlhYmxlIGVxdWFsIHRvIHRpbWUgc2VyaWVzIGRhdGE6IHN0cmFpbgoKCiMgU2V0IG51bWJlciBvZiB0aW1lIHBvaW50cyB0byBzYW1wbGU6IG51bV9zYW1wbGVzCgoKIyBTZXQgdGltZSB2ZWN0b3IKdGltZSA9IG5wLmFyYW5nZSgwLCAxLCAxL251bV9zYW1wbGVzKQoKIyBQbG90IGRhdGEKcGx0LnBsb3QodGltZSwgc3RyYWluWzpudW1fc2FtcGxlc10pCnBsdC54bGFiZWwoJ0dQUyBUaW1lIChzKScpCnBsdC55bGFiZWwoJ3N0cmFpbicpCnBsdC5zaG93KCkKCmBgYAoKIyMgKipJbXBvcnRpbmcgTUFUTEFCIGZpbGVzKioKCioqMS4gSW1wb3J0aW5nIE1BVExBQiBmaWxlcyoqCgpNQVRMQUIsIHdoaWNoIGlzIHNob3J0CgoqKjIuIE1BVExBQioqCgpmb3IgTWF0cml4IExhYm9yYXRvcnksIGlzIGEgbnVtZXJpY2FsIGNvbXB1dGluZyBlbnZpcm9ubWVudCB0aGF0IGlzIGFuIGluZHVzdHJ5IHN0YW5kYXJkIGluIHRoZSBkaXNjaXBsaW5lcyBvZiBlbmdpbmVlcmluZyBhbmQgc2NpZW5jZS4gVGhpcyBpcyBkdWUgaW4gcGFydCB0byBpdHMgcG93ZXJmdWwgbGluZWFyIGFsZ2VicmEgYW5kIG1hdHJpeCBjYXBhYmlsaXRpZXMsIGluIHBhcnQgdG8gaXRzIHByb3ByaWV0YXJ5IG5hdHVyZSBhbmQgaW4gcGFydCB0byBob3cgZGlmZmljdWx0IHRoZSBhY2FkZW1pYyB3b3JsZCBmaW5kcyBpdCB0byBzaGFrZSBvZmYgb2xkIGhhYml0cy4gUmVnYXJkbGVzcyBvZiB0aGUgcmVhc29ucyBmb3IgaXRzIHdpZGVzcHJlYWQgdXNlLCB0aGUgZmFjdCBvZiB0aGUgbWF0dGVyIGlzIHRoYXQgYSBsb3Qgb2YgcGVvcGxlIHVzZSBNQVRMQUIgYW5kIHNhdmUgdGhlaXIgZGF0YSBhcyAnZG90IG1hdCcgZmlsZXMsIHRoZSBmaWxlIGZvcm1hdCBuYXRpdmUgdG8gTUFUTEFCLiBIb3cgY2FuIHlvdSBpbXBvcnQgdGhlc2UgaW50byBQeXRob24/CgoqKjMuIFNjaVB5IHRvIHRoZSByZXNjdWUhKioKCkx1Y2tpbHkgZm9yIHVzIFB5dGhvbiBhZmZpY2lvbmFkb3MsIHRoZSBzdGFuZGFyZCBsaWJyYXJ5IHNjaXB5IGhhcyBmdW5jdGlvbnMgbG9hZG1hdCBhbmQgc2F2ZW1hdCwgd2hpY2ggYWxsb3cgdXMgdG8gcmVhZCBhbmQgd3JpdGUgZG90IG1hdCBmaWxlcywgcmVzcGVjdGl2ZWx5LgoKKio0LiBXaGF0IGlzIGEgLm1hdCBmaWxlPyoqCgoiV2hhdCBleGFjdGx5IGlzIGluIGEgZG90IG1hdCBmaWxlPyIgeW91IG1heSBhc2suIFRvIGFuc3dlciB0aGlzLCBsZXRzIGxvb2sgYXQgdGhlIE1BVExBQiBJREUuIEluIHBhcnRpY3VsYXIsCgoqKjUuIFdoYXQgaXMgYSAubWF0IGZpbGU/KioKCmNoZWNrIG91dCB0aGUgTUFUTEFCIHdvcmtzcGFjZSB3aGVyZSBhbGwgeW91ciB2YXJpYWJsZXMgYXJlIHN0b3JlZC4gVGhpcyB3b3Jrc3BhY2UgY2FuIGNvbnRhaW4gc3RyaW5ncywgZmxvYXRzLCB2ZWN0b3JzIGFuZCBhcnJheXMsIGFtb25nIG1hbnkgb3RoZXIgb2JqZWN0cy4gQSBkb3QgbWF0IGZpbGUgaXMgc2ltcGx5IGEgY29sbGVjdGlvbiBvZiBzdWNoIG9iamVjdHMuCgoqKjYuIEltcG9ydGluZyBhIC5tYXQgZmlsZSoqCgpOb3cgdGhpcyBtZWFucyB3aGVuIGltcG9ydGluZyBhIGRvdCBtYXQgZmlsZSBpbiBQeXRob24sIHdlIHNob3VsZCBleHBlY3QgdG8gc2VlIGEgbnVtYmVyIG9mIGRpZmZlcmVudCB2YXJpYWJsZXMgYW5kIG9iamVjdHMuIEluIHRoaXMgY29kZSwgSSBmaXJzdCBpbXBvcnQgc2NpcHktZG90LWlvIGFuZCB0aGVuIGxvYWQgdGhlIGZpbGUgJ3dvcmtzcGFjZSBkb3QgbWF0Jy4gQ2hlY2tpbmcgb3V0IHdoYXQgdHlwZSBvZiBvYmplY3QgcmVzdWx0cyB0ZWxscyBtZSB0aGF0IGl0J3MgYSBkaWN0aW9uYXJ5LiBIb3cgdGhpcyBkaWN0aW9uYXJ5IHJlbGF0ZXMgdG8gYSBNQVRMQUIgd29ya3NwYWNlIGlzIHN0cmFpZ2h0Zm9yd2FyZDogdGhlIGtleXMgb2YgdGhlIFB5dGhvbiBkaWN0aW9uYXJ5IGFyZSB0aGUgTUFUTEFCIHZhcmlhYmxlIG5hbWVzIGFuZCB0aGUgdmFsdWVzIG9mIHRoZSBQeXRob24gZGljdGlvbmFyeSBhcmUgdGhlIG9iamVjdHMgdGhhdCBhcmUgYXNzaWduZWQgdG8gdGhlIHZhcmlhYmxlcy4gSW4gdGhlIGV4YW1wbGUgYWJvdmUsIG1hdFsneCddIGlzIGEgbnVtcHkgY29ycmVzcG9uZGluZyB0byB0aGUgTUFUTEFCIGFycmF5IHggaW4geW91ciBNQVRMQUIgd29ya3NwYWNlLiBJdCdzIHRoYXQgZWFzeS4KCioqNy4gTGV0J3MgcHJhY3RpY2UhKioKCk5vdyBpdCdzIHlvdXIgdHVybiB0byBpbXBvcnQgYSBNQVRMQUIgd29ya3NwYWNlIGFuZCBjaGVjayBvdXQgd2hhdCBpdCBjb250YWlucywgaGFwcHkgZXhwbG9yaW5nIQoKIyMjICoqTG9hZGluZyAubWF0IGZpbGVzKioKCkluIHRoaXMgZXhlcmNpc2UsIHlvdSdsbCBmaWd1cmUgb3V0IGhvdyB0byBsb2FkIGEgTUFUTEFCIGZpbGUgdXNpbmcgYHNjaXB5LmlvLmxvYWRtYXQoKWAgYW5kIHlvdSdsbCBkaXNjb3ZlciB3aGF0IFB5dGhvbiBkYXRhdHlwZSBpdCB5aWVsZHMuCgpUaGUgZmlsZSBgJ2FsYmVja19nZW5lX2V4cHJlc3Npb24ubWF0J2AgaXMgaW4geW91ciB3b3JraW5nIGRpcmVjdG9yeS4gVGhpcyBmaWxlIGNvbnRhaW5zIFtnZW5lIGV4cHJlc3Npb24gZGF0YV0oaHR0cHM6Ly93d3cubWNiLnVjZGF2aXMuZWR1L2ZhY3VsdHktbGFicy9hbGJlY2svd29ya3Nob3AuaHRtKSBmcm9tIHRoZSBBbGJlY2sgTGFiIGF0IFVDIERhdmlzLiBZb3UgY2FuIGZpbmQgdGhlIGRhdGEgYW5kIHNvbWUgZ3JlYXQgZG9jdW1lbnRhdGlvbiBbaGVyZV0oaHR0cHM6Ly93d3cubWNiLnVjZGF2aXMuZWR1L2ZhY3VsdHktbGFicy9hbGJlY2svd29ya3Nob3AuaHRtKS4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gSW1wb3J0IHRoZSBwYWNrYWdlIGBzY2lweS5pb2AuCi0gTG9hZCB0aGUgZmlsZSBgJ2FsYmVja19nZW5lX2V4cHJlc3Npb24ubWF0J2AgaW50byB0aGUgdmFyaWFibGUgYG1hdGA7IGRvIHNvIHVzaW5nIHRoZSBmdW5jdGlvbiBgc2NpcHkuaW8ubG9hZG1hdCgpYC4KLSBVc2UgdGhlIGZ1bmN0aW9uIGB0eXBlKClgIHRvIHByaW50IHRoZSBkYXRhdHlwZSBvZiBgbWF0YCB0byB0aGUgSVB5dGhvbiBzaGVsbC4KCmBgYHtweXRob259CiMgSW1wb3J0IHBhY2thZ2UKCgojIExvYWQgTUFUTEFCIGZpbGU6IG1hdAoKCiMgUHJpbnQgdGhlIGRhdGF0eXBlIHR5cGUgb2YgbWF0CnByaW50KF9fX18pCgpgYGAKCiMjIyAqKlRoZSBzdHJ1Y3R1cmUgb2YgLm1hdCBpbiBQeXRob24qKgoKSGVyZSwgeW91J2xsIGRpc2NvdmVyIHdoYXQgaXMgaW4gdGhlIE1BVExBQiBkaWN0aW9uYXJ5IHRoYXQgeW91IGxvYWRlZCBpbiB0aGUgcHJldmlvdXMgZXhlcmNpc2UuCgpUaGUgZmlsZSBgJ2FsYmVja19nZW5lX2V4cHJlc3Npb24ubWF0J2AgaXMgYWxyZWFkeSBsb2FkZWQgaW50byB0aGUgdmFyaWFibGUgYG1hdGAuIFRoZSBmb2xsb3dpbmcgbGlicmFyaWVzIGhhdmUgYWxyZWFkeSBiZWVuIGltcG9ydGVkIGFzIGZvbGxvd3M6CgpgaW1wb3J0IHNjaXB5LmlvYApgaW1wb3J0IG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdGAKYGltcG9ydCBudW1weSBhcyBucGAKCk9uY2UgYWdhaW4sIHRoaXMgZmlsZSBjb250YWlucyBbZ2VuZSBleHByZXNzaW9uIGRhdGFdKGh0dHBzOi8vd3d3Lm1jYi51Y2RhdmlzLmVkdS9mYWN1bHR5LWxhYnMvYWxiZWNrL3dvcmtzaG9wLmh0bSkgZnJvbSB0aGUgQWxiZWNrIExhYiBhdCBVQ0RhdmlzLiBZb3UgY2FuIGZpbmQgdGhlIGRhdGEgYW5kIHNvbWUgZ3JlYXQgZG9jdW1lbnRhdGlvbiBbaGVyZV0oaHR0cHM6Ly93d3cubWNiLnVjZGF2aXMuZWR1L2ZhY3VsdHktbGFicy9hbGJlY2svd29ya3Nob3AuaHRtKS4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gVXNlIHRoZSBtZXRob2QgYC5rZXlzKClgIG9uIHRoZSBkaWN0aW9uYXJ5IGBtYXRgIHRvIHByaW50IHRoZSBrZXlzLiBNb3N0IG9mIHRoZXNlIGtleXMgKGluIGZhY3QgdGhlIG9uZXMgdGhhdCBkbyBOT1QgYmVnaW4gYW5kIGVuZCB3aXRoICdfXycpIGFyZSB2YXJpYWJsZXMgZnJvbSB0aGUgY29ycmVzcG9uZGluZyBNQVRMQUIgZW52aXJvbm1lbnQuCi0gUHJpbnQgdGhlIHR5cGUgb2YgdGhlIHZhbHVlIGNvcnJlc3BvbmRpbmcgdG8gdGhlIGtleSAnYENZcmF0aW9DeXQnYCBpbiBgbWF0YC4gUmVjYWxsIHRoYXQgYG1hdFsnQ1lyYXRpb0N5dCddYCBhY2Nlc3NlcyB0aGUgdmFsdWUuCi0gUHJpbnQgdGhlIHNoYXBlIG9mIHRoZSB2YWx1ZSBjb3JyZXNwb25kaW5nIHRvIHRoZSBrZXkgYCdDWXJhdGlvQ3l0J2AgdXNpbmcgdGhlIGBudW1weWAgZnVuY3Rpb24gYHNoYXBlKClgLgotIEV4ZWN1dGUgdGhlIGVudGlyZSBzY3JpcHQgdG8gc2VlIHNvbWUgb3NjaWxsYXRvcnkgZ2VuZSBleHByZXNzaW9uIGRhdGEhCgpgYGB7cHl0aG9ufQojIFByaW50IHRoZSBrZXlzIG9mIHRoZSBNQVRMQUIgZGljdGlvbmFyeQpwcmludChfX19fKQoKIyBQcmludCB0aGUgdHlwZSBvZiB0aGUgdmFsdWUgY29ycmVzcG9uZGluZyB0byB0aGUga2V5ICdDWXJhdGlvQ3l0JwoKCiMgUHJpbnQgdGhlIHNoYXBlIG9mIHRoZSB2YWx1ZSBjb3JyZXNwb25kaW5nIHRvIHRoZSBrZXkgJ0NZcmF0aW9DeXQnCgoKIyBTdWJzZXQgdGhlIGFycmF5IGFuZCBwbG90IGl0CmRhdGEgPSBtYXRbJ0NZcmF0aW9DeXQnXVsyNSwgNTpdCmZpZyA9IHBsdC5maWd1cmUoKQpwbHQucGxvdChkYXRhKQpwbHQueGxhYmVsKCd0aW1lIChtaW4uKScpCnBsdC55bGFiZWwoJ25vcm1hbGl6ZWQgZmx1b3Jlc2NlbmNlIChtZWFzdXJlIG9mIGV4cHJlc3Npb24pJykKcGx0LnNob3coKQoKYGBgCgo=</div>
 
 
 
