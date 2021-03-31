@@ -241,7 +241,7 @@ You're now well-versed in importing text files and you're about to become a wiz 
 
 3. A relational database (e.g. PostgreSQL).
 
-Answer:
+Answer: 3
 
 ## **Pop quiz: what exactly are flat files?**
 
@@ -256,6 +256,8 @@ Which of the following statements about flat files is incorrect?
 3. A record in a flat file is composed of *fields* or *attributes*, each of which contains at most one item of information.
 
 4. Flat files are pervasive in data science.
+
+Answer: 2
 
 ### **Why we like flat files and the Zen of Python**
 
@@ -277,6 +279,8 @@ The question you need to answer is: **what is the 5th aphorism of the Zen of Pyt
 
 4. Flatness is in the eye of the beholder.
 
+Answer: 1
+
 ## **Import flat files using NumPy**
 
 **1. Importing flat files using NumPy**
@@ -295,17 +299,42 @@ Secondly, numpy arrays are often essential for other packages, such as scikit-le
 
 To use either of these we first need to import NumPy. We then call loadtxt and pass it the filename as the first argument, along with the delimiter as the 2nd argument. Note that the default delimiter is any white space so we’ll usually need to specify it explicitly.
 
+```{python}
+import numpy as np
+filename = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/MNIST.txt"
+data = np.loadtxt(filename, delimiter = ',')
+print(data)
+```
+
 **5. Customizing your NumPy import**
 
 There are a number of additional arguments you may wish to specify. If, for example, your data consists of numerics and your header has strings in it, such as in the MNIST digits data, you will want to skip the first row by calling loadtxt with the argument skiprows equals 1; if you want only the 1st and 3rd columns of the data,
+
+```{python, eval = False}
+import numpy as np
+filename = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/MNIST_header.txt"
+data = np.loadtxt(filename, delimiter = ',', skiprows = 1)
+print(data)
+```
 
 **6. Customizing your NumPy import**
 
 you’ll want to set usecols equals the list containing ints 0 and 2.
 
+```{python, eval = False}
+import numpy as np
+filename = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/MNIST_header.txt"
+data = np.loadtxt(filename, delimiter = ',', skiprows = 1, usecols = [0, 2])
+print(data)
+```
+
 **7. Customizing your NumPy import**
 
 You can also import different datatypes into NumPy arrays: for example, setting the argument dtype equals 'str' will ensure that all entries are imported as strings. loadtxt is great for basic cases, but tends to break down when we have
+
+```{python, eval = False}
+data = np.loadtxt(filename, delimiter = ',', dtype = str)
+```
 
 **8. Mixed datatypes**
 
@@ -338,18 +367,19 @@ You can find more information about the MNIST dataset [here](http://yann.lecun.c
 - Fill in the argument of `print()` to print the type of the object `digits`. Use the function `type()`.
 - Execute the rest of the code to visualize one of the rows of the data.
 
-```{python}
+```{python, eval = False}
 # Import package
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Assign filename to variable: file
-file = 'digits.csv'
+file = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/MNIST.txt"
 
 # Load file as array: digits
-digits = np.loadtxt(____, delimiter=____)
+digits = np.loadtxt(file, delimiter = ',')
 
 # Print datatype of digits
-print(____)
+print(type(digits))
 
 # Select and reshape a row
 im = digits[21, 1:]
@@ -381,7 +411,7 @@ The file that you'll be importing, `digits_header.txt`, has a header and is tab-
 - Complete the argument of the `print()` call in order to print the entire array that you just imported.
 
 
-```{python}
+```{python, eval = False}
 # Import numpy
 import numpy as np
 
@@ -389,10 +419,10 @@ import numpy as np
 file = 'digits_header.txt'
 
 # Load the data: data
-data = np.loadtxt(____, delimiter=____, skiprows=____, usecols=____)
+data = np.loadtxt(file, delimiter = '\t', skiprows = 1, usecols = [0, 2])
 
 # Print data
-print(____)
+print(data)
 
 ```
 
@@ -419,24 +449,24 @@ Alternatively, you can skip the first row as we have seen before, using the `ski
 
 ```{python}
 # Assign filename: file
-file = 'seaslug.txt'
+file = "/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/seaslug.txt"
 
 # Import file: data
-data = np.loadtxt(____, delimiter='\t', dtype=str)
+data = np.loadtxt(file, delimiter = '\t', dtype = str)
 
 # Print the first element of data
 print(data[0])
 
 # Import data as floats and skip the first row: data_float
-data_float = np.loadtxt(____, delimiter=____, dtype=____, skiprows=____)
+data_float = np.loadtxt(file, delimiter = '\t', dtype = float, skiprows = 1)
 
 # Print the 10th element of data_float
-print(____)
+print(data_float[9])
 
 # Plot a scatterplot of the data
-plt.scatter(data_float[:, 0], data_float[:, 1])
-plt.xlabel('time (min.)')
-plt.ylabel('percentage of larvae')
+_ =plt.scatter(data_float[:, 0], data_float[:, 1])
+_ = plt.xlabel('time (min.)')
+_ = plt.ylabel('percentage of larvae')
 plt.show()
 
 ```
@@ -447,9 +477,15 @@ Much of the time you will need to import datasets which have different datatypes
 
 Import `'titanic.csv'` using the function `np.genfromtxt()` as follows:
 
-`data = np.genfromtxt('titanic.csv', delimiter=',', names=True, dtype=None)`
+```{python}
+data = np.genfromtxt('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/titanic.csv', delimiter=',', names=True, dtype=None)
+```
 
 Here, the first argument is the filename, the second specifies the delimiter `,` and the third argument `names` tells us there is a header. Because the data are of different types, `data` is an object called a [structured array](http://docs.scipy.org/doc/numpy/user/basics.rec.html). Because numpy arrays have to contain elements that are all the same type, the structured array solves this by being a 1D array, where each element of the array is a row of the flat file imported. You can test this by checking out the array's shape in the shell by executing `np.shape(data)`.
+
+```{pyhton}
+np.shape(data)
+```
 
 Accessing rows and columns of structured arrays is super-intuitive: to get the ith row, merely execute `data[i]` and to get the column with name `'Fare'`, execute `data['Fare']`.
 
@@ -465,7 +501,7 @@ After importing the Titanic data as a structured array (as per the instructions 
 
 4. 0,1,1,1.
 
-Answer: 
+Answer: 3
 
 ### **Working with mixed datatypes (2)**
 
@@ -475,13 +511,13 @@ You have just used `np.genfromtxt()` to import data containing mixed datatypes. 
 
 - Import `titanic.csv` using the function `np.recfromcsv()` and assign it to the variable, `d`. You'll only need to pass file to it because it has the defaults `delimiter=','` and `names=True` in addition to `dtype=None`!
 - Run the remaining code to print the first three entries of the resulting array `d`.
-
+'/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/titanic.csv'
 ```{python}
 # Assign the filename: file
-file = 'titanic.csv'
+file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/titanic.csv'
 
 # Import file using np.recfromcsv: d
-
+d = np.recfromcsv(file)
 
 # Print out first three entries of d
 print(d[:3])
@@ -522,6 +558,18 @@ Manipulating dataframes in pandas can be useful in all steps of the data scienti
 
 To use pandas, you first need to import it. Then, if we wish to import a CSV in the most basic case all we need to do is to call the function read_csv and supply it with a single argument, the name of the file. Having assigned the dataframe to the variable data, we can check the first 5 rows of the dataframe, including the header, with the command 'data dot head'. We can also easily convert to the dataframe to a numpy array by calling the dataframe attribute values. Now it's your turn to play around importing flat files using Python.
 
+```{python}
+import pandas as pd
+filename = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/winequality-red.csv'
+data = pd.read_csv(filename)
+data.head()
+```
+
+```{python}
+data_array = data.values
+```
+
+
 **9. You’ll experience:**
 
 You'll get experience importing a flat file that is straightforward and you'll also get experience importing a flat file that has a few issues, such as containing comments and strings that should be interpreted as missing values.
@@ -542,16 +590,16 @@ In the last exercise, you were able to import flat files containing columns with
 
 ```{python}
 # Import pandas as pd
-
+import pandas as pd
 
 # Assign the filename: file
-file = 'titanic.csv'
+file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/titanic.csv'
 
 # Read the file into a DataFrame: df
-df = pd.read_csv(____)
+df = pd.read_csv(file)
 
 # View the head of the DataFrame
-
+print(df.head())
 
 ```
 
@@ -567,13 +615,13 @@ In the last exercise, you were able to import flat files into a `pandas` DataFra
 
 ```{python}
 # Assign the filename: file
-file = 'digits.csv'
+file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/digits.csv'
 
 # Read the first 5 rows of the file into a DataFrame: data
-
+data = pd.read_csv(file, header = None, nrows = 5)
 
 # Build a numpy array from the DataFrame: data_array
-
+data_array = data.values
 
 # Print the datatype of data_array to the shell
 print(type(data_array))
@@ -591,7 +639,7 @@ The `pandas` package is also great at dealing with many of the issues you will e
 - Complete the `sep` (the `pandas` version of `delim`), `comment` and `na_values` arguments of `pd.read_csv()`. `comment` takes characters that comments occur after in the file, which in this case is `'#'`. `na_values` takes a list of strings to recognize as `NA`/`NaN`, in this case the string `'Nothing'`.
 - Execute the rest of the code to print the head of the resulting DataFrame and plot the histogram of the `'Age'` of passengers aboard the Titanic.
 
-```{python}
+```{python, eval = False}
 # Import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 
@@ -599,7 +647,7 @@ import matplotlib.pyplot as plt
 file = 'titanic_corrupt.txt'
 
 # Import file: data
-data = pd.read_csv(file, sep=____, comment=____, na_values=____)
+data = pd.read_csv(file, sep = '\t', comment = '#', na_values = 'Nothing')
 
 # Print the head of the DataFrame
 print(data.head())
