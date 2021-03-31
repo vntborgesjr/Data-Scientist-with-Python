@@ -9,6 +9,515 @@ output:
 ---
 
 ```{python setup}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+## **Introduction to ohter file types**
+
+**1. Introduction to other file types**
+
+Now that you have mastered the art of importing flat files in Python, it is time to check out a number of other file types that you will find yourself needing to work with as a data scientist.
+
+**2. Other file types**
+
+In this chapter, you will learn how to import Excel spreadsheets, which professionals from all disciplines use to store their data. You will also gain familiarity with importing MATLAB, SAS and Stata files, which are commonplace. You will also learn how to import HDF5 files and you'll actually import an HDF5 file containing data from the Laser Interferometer Gravitational-Wave Observatory project that provided empirical support for Einstein's Theory of Gravitational Waves in 2016. HDF5 files are becoming a more prevalent way to store large datasets, as demonstrated by the fact that the LIGO researchers use it to store their data.
+
+**3. Pickled files**
+
+Another file type you'll learn about in this Chapter is that of a 'pickled' file. This is a file type native to Python. The concept of pickling a file is motivated by the following: while it may be easy to save a numpy array or a pandas dataframe to a flat file, there are many other datatypes, such as dictionaries and lists, for which it isn't obvious how to store them. 'Pickle' to the rescue! If you want your files to be human readable, you may want to save them as text files in a clever manner (JSONs, which you will see in a later chapter, are appropriate for Python dictionaries). If, however, you merely want to be able to import them into Python, you can serialize them. All this means is converting the object into a sequence of bytes, or bytestream. As this is a course in Importing Data in Python,
+
+**4. Pickled files**
+
+you'll learn how to import files that have already been pickled. As you have done before, when opening such a file, you'll want to specify that it is read only; you'll also want to specify that it is a binary file, meaning that it is computer-readable and not human-readable. To specify both read only and binary, you'll want pass the string 'rb' as the second argument of open.
+
+**5. Importing Excel spreadsheets**
+
+You'll then dive head-first into Excel spreadsheets, the use of which is so widespread that they need next to no introduction at all. An Excel file generally consists of a number of sheets. There are many ways to import Excel files and you'll use pandas to do so because it produces dataframes natively, which is great for your practice as a Data Scientist. As you can see in this example, you can use the functionExcelfile to assign an Excel file to a variable data. As an Excel file consists of sheets, the first thing to do is figure out what the sheets are. This is straightforward with the command 'data dot sheet_names'. To then load a particular sheet as a dataframe, you need only apply the method parse to the object data with a single argument, which is either the name as a string or the index as a float of the sheet that you wish to load: pandas is clever enough to know if you're telling it the sheet name or the index!
+
+**6. You’ll learn:**
+
+You'll also learn how to customize your spreadsheet import in order to skip rows, import only certain columns and to change the column names. That's enough from me,
+
+**7. Let's practice!**
+
+it's now time to get your hands dirty with pickled files and Excel spreadsheets. Enjoy!
+
+### **Not so flat any more**
+
+In Chapter 1, you learned how to use the IPython magic command `! ls` to explore your current working directory. You can also do this natively in Python using the [library](https://docs.python.org/2/library/os.html) `os`, which consists of miscellaneous operating system interfaces.
+
+The first line of the following code imports the library `os`, the second line stores the name of the current directory in a string called wd and the third outputs the contents of the directory in a list to the shell.
+
+`import os`
+`wd = os.getcwd()`
+`os.listdir(wd)`
+
+Run this code in the IPython shell and answer the following questions. Ignore the files that begin with `.`.
+
+Check out the contents of your current directory and answer the following questions: (1) which file is in your directory and NOT an example of a flat file; (2) why is it not a flat file?
+
+**Possible Answers**
+
+1. `database.db` is not a flat file because relational databases contain structured relationships and flat files do not.
+
+2. `battledeath.xlsx` is not a flat because it is a spreadsheet consisting of many sheets, not a single table.
+
+3. `titanic.txt` is not a flat file because it is a `.txt`, not a `.csv`.
+
+### **Loading a pickled file**
+
+There are a number of datatypes that cannot be saved easily to flat files, such as lists and dictionaries. If you want your files to be human readable, you may want to save them as text files in a clever manner. JSONs, which you will see in a later chapter, are appropriate for Python dictionaries.
+
+However, if you merely want to be able to import them into Python, you can [serialize](https://en.wikipedia.org/wiki/Serialization) them. All this means is converting the object into a sequence of bytes, or a bytestream.
+
+In this exercise, you'll import the `pickle` package, open a previously pickled data structure from a file and load it.
+
+**Instructions**
+
+- Import the `pickle` package.
+- Complete the second argument of `open()` so that it is read only for a binary file. This argument will be a string of two letters, one signifying 'read only', the other 'binary'.
+- Pass the correct argument to `pickle.load()`; it should use the variable that is bound to `open`.
+- Print the data, `d`.
+- Print the datatype of `d`; take your mind back to your previous use of the function `type()`.
+
+```{python}
+# Import pickle package
+
+
+# Open pickle file and load data: d
+with open('data.pkl', ____) as file:
+    d = pickle.load(____)
+
+# Print d
+print(____)
+
+# Print datatype of d
+print(____)
+```
+
+### **Listing sheets in Excel files**
+
+Whether you like it or not, any working data scientist will need to deal with Excel spreadsheets at some point in time. You won't always want to do so in Excel, however!
+
+Here, you'll learn how to use `pandas` to import Excel spreadsheets and how to list the names of the sheets in any loaded .xlsx file.
+
+Recall from the video that, given an Excel file imported into a variable `spreadsheet`, you can retrieve a list of the sheet names using the attribute `spreadsheet.sheet_names`.
+
+Specifically, you'll be loading and checking out the spreadsheet `'battledeath.xlsx'`, modified from the Peace Research Institute Oslo's (PRIO) [dataset](https://www.prio.org/Data/Armed-Conflict/Battle-Deaths/The-Battle-Deaths-Dataset-version-30/). This data contains age-adjusted mortality rates due to war in various countries over several years.
+
+**Instructions**
+
+- Assign the spreadsheet filename (provided above) to the variable `file`.
+- Pass the correct argument to `pd.ExcelFile()` to load the file using pandas, assigning the result to the variable `xls`.
+- Print the sheetnames of the Excel spreadsheet by passing the necessary argument to the `print()` function.
+
+```{python}
+# Import pandas
+import pandas as pd
+
+# Assign spreadsheet filename: file
+file = ____
+
+# Load spreadsheet: xls
+xls = pd.ExcelFile(____)
+
+# Print sheet names
+print(____)
+
+```
+
+### **Importing sheets from Excel files**
+
+In the previous exercises, you saw that the Excel file contains two sheets, `'2002'` and `'2004'`. The next step is to import these.
+
+In this exercise, you'll learn how to import any given sheet of your loaded .xlsx file as a DataFrame. You'll be able to do so by specifying either the sheet's name or its index.
+
+The spreadsheet `'battledeath.xlsx'` is already loaded as `xls`.
+
+**Instructions**
+
+- Load the sheet `'2004'` into the DataFrame df1 using its name as a string.
+- Print the head of `df1` to the shell.
+- Load the sheet `2002` into the DataFrame `df2` using its index (`0`).
+- Print the head of `df2` to the shell.
+
+```{python}
+# Load a sheet into a DataFrame by name: df1
+df1 = xls.parse(____)
+
+# Print the head of the DataFrame df1
+print(____)
+
+# Load a sheet into a DataFrame by index: df2
+
+
+# Print the head of the DataFrame df2
+print(____)
+
+```
+
+### **Customizing your spreadsheet import**
+
+Here, you'll parse your spreadsheets and use additional arguments to skip rows, rename columns and select only particular columns.
+
+The spreadsheet `'battledeath.xlsx'` is already loaded as `xls`.
+
+As before, you'll use the method `parse()`. This time, however, you'll add the additional arguments `skiprows`, `names` and `usecols`. These skip rows, name the columns and designate which columns to parse, respectively. All these arguments can be assigned to lists containing the specific row numbers, strings and column numbers, as appropriate.
+
+**Instructions**
+
+- Parse the first sheet by index. In doing so, skip the first row of data and name the columns `'Country'` and `'AAM due to War (2002)'` using the argument `names`. The values passed to `skiprows` and `names` all need to be of type `list`.
+- Parse the second sheet by index. In doing so, parse only the first column with the `usecols` parameter, skip the first row and rename the column `'Country'`. The argument passed to usecols also needs to be of type `list`.
+
+```{python}
+# Parse the first sheet and rename the columns: df1
+df1 = xls.parse(____, skiprows=____, names=____)
+
+# Print the head of the DataFrame df1
+print(df1.head())
+
+# Parse the first column of the second sheet and rename the column: df2
+df2 = xls.parse(____, usecols=____, skiprows=____, names=____)
+
+# Print the head of the DataFrame df2
+print(df2.head())
+
+```
+
+## **Importing SAS/Stata files using pandas**
+
+**1. Importing SAS/Stata files using pandas**
+
+There are many statistical software packages out there and, although you may not need to do so all the time, it will be important for you, as a working Data Scientist, to be able to import these files into your Python environment.
+
+**2. SAS and Stata files**
+
+The most common examples are SAS, which is an acronym for 'Statistical Analysis System', and Stata, which is a contraction of 'Statistics' and 'Data'. The former is used a great deal in business analytics and biostatistics, while the latter is popular in academic social sciences research, such as economics and epidemiology.
+
+**3. SAS files**
+
+SAS files are important because SAS is a software suite that performs advanced analytics, multivariate analyses, business intelligence, data management, predictive analytics and is a standard for statisticians to do computational analysis.
+
+**4. Importing SAS files**
+
+The most common SAS files have the extension dot sas7bdat and dot sas7bcat, which are dataset files and catalog files respectively. You'll learn how to import the former as dataframes using the function SAS7BDAT (upper case) from the package sas7bdat (lower case). In this case, you can bind the variable file to a connection to the file 'urbanpop dot sas7bdat' in a context manager. Within this context, you can assign to a variable df_sas the result of applying method to_data_frame to file.
+
+**5. Importing Stata files**
+
+Stata files have extension dot dta and we can import them using pandas. We don't even need to initialize a context manager in this case! We merely pass the filename to the function read_stata and assign it to a variable, just like this. In the following exercises, you'll gain invaluable experience at importing these important file formats in Python as pandas dataframes and then seeing what was inside them.
+
+**6. Let's practice!**
+
+Now it's your turn, happy importing!
+
+### **How to import SAS7BDAT**
+
+How do you correctly import the function `SAS7BDAT()` from the package sas7bdat?
+
+**Possible Answers**
+
+1. `import SAS7BDAT from sas7bdat`
+
+2. `from SAS7BDAT import sas7bdat`
+
+3. `import sas7bdat from SAS7BDAT`
+
+4. `from sas7bdat import SAS7BDAT`
+
+Answer:
+
+### **Importing SAS files**
+
+In this exercise, you'll figure out how to import a SAS file as a DataFrame using `SAS7BDAT` and `pandas`. The file `'sales.sas7bdat'` is already in your working directory and both `pandas` and `matplotlib.pyplot` have already been imported as follows:
+
+`import pandas as pd`
+`import matplotlib.pyplot as plt`
+
+The data are adapted from the website of the undergraduate text book [Principles of Econometrics](http://www.principlesofeconometrics.com/) by Hill, Griffiths and Lim.
+
+**Instructions**
+
+- Import the module `SAS7BDAT` from the library `sas7bdat`.
+- In the context of the file `'sales.sas7bdat'`, load its contents to a DataFrame `df_sas`, using the method `to_data_frame()` on the object `file`.
+- Print the head of the DataFrame `df_sas`.
+- Execute your entire script to produce a histogram plot!
+
+```{python}
+# Import sas7bdat package
+from ____ import ____
+
+# Save file to a DataFrame: df_sas
+with SAS7BDAT('sales.sas7bdat') as file:
+    ____
+
+# Print head of DataFrame
+
+
+# Plot histogram of DataFrame features (pandas and pyplot already imported)
+pd.DataFrame.hist(df_sas[['P']])
+plt.ylabel('count')
+plt.show()
+```
+
+## **Using read_stata to import Stata files**
+
+The `pandas` package has been imported in the environment as `pd` and the file `disarea.dta` is in your working directory. The data consist of disease extents for several diseases in various countries (more information can be found [here](http://www.cid.harvard.edu/ciddata/geog/readme_disarea.html)).
+
+What is the correct way of using the `read_stata()` function to import `disarea.dta` into the object `df`?
+
+**Instructions**
+
+1. `df = 'disarea.dta'`
+
+2. `df = read_stata.pd('disarea.dta')`
+
+3. `df = pd.read_stata('disarea.dta')`
+
+4. `df = pd.read_stata(disarea.dta)`
+
+Answer:
+
+### **Importing Stata files**
+
+Here, you'll gain expertise in importing Stata files as DataFrames using the `pd.read_stata()` function from pandas. The last exercise's file, `'disarea.dta'`, is still in your working directory.
+
+**Instructions**
+
+- Use `pd.read_stata()` to load the file `'disarea.dta'` into the DataFrame `df`.
+- Print the head of the DataFrame `df`.
+- Visualize your results by plotting a histogram of the column `disa10`. We’ve already provided this code for you, so just run it!
+
+```{python}
+# Import pandas
+import pandas as pd
+
+# Load Stata file into a pandas DataFrame: df
+
+
+# Print the head of the DataFrame df
+
+
+# Plot histogram of one column of the DataFrame
+pd.DataFrame.hist(df[['disa10']])
+plt.xlabel('Extent of disease')
+plt.ylabel('Number of countries')
+plt.show()
+
+```
+
+## **Importing HDF5 files**
+
+**1. Importing HDF5 files**
+
+According to the 2013 O'Reilly book Python and HDF5 by Andrew Collette,
+
+**2. HDF5 files**
+
+"In the Python world, consensus is rapidly converging on Hierarchical Data Format version 5, or 'HDF5,' as the standard mechanism for storing large quantities of numerical data." How large are we talking here? According to Collette, "It’s now relatively common to deal with datasets hundreds of gigabytes or even terabytes in size; HDF5 itself can scale up to exabytes." Let's explore with a concrete example from LIGO, the Laser Interferometer Gravitational-Wave Observatory project.
+
+**3. Importing HDF5 files**
+
+You import the package h5py and then import the file using 'h5py dot File', remembering to use 'r' in order to specify read only. Printing the datatype to the shell reveals that we are dealing with an h5py.
+
+**4. The structure of HDF5 files**
+
+But what is the structure of this file? You can explore it's hierarchical structure as you would that of a Python dictionary using the method keys. You see that there are three keys, meta, quality and strain. Each of these is an HDF group. You can think of these groups as directories. The LIGO documentation tells us that 'meta' contains meta-data for the file, 'quality' contains information about data quality and 'strain' contains 'strain data from the interferometer', the main measurement performed by LIGO, the data of interest. If you knew what data and metadata should be in each group, you could access it straightforwardly. However, if not, due to the hierarchical nature of the file structure, it is easy to explore. For example,
+
+**5. The structure of HDF5 files**
+
+let's say you wanted to find out what type of metadata there is, you could easily print out the keys. Now you know the keys, you can access any metadata of interest. If you're interested in 'Description' and 'Detector', all you need to do is print the corresponding values. You see that the data in the file is 'Strain data time series from LIGO' and that the detector used was 'H1'. Next perhaps you would like to check out the actual data? Great idea and that's precisely what you're going to do in the upcoming exercises!
+
+**6. The HDF Project**
+
+Before you do so, it is also worth noting that the HDF project is actively maintained byt the HDF group, based in Champaign, Illinois and formerly part of the University of Illinois Urbana-Champaign.
+
+**7. Let's practice!**
+
+Now it's time for you to import and visualize some of the data that led to the validation of Einstein's Theory of Gravitational Waves, enjoy!
+
+### **Using File to import HDF5 files**
+
+The `h5py` package has been imported in the environment and the file `LIGO_data.hdf5` is loaded in the object `h5py_file`.
+
+What is the correct way of using the h5py function, `File()`, to import the file in `h5py_file` into an object, `h5py_data`, for reading only?
+
+**Possible Answers**
+
+1. `h5py_data = File(h5py_file, 'r')`
+
+2. `h5py_data = h5py.File(h5py_file, 'r')`
+
+3. `h5py_data = h5py.File(h5py_file, read)`
+
+4. `h5py_data = h5py.File(h5py_file, 'read')`
+
+Answer:
+
+### **Using h5py to import HDF5 files**
+
+The file `'LIGO_data.hdf5'` is already in your working directory. In this exercise, you'll import it using the `h5py` library. You'll also print out its datatype to confirm you have imported it correctly. You'll then study the structure of the file in order to see precisely what HDF groups it contains.
+
+You can find the LIGO data plus loads of documentation and tutorials [here](https://losc.ligo.org/events/GW150914/). There is also a great tutorial on Signal Processing with the data [here](https://www.gw-openscience.org/GW150914data/LOSC_Event_tutorial_GW150914.html).
+
+**Instructions**
+
+- Import the package `h5py`.
+- Assign the name of the file to the variable `file`.
+- Load the file as read only into the variable `data`.
+- Print the datatype of `data`.
+- Print the names of the groups in the HDF5 file `'LIGO_data.hdf5'`.
+
+```{python}
+# Import packages
+import numpy as np
+import ____
+
+# Assign filename: file
+
+
+# Load file: data
+data = h5py.File(____, ____)
+
+# Print the datatype of the loaded file
+
+
+# Print the keys of the file
+for key in ____:
+    print(____)
+
+```
+
+### **Extracting data from your HDF5 file**
+
+In this exercise, you'll extract some of the LIGO experiment's actual data from the HDF5 file and you'll visualize it.
+
+To do so, you'll need to first explore the HDF5 group `'strain'`.
+
+**Instructions**
+
+- Assign the HDF5 group `data['strain']` to `group`.
+- In the `for` loop, print out the keys of the HDF5 group in `group`.
+- Assign to the variable `strain` the values of the time series data `data['strain']['Strain']` using the attribute `.value`.
+- Set `num_samples` equal to `10000`, the number of time points we wish to sample.
+- Execute the rest of the code to produce a plot of the time series data in `LIGO_data.hdf5`.
+
+```{python}
+# Get the HDF5 group: group
+
+
+# Check out keys of group
+for key in ____:
+    print(____)
+
+# Set variable equal to time series data: strain
+
+
+# Set number of time points to sample: num_samples
+
+
+# Set time vector
+time = np.arange(0, 1, 1/num_samples)
+
+# Plot data
+plt.plot(time, strain[:num_samples])
+plt.xlabel('GPS Time (s)')
+plt.ylabel('strain')
+plt.show()
+
+```
+
+## **Importing MATLAB files**
+
+**1. Importing MATLAB files**
+
+MATLAB, which is short
+
+**2. MATLAB**
+
+for Matrix Laboratory, is a numerical computing environment that is an industry standard in the disciplines of engineering and science. This is due in part to its powerful linear algebra and matrix capabilities, in part to its proprietary nature and in part to how difficult the academic world finds it to shake off old habits. Regardless of the reasons for its widespread use, the fact of the matter is that a lot of people use MATLAB and save their data as 'dot mat' files, the file format native to MATLAB. How can you import these into Python?
+
+**3. SciPy to the rescue!**
+
+Luckily for us Python afficionados, the standard library scipy has functions loadmat and savemat, which allow us to read and write dot mat files, respectively.
+
+**4. What is a .mat file?**
+
+"What exactly is in a dot mat file?" you may ask. To answer this, lets look at the MATLAB IDE. In particular,
+
+**5. What is a .mat file?**
+
+check out the MATLAB workspace where all your variables are stored. This workspace can contain strings, floats, vectors and arrays, among many other objects. A dot mat file is simply a collection of such objects.
+
+**6. Importing a .mat file**
+
+Now this means when importing a dot mat file in Python, we should expect to see a number of different variables and objects. In this code, I first import scipy-dot-io and then load the file 'workspace dot mat'. Checking out what type of object results tells me that it's a dictionary. How this dictionary relates to a MATLAB workspace is straightforward: the keys of the Python dictionary are the MATLAB variable names and the values of the Python dictionary are the objects that are assigned to the variables. In the example above, mat['x'] is a numpy corresponding to the MATLAB array x in your MATLAB workspace. It's that easy.
+
+**7. Let's practice!**
+
+Now it's your turn to import a MATLAB workspace and check out what it contains, happy exploring!
+
+### **Loading .mat files**
+
+In this exercise, you'll figure out how to load a MATLAB file using `scipy.io.loadmat()` and you'll discover what Python datatype it yields.
+
+The file `'albeck_gene_expression.mat'` is in your working directory. This file contains [gene expression data](https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm) from the Albeck Lab at UC Davis. You can find the data and some great documentation [here](https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm).
+
+**Instructions**
+
+- Import the package `scipy.io`.
+- Load the file `'albeck_gene_expression.mat'` into the variable `mat`; do so using the function `scipy.io.loadmat()`.
+- Use the function `type()` to print the datatype of `mat` to the IPython shell.
+
+```{python}
+# Import package
+
+
+# Load MATLAB file: mat
+
+
+# Print the datatype type of mat
+print(____)
+
+```
+
+### **The structure of .mat in Python**
+
+Here, you'll discover what is in the MATLAB dictionary that you loaded in the previous exercise.
+
+The file `'albeck_gene_expression.mat'` is already loaded into the variable `mat`. The following libraries have already been imported as follows:
+
+`import scipy.io`
+`import matplotlib.pyplot as plt`
+`import numpy as np`
+
+Once again, this file contains [gene expression data](https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm) from the Albeck Lab at UCDavis. You can find the data and some great documentation [here](https://www.mcb.ucdavis.edu/faculty-labs/albeck/workshop.htm).
+
+**Instructions**
+
+- Use the method `.keys()` on the dictionary `mat` to print the keys. Most of these keys (in fact the ones that do NOT begin and end with '__') are variables from the corresponding MATLAB environment.
+- Print the type of the value corresponding to the key '`CYratioCyt'` in `mat`. Recall that `mat['CYratioCyt']` accesses the value.
+- Print the shape of the value corresponding to the key `'CYratioCyt'` using the `numpy` function `shape()`.
+- Execute the entire script to see some oscillatory gene expression data!
+
+```{python}
+# Print the keys of the MATLAB dictionary
+print(____)
+
+# Print the type of the value corresponding to the key 'CYratioCyt'
+
+
+# Print the shape of the value corresponding to the key 'CYratioCyt'
+
+
+# Subset the array and plot it
+data = mat['CYratioCyt'][25, 5:]
+fig = plt.figure()
+plt.plot(data)
+plt.xlabel('time (min.)')
+plt.ylabel('normalized fluorescence (measure of expression)')
+plt.show()
 
 ```
 
