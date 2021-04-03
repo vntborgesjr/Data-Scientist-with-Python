@@ -56,6 +56,12 @@ The first line of the following code imports the library `os`, the second line s
 
 Run this code in the IPython shell and answer the following questions. Ignore the files that begin with `.`.
 
+```{python}
+import os
+wd = os.getcwd()
+os.listdir(wd)
+```
+
 Check out the contents of your current directory and answer the following questions: (1) which file is in your directory and NOT an example of a flat file; (2) why is it not a flat file?
 
 **Possible Answers**
@@ -65,6 +71,8 @@ Check out the contents of your current directory and answer the following questi
 2. `battledeath.xlsx` is not a flat because it is a spreadsheet consisting of many sheets, not a single table.
 
 3. `titanic.txt` is not a flat file because it is a `.txt`, not a `.csv`.
+
+Answer: 2
 
 ### **Loading a pickled file**
 
@@ -83,18 +91,21 @@ In this exercise, you'll import the `pickle` package, open a previously pickled 
 - Print the datatype of `d`; take your mind back to your previous use of the function `type()`.
 
 ```{python}
-# Import pickle package
+# pickle dictionary data
+data = {'June': '69.4', 'Aug': '85', 'Airline': '8', 'Mar': '84.4'}
 
+# Import pickle package
+import pickle
 
 # Open pickle file and load data: d
-with open('data.pkl', ____) as file:
-    d = pickle.load(____)
+with open('data.pkl', 'rb') as file:
+    d = pickle.load(file)
 
 # Print d
-print(____)
+print(d)
 
 # Print datatype of d
-print(____)
+print(type(d))
 ```
 
 ### **Listing sheets in Excel files**
@@ -118,13 +129,13 @@ Specifically, you'll be loading and checking out the spreadsheet `'battledeath.x
 import pandas as pd
 
 # Assign spreadsheet filename: file
-file = ____
+file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/battledeath.xlsx'
 
 # Load spreadsheet: xls
-xls = pd.ExcelFile(____)
+xls = pd.ExcelFile(file)
 
 # Print sheet names
-print(____)
+print(xls.sheet_names)
 
 ```
 
