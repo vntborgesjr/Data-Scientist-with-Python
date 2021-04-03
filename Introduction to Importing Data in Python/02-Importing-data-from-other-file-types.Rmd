@@ -32,9 +32,49 @@ Another file type you'll learn about in this Chapter is that of a 'pickled' file
 
 you'll learn how to import files that have already been pickled. As you have done before, when opening such a file, you'll want to specify that it is read only; you'll also want to specify that it is a binary file, meaning that it is computer-readable and not human-readable. To specify both read only and binary, you'll want pass the string 'rb' as the second argument of open.
 
+```{python write pickle}
+import pickle
+
+pickled_fruit = {'peaches': 13, 'apples': 4, 'oranges': 11}
+
+filename = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/pickled_fruit.pkl'
+
+outfile = open(filename, 'wb')
+
+pickle.dump(pickled_fruit, outfile)
+outfile.close()
+
+del(pickled_fruit)
+```
+
+```{python open pickle}
+import pickle
+
+filename = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/pickled_fruit.pkl'
+
+with open(filename, 'rb') as file:
+  data = pickle.load(file)
+
+print(data)
+```
+
 **5. Importing Excel spreadsheets**
 
 You'll then dive head-first into Excel spreadsheets, the use of which is so widespread that they need next to no introduction at all. An Excel file generally consists of a number of sheets. There are many ways to import Excel files and you'll use pandas to do so because it produces dataframes natively, which is great for your practice as a Data Scientist. As you can see in this example, you can use the functionExcelfile to assign an Excel file to a variable data. As an Excel file consists of sheets, the first thing to do is figure out what the sheets are. This is straightforward with the command 'data dot sheet_names'. To then load a particular sheet as a dataframe, you need only apply the method parse to the object data with a single argument, which is either the name as a string or the index as a float of the sheet that you wish to load: pandas is clever enough to know if you're telling it the sheet name or the index!
+
+```{python import xlsx file}
+import pandas as pd
+
+file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/battledeath.xls'
+
+data = pd.ExcelFile(file)
+print(data.sheet_names)
+
+```
+```{python}
+df1 = data.parse('2002') # sheet name, as string
+df2 = data.parse(0) # sheet index, as a float
+```
 
 **6. You’ll learn:**
 
@@ -94,11 +134,20 @@ In this exercise, you'll import the `pickle` package, open a previously pickled 
 # pickle dictionary data
 data = {'June': '69.4', 'Aug': '85', 'Airline': '8', 'Mar': '84.4'}
 
+filename = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/data.pkl'
+
+outfile = open(filename, 'wb')
+
+pickle.dump(data, outfile)
+outfile.close()
+```
+
+```{python}
 # Import pickle package
 import pickle
 
 # Open pickle file and load data: d
-with open('data.pkl', 'rb') as file:
+with open('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/data.pkl', 'rb') as file:
     d = pickle.load(file)
 
 # Print d
@@ -129,7 +178,7 @@ Specifically, you'll be loading and checking out the spreadsheet `'battledeath.x
 import pandas as pd
 
 # Assign spreadsheet filename: file
-file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/battledeath.xlsx'
+file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/battledeath.xls'
 
 # Load spreadsheet: xls
 xls = pd.ExcelFile(file)
@@ -156,18 +205,19 @@ The spreadsheet `'battledeath.xlsx'` is already loaded as `xls`.
 
 ```{python}
 # Load a sheet into a DataFrame by name: df1
-df1 = xls.parse(____)
+df1 = xls.parse('2004')
 
 # Print the head of the DataFrame df1
-print(____)
+print(df1.head())
 
 # Load a sheet into a DataFrame by index: df2
-
+df2 = xls.parse(0)
 
 # Print the head of the DataFrame df2
-print(____)
+print(df2.head())
 
 ```
+You'll typically find yourself referring to the Excel sheet by name, but it's good to know you can also use indexes.
 
 ### **Customizing your spreadsheet import**
 
@@ -184,13 +234,13 @@ As before, you'll use the method `parse()`. This time, however, you'll add the a
 
 ```{python}
 # Parse the first sheet and rename the columns: df1
-df1 = xls.parse(____, skiprows=____, names=____)
+df1 = xls.parse(0, skiprows = [1], names = ['Country', 'AAM due to War (2002)'])
 
 # Print the head of the DataFrame df1
 print(df1.head())
 
 # Parse the first column of the second sheet and rename the column: df2
-df2 = xls.parse(____, usecols=____, skiprows=____, names=____)
+df2 = xls.parse(1, usecols = [1], skiprows = [0], names = ['Country'])
 
 # Print the head of the DataFrame df2
 print(df2.head())
