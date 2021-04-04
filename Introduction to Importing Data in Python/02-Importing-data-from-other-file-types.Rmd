@@ -37,7 +37,7 @@ import pickle
 
 pickled_fruit = {'peaches': 13, 'apples': 4, 'oranges': 11}
 
-filename = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/pickled_fruit.pkl'
+filename = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\pickled_fruit.pkl'
 
 outfile = open(filename, 'wb')
 
@@ -50,7 +50,7 @@ del(pickled_fruit)
 ```{python open pickle}
 import pickle
 
-filename = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/pickled_fruit.pkl'
+filename = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\pickled_fruit.pkl'
 
 with open(filename, 'rb') as file:
   data = pickle.load(file)
@@ -65,7 +65,7 @@ You'll then dive head-first into Excel spreadsheets, the use of which is so wide
 ```{python import xlsx file}
 import pandas as pd
 
-file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/battledeath.xls'
+file = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\battledeath.xls'
 
 data = pd.ExcelFile(file)
 print(data.sheet_names)
@@ -131,10 +131,12 @@ In this exercise, you'll import the `pickle` package, open a previously pickled 
 - Print the datatype of `d`; take your mind back to your previous use of the function `type()`.
 
 ```{python}
+import pickle
+
 # pickle dictionary data
 data = {'June': '69.4', 'Aug': '85', 'Airline': '8', 'Mar': '84.4'}
 
-filename = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/data.pkl'
+filename = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\data.pkl'
 
 outfile = open(filename, 'wb')
 
@@ -147,7 +149,7 @@ outfile.close()
 import pickle
 
 # Open pickle file and load data: d
-with open('/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/data.pkl', 'rb') as file:
+with open('\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\data.pkl', 'rb') as file:
     d = pickle.load(file)
 
 # Print d
@@ -178,7 +180,7 @@ Specifically, you'll be loading and checking out the spreadsheet `'battledeath.x
 import pandas as pd
 
 # Assign spreadsheet filename: file
-file = '/home/cla/Documentos/Vitor/DataCamp/Data-Scientist-with-Python/Datasets/battledeath.xls'
+file = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\battledeath.xls'
 
 # Load spreadsheet: xls
 xls = pd.ExcelFile(file)
@@ -265,9 +267,23 @@ SAS files are important because SAS is a software suite that performs advanced a
 
 The most common SAS files have the extension dot sas7bdat and dot sas7bcat, which are dataset files and catalog files respectively. You'll learn how to import the former as dataframes using the function SAS7BDAT (upper case) from the package sas7bdat (lower case). In this case, you can bind the variable file to a connection to the file 'urbanpop dot sas7bdat' in a context manager. Within this context, you can assign to a variable df_sas the result of applying method to_data_frame to file.
 
+```{python}
+import pandas as pd
+from sas7bdat import SAS7BDAT
+with SAS7BDAT("\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\sales.sas7bdat") as file:
+  df_sas = file.to_data_frame()
+print(df_sas.head())
+```
+
 **5. Importing Stata files**
 
 Stata files have extension dot dta and we can import them using pandas. We don't even need to initialize a context manager in this case! We merely pass the filename to the function read_stata and assign it to a variable, just like this. In the following exercises, you'll gain invaluable experience at importing these important file formats in Python as pandas dataframes and then seeing what was inside them.
+
+```{python}
+import pandas as pd
+data = pd.read_stata("\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\disarea.dta")
+print(data.head())
+```
 
 **6. Let's practice!**
 
@@ -287,7 +303,7 @@ How do you correctly import the function `SAS7BDAT()` from the package sas7bdat?
 
 4. `from sas7bdat import SAS7BDAT`
 
-Answer:
+Answer: 3
 
 ### **Importing SAS files**
 
@@ -307,14 +323,14 @@ The data are adapted from the website of the undergraduate text book [Principles
 
 ```{python}
 # Import sas7bdat package
-from ____ import ____
+from sas7bdat import SAS7BDAT
 
 # Save file to a DataFrame: df_sas
-with SAS7BDAT('sales.sas7bdat') as file:
-    ____
+with SAS7BDAT('\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\sales.sas7bdat') as file:
+    df_sas = file.to_data_frame()
 
 # Print head of DataFrame
-
+print(df_sas.head())
 
 # Plot histogram of DataFrame features (pandas and pyplot already imported)
 pd.DataFrame.hist(df_sas[['P']])
@@ -338,7 +354,7 @@ What is the correct way of using the `read_stata()` function to import `disarea.
 
 4. `df = pd.read_stata(disarea.dta)`
 
-Answer:
+Answer: 3
 
 ### **Importing Stata files**
 
@@ -355,10 +371,10 @@ Here, you'll gain expertise in importing Stata files as DataFrames using the `pd
 import pandas as pd
 
 # Load Stata file into a pandas DataFrame: df
-
+df = pd.read_stata('\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\disarea.dta')
 
 # Print the head of the DataFrame df
-
+print()
 
 # Plot histogram of one column of the DataFrame
 pd.DataFrame.hist(df[['disa10']])
@@ -382,13 +398,39 @@ According to the 2013 O'Reilly book Python and HDF5 by Andrew Collette,
 
 You import the package h5py and then import the file using 'h5py dot File', remembering to use 'r' in order to specify read only. Printing the datatype to the shell reveals that we are dealing with an h5py.
 
+```{python}
+import h5py
+filename = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\L-L1_LOSC_4_V1-1126259446-32.hdf5'
+data = h5py.File(filename, 'r') # 'r' is to read
+print(type(data))
+```
+
 **4. The structure of HDF5 files**
 
 But what is the structure of this file? You can explore it's hierarchical structure as you would that of a Python dictionary using the method keys. You see that there are three keys, meta, quality and strain. Each of these is an HDF group. You can think of these groups as directories. The LIGO documentation tells us that 'meta' contains meta-data for the file, 'quality' contains information about data quality and 'strain' contains 'strain data from the interferometer', the main measurement performed by LIGO, the data of interest. If you knew what data and metadata should be in each group, you could access it straightforwardly. However, if not, due to the hierarchical nature of the file structure, it is easy to explore. For example,
 
+```{python}
+for key in data.keys():
+  print(key)
+quit()
+```
+```{python}
+print(type(data['meta']))
+```
+
 **5. The structure of HDF5 files**
 
 let's say you wanted to find out what type of metadata there is, you could easily print out the keys. Now you know the keys, you can access any metadata of interest. If you're interested in 'Description' and 'Detector', all you need to do is print the corresponding values. You see that the data in the file is 'Strain data time series from LIGO' and that the detector used was 'H1'. Next perhaps you would like to check out the actual data? Great idea and that's precisely what you're going to do in the upcoming exercises!
+
+```{python}
+for key in data['meta'].keys():
+  print(key)
+quit()
+```
+```{python}
+print(data['meta']['Description'], data['meta']['Detector'])
+```
+
 
 **6. The HDF Project**
 
@@ -414,7 +456,7 @@ What is the correct way of using the h5py function, `File()`, to import the file
 
 4. `h5py_data = h5py.File(h5py_file, 'read')`
 
-Answer:
+Answer: 2
 
 ### **Using h5py to import HDF5 files**
 
@@ -433,20 +475,20 @@ You can find the LIGO data plus loads of documentation and tutorials [here](http
 ```{python}
 # Import packages
 import numpy as np
-import ____
+import h5py
 
 # Assign filename: file
-
+file = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\L-L1_LOSC_4_V1-1126259446-32.hdf5'
 
 # Load file: data
-data = h5py.File(____, ____)
+data = h5py.File(file, 'r')
 
 # Print the datatype of the loaded file
-
+print(type(data))
 
 # Print the keys of the file
-for key in ____:
-    print(____)
+for key in data.keys():
+    print(key)
 
 ```
 
@@ -466,17 +508,17 @@ To do so, you'll need to first explore the HDF5 group `'strain'`.
 
 ```{python}
 # Get the HDF5 group: group
-
+group = data['strain']
 
 # Check out keys of group
-for key in ____:
-    print(____)
+for key in group.keys():
+    print(key)
 
 # Set variable equal to time series data: strain
-
+strain = data['strain']['Strain']
 
 # Set number of time points to sample: num_samples
-
+num_samples = 10000
 
 # Set time vector
 time = np.arange(0, 1, 1/num_samples)
@@ -486,7 +528,7 @@ plt.plot(time, strain[:num_samples])
 plt.xlabel('GPS Time (s)')
 plt.ylabel('strain')
 plt.show()
-
+plt.clf()
 ```
 
 ## **Importing MATLAB files**
@@ -515,6 +557,13 @@ check out the MATLAB workspace where all your variables are stored. This workspa
 
 Now this means when importing a dot mat file in Python, we should expect to see a number of different variables and objects. In this code, I first import scipy-dot-io and then load the file 'workspace dot mat'. Checking out what type of object results tells me that it's a dictionary. How this dictionary relates to a MATLAB workspace is straightforward: the keys of the Python dictionary are the MATLAB variable names and the values of the Python dictionary are the objects that are assigned to the variables. In the example above, mat['x'] is a numpy corresponding to the MATLAB array x in your MATLAB workspace. It's that easy.
 
+```{python}
+import scipy.io
+filename = '\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\albeck_gene_expression.mat'
+mat = scipy.io.loadmat(filename)
+print(type(mat))
+```
+
 **7. Let's practice!**
 
 Now it's your turn to import a MATLAB workspace and check out what it contains, happy exploring!
@@ -533,13 +582,13 @@ The file `'albeck_gene_expression.mat'` is in your working directory. This file 
 
 ```{python}
 # Import package
-
+import scipy.io
 
 # Load MATLAB file: mat
-
+mat = scipy.io.loadmat('\\Users\\clari\\Documents\\Vitor\\DataCamp\\Data-Scientist-with-Python\\Datasets\\albeck_gene_expression.mat')
 
 # Print the datatype type of mat
-print(____)
+print(type(mat))
 
 ```
 
@@ -564,13 +613,13 @@ Once again, this file contains [gene expression data](https://www.mcb.ucdavis.ed
 
 ```{python}
 # Print the keys of the MATLAB dictionary
-print(____)
+print(mat.keys())
 
 # Print the type of the value corresponding to the key 'CYratioCyt'
-
+print(type(mat['CYratioCyt']))
 
 # Print the shape of the value corresponding to the key 'CYratioCyt'
-
+print(mat['CYratioCyt'].shape)
 
 # Subset the array and plot it
 data = mat['CYratioCyt'][25, 5:]
