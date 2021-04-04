@@ -213,15 +213,885 @@ pre code {
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction-to-relational-databases"><strong>Introduction to relational databases</strong></a>
+<ul>
+<li><a href="#pop-quiz-the-relational-model"><strong>Pop quiz: The relational model</strong></a></li>
+</ul></li>
+<li><a href="#creating-a-database-engine-in-python"><strong>Creating a database engine in Python</strong></a>
+<ul>
+<li><a href="#creating-a-database-engine"><strong>Creating a database engine</strong></a></li>
+<li><a href="#what-are-the-tables-in-the-database"><strong>What are the tables in the database?</strong></a></li>
+</ul></li>
+<li><a href="#querying-relational-databases-in-python"><strong>Querying relational databases in Python</strong></a>
+<ul>
+<li><a href="#the-hello-world-of-sql-queries"><strong>The Hello World of SQL Queries!</strong></a></li>
+<li><a href="#customizing-the-hello-world-of-sql-queries"><strong>Customizing the Hello World of SQL Queries</strong></a></li>
+<li><a href="#filtering-your-database-records-using-sqls-where"><strong>Filtering your database records using SQL’s WHERE</strong></a></li>
+<li><a href="#ordering-your-sql-records-with-order-by"><strong>Ordering your SQL records with ORDER BY</strong></a></li>
+</ul></li>
+<li><a href="#quering-relational-databases-directly-with-pandas"><strong>Quering relational databases directly with pandas</strong></a>
+<ul>
+<li><a href="#pandas-and-the-hello-world-of-sql-queries"><strong>Pandas and The Hello World of SQL Queries!</strong></a></li>
+<li><a href="#pandas-for-more-complex-querying"><strong>Pandas for more complex querying</strong></a></li>
+<li><a href="#advanced-querying-exploiting-table-relationships"><strong>Advanced querying: exploiting table relationships</strong></a></li>
+<li><a href="#the-power-of-sql-lies-in-relationships-between-tables-inner-join"><strong>The power of SQL lies in relationships between tables: INNER JOIN</strong></a></li>
+<li><a href="#filtering-your-inner-join"><strong>Filtering your INNER JOIN</strong></a></li>
+</ul></li>
+<li><a href="#final-thoughts"><strong>Final thoughts</strong></a></li>
+</ul>
+</div>
 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5pbXBvcnQgbnVtcHkgYXMgbnBcbmltcG9ydCBtYXRwbG90bGliLnB5cGxvdCBhcyBwbHRcbmBgYCJ9 -->
+<pre class="python"><code>import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="introduction-to-relational-databases" class="section level2">
+<h2><strong>Introduction to relational databases</strong></h2>
+<p><strong>1. Introduction to relational databases</strong></p>
+<p>You have already mastered the art of importing all types of single files in Python: congratulations! However, to earn your daily bread and butter as a Data Scientist, you’ll be required to interact with more complex data structures, such as relational databases.</p>
+<p><strong>2. What is a relational database?</strong></p>
+<p>What is a relational database? It’s a type of database that is based upon the Relational model of data, first described by Ted Codd in the late 1960s. Before getting too theoretical, however, let’s check out at an illuminating example,</p>
+<p><strong>3. Example: Northwind database</strong></p>
+<p>the Northwind Traders database, a synthetic database that contains sales data for a fictitious company. Firstly, a database consists of tables. Here you can see 3 tables from the Northwind database:</p>
+<p><strong>4. Example: Northwind database</strong></p>
+<p>‘Orders’,</p>
+<p><strong>5. Example: Northwind database</strong></p>
+<p>‘Customers’ and</p>
+<p><strong>6. Example: Northwind database</strong></p>
+<p>‘Employees’. So what’s a table? A table generally represents one entity type,</p>
+<p><strong>7. The Orders table</strong></p>
+<p>such as ‘Order’ . Notice that this table looks a great deal like a dataframe. That’s the point. In a relational database table,</p>
+<p><strong>8. The Orders table</strong></p>
+<p>each row or record represents an instance of the entity type: in this case, each row is an Order.</p>
+<p><strong>9. The Orders table</strong></p>
+<p>Each column represents an attribute of each instance, such as ‘OrderDate’ in the case of ‘Orders’. In this sense, a table is entirely analogous to a dataframe. It is essential that each row contain a unique identifier, known as a primary key, that we can use to explicitly access the row in question. In our ‘Orders’ table, you can see that</p>
+<p><strong>10. The Orders table</strong></p>
+<p>the key is ‘OrderID’ the first column. But recall that a database consists of many tables! The really cool thing about relational databases is not merely that you have a bunch of tables,</p>
+<p><strong>11. Tables are linked</strong></p>
+<p>but that the tables are linked. How this linking works is ultra-intuitive: see that the ‘Orders’ table has</p>
+<p><strong>12. Tables are linked</strong></p>
+<p>both a column called ‘CustomerID’ and one called ‘EmployeeID’. These columns correspond precisely to the primary keys in the</p>
+<p><strong>13. Tables are linked</strong></p>
+<p>‘Customers’ and ‘Employees’ tables, respectively. So, given an Order, you can immediately look up the details of the relevant Customer or Employee. This is cool because it means that you don’t need to store all the Customer details, such as first name, last name, company with every order that they place: you merely need to look it up in the ‘Customers’ table. This saves an incredible amount of space!</p>
+<p><strong>14. Relational model</strong></p>
+<p>As stated earlier, the relational database model was originally proposed by “Ted” Codd and has been widely adopted. There is a great deal to theory but it is most neatly summarized in Codd’s 12 Rules, also known as Codd’s 12 Commandments, which he developed in the early 1980s to combat what he viewed as a dilution of his original relational database vision. Codd’s 12 Rules actually consist of 13 rules but they are zero-indexed, that is, the first rule is zero-indexed. If that makes you laugh, you’re definitely a geek like me! These 13 rules were defined to describe what a Relational Database Management System should adhere to in order to be considered relational.</p>
+<p><strong>15. Relational Database Management Systems</strong></p>
+<p>Among the most popular of such systems are PostreSQL (commonly called Postgres),</p>
+<p><strong>16. Relational Database Management Systems</strong></p>
+<p>MySQL and</p>
+<p><strong>17. Relational Database Management Systems</strong></p>
+<p>SQLite, all of which use the SQL query language. In fact, SQL itself is actually an acronym</p>
+<p><strong>18. Relational Database Management Systems</strong></p>
+<p>for Structured Query Language, which describes how you communicate with a database in order to both access and update the information it contains. The term “querying” is really just a fancy way of saying getting data out from the database. Next up, you’ll learn how to connect to databases but before that,</p>
+<p><strong>19. Let’s practice!</strong></p>
+<p>let’s make sure that you have a solid conceptual grip on the relational model.</p>
+<div id="pop-quiz-the-relational-model" class="section level3">
+<h3><strong>Pop quiz: The relational model</strong></h3>
+<p>Which of the following is not part of the relational model?</p>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>Each row or record in a table represents an instance of an entity type.</p></li>
+<li><p>Each column in a table represents an attribute or feature of an instance.</p></li>
+<li><p>Every table contains a primary key column, which has a unique entry for each row.</p></li>
+<li><p>A database consists of at least 3 tables.</p></li>
+<li><p>There are relations between tables.</p></li>
+</ol>
+<p>Answers: 4</p>
+</div>
+</div>
+<div id="creating-a-database-engine-in-python" class="section level2">
+<h2><strong>Creating a database engine in Python</strong></h2>
+<p><strong>1. Creating a database engine in Python</strong></p>
+<p>All right, we’re back! What we really want to do is to get data out of our databases using SQL, or the Structured Query Language. But before we get to that, we’re going to need to figure out how to connect to a database.</p>
+<p><strong>2. Creating a database engine</strong></p>
+<p>We’ll use an SQLite database as an example because SQLite is fast and simple while still containing enough functionality to introduce you to all the necessary concepts of querying a database. There are times when you would prefer to use PostgreSQL or MySQL, but for our purposes here, an Introduction to Interacting with Relational Databases in Python, a SQLite database is perfect. We’ll once again look at the Northwind database. There are many packages we could use to access an SQLite database such as sqlite3 and SQLAlchemy. We’ll use SQLAlchemy as it works with many other Relational Database Management Systems, such as Postgres and MySQL. So without further ado, to connect to ‘Northwind dot sqlite’, we need to import the relevant funtion create_engine from the package SQLAlchemy. We then use the function create_engine to fire up an SQL engine that will communicate our queries to the database. The only required argument of create_engine is a string that indicates the type of database you’re connecting to and the name of the database. Next, In order to query the database, we need to connect to the engine to do so.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmVuZ2luZTEgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vTm9ydGh3aW5kLnNxbGl0ZScpXG5gYGAifQ== -->
+<pre class="python"><code>from sqlalchemy import create_engine
+engine1 = create_engine(&#39;sqlite:///Northwind.sqlite&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>3. Getting table names</strong></p>
+<p>But before we do this, we would like to know the names of the tables it contains. To do this, apply the method table_names to the object engine. This will return a list of the table names that you can then print the console. Now it’s your turn to do the same: fire up the database engine and print the table names!</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG50YWJsZV9uYW1lczEgPSBlbmdpbmUudGFibGVfbmFtZXMoKVxucHJpbnQodGFibGVfbmFtZXMpXG5gYGAifQ== -->
+<pre class="python"><code>table_names1 = engine.table_names()
+print(table_names)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWydDYXRlZ29yaWVzJywgJ0N1c3RvbWVyQ3VzdG9tZXJEZW1vJywgJ0N1c3RvbWVyRGVtb2dyYXBoaWNzJywgJ0N1c3RvbWVycycsICdFbXBsb3llZVRlcnJpdG9yaWVzJywgJ0VtcGxveWVlcycsICdPcmRlciBEZXRhaWxzJywgJ09yZGVycycsICdQcm9kdWN0cycsICdSZWdpb24nLCAnU2hpcHBlcnMnLCAnU3VwcGxpZXJzJywgJ1RlcnJpdG9yaWVzJ11cbiJ9 -->
+<pre><code>[&#39;Categories&#39;, &#39;CustomerCustomerDemo&#39;, &#39;CustomerDemographics&#39;, &#39;Customers&#39;, &#39;EmployeeTerritories&#39;, &#39;Employees&#39;, &#39;Order Details&#39;, &#39;Orders&#39;, &#39;Products&#39;, &#39;Region&#39;, &#39;Shippers&#39;, &#39;Suppliers&#39;, &#39;Territories&#39;]</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>4. Let’s practice!</strong></p>
+<p>After this, I’ll be back to show you how to connect to the engine, query your DBs and then you’ll get loads of practice writing your own queries to import data from relational databases!</p>
+<div id="creating-a-database-engine" class="section level3">
+<h3><strong>Creating a database engine</strong></h3>
+<p>Here, you’re going to fire up your very first SQL engine. You’ll create an engine to connect to the SQLite database <code>&#39;Chinook.sqlite&#39;</code>, which is in your working directory. Remember that to create an engine to connect to <code>&#39;Northwind.sqlite&#39;</code>, Hugo executed the command</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5lbmdpbmUgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vTm9ydGh3aW5kLnNsMycpXG5gYGAifQ== -->
+<pre class="python"><code>engine = create_engine(&#39;sqlite:///Northwind.sl3&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Here, <code>&#39;sqlite:///Northwind.sqlite&#39;</code> is called the connection string to the SQLite database <code>Northwind.sqlite</code>. A little bit of background on the <a href="https://github.com/lerocha/chinook-database">Chinook database</a>: the Chinook database contains information about a semi-fictional digital media store in which media data is real and customer, employee and sales data has been manually created.</p>
+<p>Why the name Chinook, you ask? According to their <a href="https://github.com/lerocha/chinook-database">website</a>,</p>
+<blockquote>
+<p><em>The name of this sample database was based on the Northwind database. Chinooks are winds in the interior West of North America, where the Canadian Prairies and Great Plains meet various mountain ranges. Chinooks are most prevalent over southern Alberta in Canada. Chinook is a good name choice for a database that intends to be an alternative to Northwind.</em></p>
+</blockquote>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Import the function <code>create_engine</code> from the module <code>sqlalchemy</code>.</li>
+<li>Create an engine to connect to the SQLite database <code>&#39;Chinook.sqlite&#39;</code> and assign it to <code>engine</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5xdWl0XG4jIEltcG9ydCBuZWNlc3NhcnkgbW9kdWxlXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>quit
+# Import necessary module
+reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcblxuIyBDcmVhdGUgZW5naW5lOiBlbmdpbmVcbmVuZ2luZSA9IGNyZWF0ZV9lbmdpbmUoJ3NxbGl0ZTovLy9DaGlub29rLnNxbGl0ZScpXG5gYGAifQ== -->
+<pre class="python"><code>from sqlalchemy import create_engine
+
+# Create engine: engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="what-are-the-tables-in-the-database" class="section level3">
+<h3><strong>What are the tables in the database?</strong></h3>
+<p>In this exercise, you’ll once again create an engine to connect to <code>&#39;Chinook.sqlite&#39;</code>. Before you can get any data out of the database, however, you’ll need to know what tables it contains!</p>
+<p>To this end, you’ll save the table names to a list using the method <code>table_names()</code> on the engine and then you will print the list.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Import the function <code>create_engine</code> from the module <code>sqlalchemy</code>.</li>
+<li>Create an engine to connect to the SQLite database <code>&#39;Chinook.sqlite&#39;</code> and assign it to <code>engine</code>.</li>
+<li>Using the method <code>table_names()</code> on the engine <code>engine</code>, assign the table names of <code>&#39;Chinook.sqlite&#39;</code> to the variable <code>table_names</code>.</li>
+<li>Print the object <code>table_names</code> to the shell.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBuZWNlc3NhcnkgbW9kdWxlXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code># Import necessary module
+reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbnJldGljdWxhdGU6OnJlcGxfcHl0aG9uKClcbmBgYCJ9 -->
+<pre class="python"><code>from sqlalchemy import create_engine
+reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiU3ludGF4RXJyb3I6IGludmFsaWQgc3ludGF4ICg8c3RyaW5nPiwgbGluZSAxKVxuIn0= -->
+<pre><code>SyntaxError: invalid syntax (&lt;string&gt;, line 1)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBlbmdpbmU6IGVuZ2luZVxuZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJylcblxuIyBTYXZlIHRoZSB0YWJsZSBuYW1lcyB0byBhIGxpc3Q6IHRhYmxlX25hbWVzXG50YWJsZV9uYW1lcyA9IGVuZ2luZS50YWJsZV9uYW1lcygpXG5cbiMgUHJpbnQgdGhlIHRhYmxlIG5hbWVzIHRvIHRoZSBzaGVsbFxucHJpbnQodGFibGVfbmFtZXMpXG5gYGAifQ== -->
+<pre class="python"><code># Create engine: engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)
+
+# Save the table names to a list: table_names
+table_names = engine.table_names()
+
+# Print the table names to the shell
+print(table_names)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWydBbGJ1bScsICdBcnRpc3QnLCAnQ3VzdG9tZXInLCAnRW1wbG95ZWUnLCAnR2VucmUnLCAnSW52b2ljZScsICdJbnZvaWNlTGluZScsICdNZWRpYVR5cGUnLCAnUGxheWxpc3QnLCAnUGxheWxpc3RUcmFjaycsICdUcmFjayddXG4ifQ== -->
+<pre><code>[&#39;Album&#39;, &#39;Artist&#39;, &#39;Customer&#39;, &#39;Employee&#39;, &#39;Genre&#39;, &#39;Invoice&#39;, &#39;InvoiceLine&#39;, &#39;MediaType&#39;, &#39;Playlist&#39;, &#39;PlaylistTrack&#39;, &#39;Track&#39;]</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="querying-relational-databases-in-python" class="section level2">
+<h2><strong>Querying relational databases in Python</strong></h2>
+<p><strong>1. Querying relational databases in Python</strong></p>
+<p>Now that you have figured out how to create a database engine and to list the tables of the database in question, it’s time to connect to the engine and query the database. Once again, the term “querying” is just a fancy way of saying getting data out from the database.</p>
+<p><strong>2. Basic SQL query</strong></p>
+<p>THe HELLO WORLD of SQL queries is ‘SELECT * FROM Table_Name’, where ‘Table_name’ is the name of any of the tables in the database. This query returns all columns of all rows of the Table of interest. For example, I could query the Northwind database with ‘SELECT * FROM Orders’ and this would return all columns of all rows of the ‘Orders’ table. The star after SELECT means ‘all columns’. Straightforward, right? Well, nearly! This is an SQL query and we need to figure out how to make such a query using python, SQLAlchemy and, in fact, we’ll also use pandas to store the results of our queries.</p>
+<p><strong>3. Workflow of SQL querying</strong></p>
+<p>The workflow will be as follows. You’ll import the required packages and functions, create the engine, connect to it, query the database save the results of the query to a dataframe, and close the connection.</p>
+<p><strong>4. Your first SQL query</strong></p>
+<p>Let’s now check out how to do each of these steps! Create the engine using the function create_engine. To connect to the database after creating the engine, you create a connection object con by applying the method connect to the engine. To query the DB, apply the method execute to the connection con and pass it a single argument, the relevant SQL query; This creates a SQLAlchemy results object which we assign to the variable rs. To turn the results object rs into a dataframe, we apply the method fetchall to rs and save it as a dataframe using the pandas function DataFrame. fetchall fetches all rows, as you would expect. To close the connection, execute ‘con dot close’. Don’t forget to do this!</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmltcG9ydCBwYW5kYXMgYXMgcGRcbmVuZ2luZTEgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vTm9ydGh3aW5kLnNsMycpXG5jb24gPSBlbmdpbmUxLmNvbm5lY3QoKVxucnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUICogRlJPTSBPcmRlcnMnKVxuZGYgPSBwZC5EYXRhRnJhbWUocnMuZmV0Y2hhbGwoKSlcbmBgYCJ9 -->
+<pre class="python"><code>from sqlalchemy import create_engine
+import pandas as pd
+engine1 = create_engine(&#39;sqlite:///Northwind.sl3&#39;)
+con = engine1.connect()
+rs = con.execute(&#39;SELECT * FROM Orders&#39;)
+df = pd.DataFrame(rs.fetchall())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiT3BlcmF0aW9uYWxFcnJvcjogKHNxbGl0ZTMuT3BlcmF0aW9uYWxFcnJvcikgQ291bGQgbm90IGRlY29kZSB0byBVVEYtOCBjb2x1bW4gJ1NoaXBDaXR5JyB3aXRoIHRleHQgJ03vv71uc3RlcidcbihCYWNrZ3JvdW5kIG9uIHRoaXMgZXJyb3IgYXQ6IGh0dHA6Ly9zcWxhbGNoZS5tZS9lLzE0L2UzcTgpXG4ifQ== -->
+<pre><code>OperationalError: (sqlite3.OperationalError) Could not decode to UTF-8 column &#39;ShipCity&#39; with text &#39;M�nster&#39;
+(Background on this error at: http://sqlalche.me/e/14/e3q8)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5jb24uY2xvc2UoKVxuYGBgIn0= -->
+<pre class="python"><code>con.close()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>5. Printing your query results</strong></p>
+<p>You can then print the head of the dataframe, as we have done before, as a sanity check: all the rows look good but the column names aren’t correct.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5wcmludChkZi5oZWFkKCkpXG5gYGAifQ== -->
+<pre class="python"><code>print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>6. Set the DataFrame column names</strong></p>
+<p>To fix this, before closing the connection, you can set the dataframe’s column names by executing ‘df dot columns equals rs dot keys’.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5kZi5jb2x1bW5zID0gcnMua2V5cygpXG5cbmBgYCJ9 -->
+<pre class="python"><code>df.columns = rs.keys()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiVmFsdWVFcnJvcjogTGVuZ3RoIG1pc21hdGNoOiBFeHBlY3RlZCBheGlzIGhhcyAyNyBlbGVtZW50cywgbmV3IHZhbHVlcyBoYXZlIDE0IGVsZW1lbnRzXG4ifQ== -->
+<pre><code>ValueError: Length mismatch: Expected axis has 27 elements, new values have 14 elements</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>7. Set the data frame column names</strong></p>
+<p>One last note: analogous to what you saw in chapter 1 when opening plain text files, you can use</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5wcmludChkZi5oZWFkKCkpXG5gYGAifQ== -->
+<pre class="python"><code>print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>8. Using the context manager</strong></p>
+<p>the context manager construct to open a connection, which will save you the trouble of closing the connection later, or save you the trouble of forgetting to close it! There are two other differences that you may have notice between this and the previous code: firstly, I no longer have ‘SELECT <em>’ in the SQL query; I now have column names of the table ’Orders’; all this does is it imports those particular columns and no others whereas ’SELECT </em>’ imports all columns; secondly, instead of applying the method fetchall to the results rs, I apply the method fetchmany with the argument size equals 5; this imports 5 rows instead of all rows. You’ll become better acquainted with these functions and arguments very soon.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmltcG9ydCBwYW5kYXMgYXMgcGRcbmVuZ2luZTEgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vTm9ydGh3aW5kLnNsMycpXG5cbndpdGggZW5naW5lMS5jb25uZWN0KCkgYXMgY29uOlxuICBycyA9IGNvbi5leGVjdXRlKCdTRUxFQ1QgT3JkZXJJZCwgT3JkZXJEYXRlLFNoaXBOYW1lIEZST00gT3JkZXJzJylcbiAgZGYgPSBwZC5EYXRhRnJhbWUocnMuZmV0Y2htYW55KHNpemUgPSA1KSlcbiAgZGYuY29sdW1ucyA9IHJzLmtleXMoKVxucHJpbnQoZGYpXG5gYGAifQ== -->
+<pre class="python"><code>from sqlalchemy import create_engine
+import pandas as pd
+engine1 = create_engine(&#39;sqlite:///Northwind.sl3&#39;)
+
+with engine1.connect() as con:
+  rs = con.execute(&#39;SELECT OrderId, OrderDate,ShipName FROM Orders&#39;)
+  df = pd.DataFrame(rs.fetchmany(size = 5))
+  df.columns = rs.keys()
+print(df)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>9. Let’s practice!</strong></p>
+<p>That’s enough out of me! It’s time for you to practice writing your own SQL queries to import data from your database, enjoy!</p>
+<div id="the-hello-world-of-sql-queries" class="section level3">
+<h3><strong>The Hello World of SQL Queries!</strong></h3>
+<p>Now, it’s time for liftoff! In this exercise, you’ll perform the Hello World of SQL queries, <code>SELECT</code>, in order to retrieve all columns of the table <code>Album</code> in the Chinook database. Recall that the query <code>SELECT *</code> selects all columns.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Open the engine connection as <code>con</code> using the method <code>connect()</code> on the engine.</li>
+<li>Execute the query that <strong>selects</strong> <em>ALL columns</em> <strong>from</strong> the <code>Album</code> table. Store the results in <code>rs</code>.</li>
+<li>Store all of your query results in the DataFrame <code>df</code> by applying the <code>fetchall()</code> method to the results <code>rs</code>.</li>
+<li>Close the connection!</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwYWNrYWdlc1xuZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5cbiMgQ3JlYXRlIGVuZ2luZTogZW5naW5lXG5lbmdpbmUgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vQ2hpbm9vay5zcWxpdGUnKVxuXG4jIE9wZW4gZW5naW5lIGNvbm5lY3Rpb246IGNvblxuY29uID0gZW5naW5lLmNvbm5lY3QoKVxuXG4jIFBlcmZvcm0gcXVlcnk6IHJzXG5ycyA9IGNvbi5leGVjdXRlKCdTRUxFQ1QgKiBGUk9NIEFsYnVtJylcblxuIyBTYXZlIHJlc3VsdHMgb2YgdGhlIHF1ZXJ5IHRvIERhdGFGcmFtZTogZGZcbmRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNoYWxsKCkpXG5cbiMgQ2xvc2UgY29ubmVjdGlvblxuY29uLmNsb3NlKClcblxuIyBQcmludCBoZWFkIG9mIERhdGFGcmFtZSBkZlxucHJpbnQoZGYuaGVhZCgpKVxuYGBgIn0= -->
+<pre class="python"><code># Import packages
+from sqlalchemy import create_engine
+import pandas as pd
+
+# Create engine: engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)
+
+# Open engine connection: con
+con = engine.connect()
+
+# Perform query: rs
+rs = con.execute(&#39;SELECT * FROM Album&#39;)
+
+# Save results of the query to DataFrame: df
+df = pd.DataFrame(rs.fetchall())
+
+# Close connection
+con.close()
+
+# Print head of DataFrame df
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgMCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMSAgMlxuMCAgMSAgRm9yIFRob3NlIEFib3V0IFRvIFJvY2sgV2UgU2FsdXRlIFlvdSAgMVxuMSAgMiAgICAgICAgICAgICAgICAgICAgICBCYWxscyB0byB0aGUgV2FsbCAgMlxuMiAgMyAgICAgICAgICAgICAgICAgICAgICBSZXN0bGVzcyBhbmQgV2lsZCAgMlxuMyAgNCAgICAgICAgICAgICAgICAgICAgICBMZXQgVGhlcmUgQmUgUm9jayAgMVxuNCAgNSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBCaWcgT25lcyAgM1xuIn0= -->
+<pre><code>   0                                      1  2
+0  1  For Those About To Rock We Salute You  1
+1  2                      Balls to the Wall  2
+2  3                      Restless and Wild  2
+3  4                      Let There Be Rock  1
+4  5                               Big Ones  3</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="customizing-the-hello-world-of-sql-queries" class="section level3">
+<h3><strong>Customizing the Hello World of SQL Queries</strong></h3>
+<p>Congratulations on executing your first SQL query! Now you’re going to figure out how to customize your query in order to:</p>
+<ul>
+<li>Select specified columns from a table;</li>
+<li>Select a specified number of rows;</li>
+<li>Import column names from the database table.</li>
+</ul>
+<p>Recall that Hugo performed a very similar query customization in the video:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Packages have already been imported as follows:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmltcG9ydCBwYW5kYXMgYXMgcGRcbmBgYCJ9 -->
+<pre class="python"><code>from sqlalchemy import create_engine
+import pandas as pd</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The engine has also already been created:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5lbmdpbmUgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vQ2hpbm9vay5zcWxpdGUnKVxuYGBgIn0= -->
+<pre class="python"><code>engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The engine connection is already open with the statement</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG53aXRoIGVuZ2luZS5jb25uZWN0KCkgYXMgY29uOlxuYGBgIn0= -->
+<pre class="python"><code>with engine.connect() as con:</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>All the code you need to complete is within this context.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Execute the SQL query that <strong>selects</strong> the columns <code>LastName</code> and <code>Title</code> <strong>from</strong> the <code>Employee</code> table. Store the results in the variable <code>rs</code>.</li>
+<li>Apply the method <code>fetchmany()</code> to <code>rs</code> in order to retrieve 3 of the records. Store them in the DataFrame <code>df</code>.</li>
+<li>Using the <code>rs</code> object, set the DataFrame’s column names to the corresponding names of the table columns.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIE9wZW4gZW5naW5lIGluIGNvbnRleHQgbWFuYWdlclxuIyBQZXJmb3JtIHF1ZXJ5IGFuZCBzYXZlIHJlc3VsdHMgdG8gRGF0YUZyYW1lOiBkZlxud2l0aCBlbmdpbmUuY29ubmVjdCgpIGFzIGNvbjpcbiAgICBycyA9IGNvbi5leGVjdXRlKCdTRUxFQ1QgTGFzdE5hbWUsIFRpdGxlIEZST00gRW1wbG95ZWUnKVxuICAgIGRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNobWFueShzaXplID0gMykpXG4gICAgZGYuY29sdW1ucyA9IHJzLmtleXMoKVxuXG4jIFByaW50IHRoZSBsZW5ndGggb2YgdGhlIERhdGFGcmFtZSBkZlxucHJpbnQobGVuKGRmKSlcbmBgYCJ9 -->
+<pre class="python"><code># Open engine in context manager
+# Perform query and save results to DataFrame: df
+with engine.connect() as con:
+    rs = con.execute(&#39;SELECT LastName, Title FROM Employee&#39;)
+    df = pd.DataFrame(rs.fetchmany(size = 3))
+    df.columns = rs.keys()
+
+# Print the length of the DataFrame df
+print(len(df))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiM1xuIn0= -->
+<pre><code>3</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFByaW50IHRoZSBoZWFkIG9mIHRoZSBEYXRhRnJhbWUgZGZcbnByaW50KGRmLmhlYWQoKSlcbmBgYCJ9 -->
+<pre class="python"><code># Print the head of the DataFrame df
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICBMYXN0TmFtZSAgICAgICAgICAgICAgICBUaXRsZVxuMCAgICBBZGFtcyAgICAgIEdlbmVyYWwgTWFuYWdlclxuMSAgRWR3YXJkcyAgICAgICAgU2FsZXMgTWFuYWdlclxuMiAgUGVhY29jayAgU2FsZXMgU3VwcG9ydCBBZ2VudFxuIn0= -->
+<pre><code>  LastName                Title
+0    Adams      General Manager
+1  Edwards        Sales Manager
+2  Peacock  Sales Support Agent</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="filtering-your-database-records-using-sqls-where" class="section level3">
+<h3><strong>Filtering your database records using SQL’s WHERE</strong></h3>
+<p>You can now execute a basic SQL query to select records from any table in your database and you can also perform simple query customizations to select particular columns and numbers of rows.</p>
+<p>There are a couple more standard SQL query chops that will aid you in your journey to becoming an SQL ninja.</p>
+<p>Let’s say, for example that you wanted to get all records from the <code>Customer</code> table of the Chinook database for which the <code>Country</code> is <code>&#39;Canada&#39;</code>. You can do this very easily in SQL using a <code>SELECT</code> statement followed by a <code>WHERE</code> clause as follows:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5TRUxFQ1QgKiBGUk9NIEN1c3RvbWVyIFdIRVJFIENvdW50cnkgPSAnQ2FuYWRhJ1xuYGBgIn0= -->
+<pre class="python"><code>SELECT * FROM Customer WHERE Country = &#39;Canada&#39;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In fact, you can filter any <code>SELECT</code> statement by any condition using a <code>WHERE</code> clause. This is called <em>filtering</em> your records.</p>
+<p>In this interactive exercise, you’ll select all records of the <code>Employee</code> table for which <code>&#39;EmployeeId&#39;</code> is greater than or equal to <code>6</code>.</p>
+<p>Packages are already imported as follows:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmBgYCJ9 -->
+<pre class="python"><code>import pandas as pd
+from sqlalchemy import create_engine</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Query away!</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Complete the argument of <code>create_engine()</code> so that the engine for the SQLite database <code>&#39;Chinook.sqlite&#39;</code> is created.</li>
+<li>Execute the query that <strong>selects</strong> all records <strong>from</strong> the <code>Employee</code> table <strong>where</strong> <code>&#39;EmployeeId&#39;</code> is greater than or equal to <code>6</code>. Use the <code>&gt;=</code> operator and assign the results to <code>rs</code>.</li>
+<li>Apply the method <code>fetchall()</code> to <code>rs</code> in order to fetch all records in <code>rs</code>. Store them in the DataFrame <code>df</code>.</li>
+<li>Using the <code>rs</code> object, set the DataFrame’s column names to the corresponding names of the table columns.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBlbmdpbmU6IGVuZ2luZVxuZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJylcblxuIyBPcGVuIGVuZ2luZSBpbiBjb250ZXh0IG1hbmFnZXJcbiMgUGVyZm9ybSBxdWVyeSBhbmQgc2F2ZSByZXN1bHRzIHRvIERhdGFGcmFtZTogZGZcbndpdGggZW5naW5lLmNvbm5lY3QoKSBhcyBjb246XG4gICAgcnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUICogRlJPTSBFbXBsb3llZSBXSEVSRSBFbXBsb3llZUlkID49IDYnKVxuICAgIGRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNoYWxsKCkpXG4gICAgZGYuY29sdW1ucyA9IHJzLmtleXMoKVxuXG4jIFByaW50IHRoZSBoZWFkIG9mIHRoZSBEYXRhRnJhbWUgZGZcbnByaW50KGRmLmhlYWQoKSlcbmBgYCJ9 -->
+<pre class="python"><code># Create engine: engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)
+
+# Open engine in context manager
+# Perform query and save results to DataFrame: df
+with engine.connect() as con:
+    rs = con.execute(&#39;SELECT * FROM Employee WHERE EmployeeId &gt;= 6&#39;)
+    df = pd.DataFrame(rs.fetchall())
+    df.columns = rs.keys()
+
+# Print the head of the DataFrame df
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgRW1wbG95ZWVJZCAgTGFzdE5hbWUgIC4uLiAgICAgICAgICAgICAgICBGYXggICAgICAgICAgICAgICAgICAgIEVtYWlsXG4wICAgICAgICAgICA2ICBNaXRjaGVsbCAgLi4uICArMSAoNDAzKSAyNDYtOTg5OSAgbWljaGFlbEBjaGlub29rY29ycC5jb21cbjEgICAgICAgICAgIDcgICAgICBLaW5nICAuLi4gICsxICg0MDMpIDQ1Ni04NDg1ICAgcm9iZXJ0QGNoaW5vb2tjb3JwLmNvbVxuMiAgICAgICAgICAgOCAgQ2FsbGFoYW4gIC4uLiAgKzEgKDQwMykgNDY3LTg3NzIgICAgbGF1cmFAY2hpbm9va2NvcnAuY29tXG5cblszIHJvd3MgeCAxNSBjb2x1bW5zXVxuIn0= -->
+<pre><code>   EmployeeId  LastName  ...                Fax                    Email
+0           6  Mitchell  ...  +1 (403) 246-9899  michael@chinookcorp.com
+1           7      King  ...  +1 (403) 456-8485   robert@chinookcorp.com
+2           8  Callahan  ...  +1 (403) 467-8772    laura@chinookcorp.com
+
+[3 rows x 15 columns]</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="ordering-your-sql-records-with-order-by" class="section level3">
+<h3><strong>Ordering your SQL records with ORDER BY</strong></h3>
+<p>You can also order your SQL query results. For example, if you wanted to get all records from the <code>Customer</code> table of the Chinook database and order them in increasing order by the column <code>SupportRepId</code>, you could do so with the following query:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5cIlNFTEVDVCAqIEZST00gQ3VzdG9tZXIgT1JERVIgQlkgU3VwcG9ydFJlcElkXCJcbmBgYCJ9 -->
+<pre class="python"><code>&quot;SELECT * FROM Customer ORDER BY SupportRepId&quot;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In fact, you can order any <code>SELECT</code> statement by any column.</p>
+<p>In this interactive exercise, you’ll select all records of the <code>Employee</code> table and order them in increasing order by the column <code>BirthDate</code>.</p>
+<p>Packages are already imported as follows:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmBgYCJ9 -->
+<pre class="python"><code>import pandas as pd
+from sqlalchemy import create_engine</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Get querying!</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Using the function <code>create_engine()</code>, create an engine for the SQLite database <code>Chinook.sqlite</code> and assign it to the variable <code>engine</code>.</li>
+<li>In the context manager, execute the query that <strong>selects</strong> <em>all</em> records <strong>from</strong> the <code>Employee</code> table and <strong>orders</strong> them in increasing order <strong>by</strong> the column <code>BirthDate</code>. Assign the result to <code>rs</code>.</li>
+<li>In a call to <code>pd.DataFrame()</code>, apply the method <code>fetchall()</code> to <code>rs</code> in order to fetch all records in <code>rs</code>. Store them in the DataFrame <code>df</code>.</li>
+<li>Set the DataFrame’s column names to the corresponding names of the table columns.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBlbmdpbmU6IGVuZ2luZVxuZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJylcblxuIyBPcGVuIGVuZ2luZSBpbiBjb250ZXh0IG1hbmFnZXJcbndpdGggZW5naW5lLmNvbm5lY3QoKSBhcyBjb246XG4gICAgcnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUICogRlJPTSBFbXBsb3llZSBPUkRFUiBCWSBCaXJ0aERhdGUnKVxuICAgIGRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNoYWxsKCkpXG5cbiAgICAjIFNldCB0aGUgRGF0YUZyYW1lJ3MgY29sdW1uIG5hbWVzXG4gICAgZGYuY29sdW1ucyA9IHJzLmtleXMoKVxuXG4jIFByaW50IGhlYWQgb2YgRGF0YUZyYW1lXG5wcmludChkZi5oZWFkKCkpXG5gYGAifQ== -->
+<pre class="python"><code># Create engine: engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)
+
+# Open engine in context manager
+with engine.connect() as con:
+    rs = con.execute(&#39;SELECT * FROM Employee ORDER BY BirthDate&#39;)
+    df = pd.DataFrame(rs.fetchall())
+
+    # Set the DataFrame&#39;s column names
+    df.columns = rs.keys()
+
+# Print head of DataFrame
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgRW1wbG95ZWVJZCAgTGFzdE5hbWUgIC4uLiAgICAgICAgICAgICAgICBGYXggICAgICAgICAgICAgICAgICAgICBFbWFpbFxuMCAgICAgICAgICAgNCAgICAgIFBhcmsgIC4uLiAgKzEgKDQwMykgMjYzLTQyODkgIG1hcmdhcmV0QGNoaW5vb2tjb3JwLmNvbVxuMSAgICAgICAgICAgMiAgIEVkd2FyZHMgIC4uLiAgKzEgKDQwMykgMjYyLTMzMjIgICAgIG5hbmN5QGNoaW5vb2tjb3JwLmNvbVxuMiAgICAgICAgICAgMSAgICAgQWRhbXMgIC4uLiAgKzEgKDc4MCkgNDI4LTM0NTcgICAgYW5kcmV3QGNoaW5vb2tjb3JwLmNvbVxuMyAgICAgICAgICAgNSAgIEpvaG5zb24gIC4uLiAgIDEgKDc4MCkgODM2LTk1NDMgICAgIHN0ZXZlQGNoaW5vb2tjb3JwLmNvbVxuNCAgICAgICAgICAgOCAgQ2FsbGFoYW4gIC4uLiAgKzEgKDQwMykgNDY3LTg3NzIgICAgIGxhdXJhQGNoaW5vb2tjb3JwLmNvbVxuXG5bNSByb3dzIHggMTUgY29sdW1uc11cbiJ9 -->
+<pre><code>   EmployeeId  LastName  ...                Fax                     Email
+0           4      Park  ...  +1 (403) 263-4289  margaret@chinookcorp.com
+1           2   Edwards  ...  +1 (403) 262-3322     nancy@chinookcorp.com
+2           1     Adams  ...  +1 (780) 428-3457    andrew@chinookcorp.com
+3           5   Johnson  ...   1 (780) 836-9543     steve@chinookcorp.com
+4           8  Callahan  ...  +1 (403) 467-8772     laura@chinookcorp.com
+
+[5 rows x 15 columns]</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="quering-relational-databases-directly-with-pandas" class="section level2">
+<h2><strong>Quering relational databases directly with pandas</strong></h2>
+<p><strong>1. Querying relational databases directly with pandas</strong></p>
+<p>You have seen that,</p>
+<p><strong>2. The pandas way to query</strong></p>
+<p>after creating a database engine, you can get the results of any particular line using 4 lines of code: connecting, executing a query, passing the results to a dataframe and naming the columns: 4 lines of code is pretty good but you can do better! You can actually do it in 1 line, utilizing the pandas function read_sql_query and passing it 2 arguments. The first argument will be the query you wish to make, the 2nd argument the engine you want to connect to. And thus you can achieve the same as this code by executing this single line. The power of pandas! In the following exercises, you’ll gain more expertise in writing SQL queries and using pandas to execute them.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmltcG9ydCBwYW5kYXMgYXMgcGRcbmVuZ2luZTEgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vTm9ydGh3aW5kLnNxbGl0ZScpXG53aXRoIGVuZ2luZTEuY29ubmVjdCgpIGFzIGNvbjpcbiAgcnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUICogRlJPTSBPcmRlcnMnKVxuICBkZiA9IHBkLkRhdGFGcmFtZShycy5mZXRjaGFsbCgpKVxuICBkZi5jb2x1bW5zID0gcnMua2V5cygpXG5gYGAifQ== -->
+<pre class="python"><code>from sqlalchemy import create_engine
+import pandas as pd
+engine1 = create_engine(&#39;sqlite:///Northwind.sqlite&#39;)
+with engine1.connect() as con:
+  rs = con.execute(&#39;SELECT * FROM Orders&#39;)
+  df = pd.DataFrame(rs.fetchall())
+  df.columns = rs.keys()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5kZiA9IHBkLnJlYWRfc3FsX3F1ZXJ5KCdTRUxFQ1QgKiBGUk9NIE9yZGVycycsIGVuZ2luZSlcbmBgYCJ9 -->
+<pre class="python"><code>df = pd.read_sql_query(&#39;SELECT * FROM Orders&#39;, engine)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>3. Let’s practice!</strong></p>
+<p>What are you waiting for? The end of this video? Let’s do it!</p>
+<div id="pandas-and-the-hello-world-of-sql-queries" class="section level3">
+<h3><strong>Pandas and The Hello World of SQL Queries!</strong></h3>
+<p>Here, you’ll take advantage of the power of <code>pandas</code> to write the results of your SQL query to a DataFrame in one swift line of Python code!</p>
+<p>You’ll first import <code>pandas</code> and create the SQLite <code>&#39;Chinook.sqlite&#39;</code> engine. Then you’ll query the database to select all records from the <code>Album</code> table.</p>
+<p>Recall that to select all records from the <code>Orders</code> table in the Northwind database, Hugo executed the following command:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5kZiA9IHBkLnJlYWRfc3FsX3F1ZXJ5KFwiU0VMRUNUICogRlJPTSBPcmRlcnNcIiwgZW5naW5lKVxuYGBgIn0= -->
+<pre class="python"><code>df = pd.read_sql_query(&quot;SELECT * FROM Orders&quot;, engine)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Import the <code>pandas</code> package using the alias <code>pd</code>.</li>
+<li>Using the function <code>create_engine()</code>, create an engine for the SQLite database <code>Chinook.sqlite</code> and assign it to the variable <code>engine</code>.</li>
+<li>Use the <code>pandas</code> function <code>read_sql_query()</code> to assign to the variable <code>df</code> the DataFrame of results from the following query: <strong>select</strong> <em>all</em> records <strong>from</strong> the table <code>Album</code>.</li>
+<li>The remainder of the code is included to confirm that the DataFrame created by this method is equal to that created by the previous method that you learned.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwYWNrYWdlc1xuZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5cbiMgQ3JlYXRlIGVuZ2luZTogZW5naW5lXG5lbmdpbmUgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vQ2hpbm9vay5zcWxpdGUnKVxuXG4jIEV4ZWN1dGUgcXVlcnkgYW5kIHN0b3JlIHJlY29yZHMgaW4gRGF0YUZyYW1lOiBkZlxuZGYgPSBwZC5yZWFkX3NxbF9xdWVyeSgnU0VMRUNUICogRlJPTSBBbGJ1bScsIGVuZ2luZSlcblxuIyBQcmludCBoZWFkIG9mIERhdGFGcmFtZVxucHJpbnQoZGYuaGVhZCgpKVxuYGBgIn0= -->
+<pre class="python"><code># Import packages
+from sqlalchemy import create_engine
+import pandas as pd
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDMgLSBXb3JraW5nIHdpdGggcmVsYXRpb25hbCBkYXRhYmFzZXMgaW4gUHl0aG9uIgpvdXRwdXQ6IAogIGh0bWxfbm90ZWJvb2s6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogZmFsc2UKICAgIHRvY19kZXB0aDogNAogICAgY29kZV9mb2xkaW5nOiBoaWRlCi0tLQoKYGBge3B5dGhvbiBzZXR1cH0KCmBgYAoK</div>
+# Create engine: engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)
+
+# Execute query and store records in DataFrame: df
+df = pd.read_sql_query(&#39;SELECT * FROM Album&#39;, engine)
+
+# Print head of DataFrame
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgQWxidW1JZCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBUaXRsZSAgQXJ0aXN0SWRcbjAgICAgICAgIDEgIEZvciBUaG9zZSBBYm91dCBUbyBSb2NrIFdlIFNhbHV0ZSBZb3UgICAgICAgICAxXG4xICAgICAgICAyICAgICAgICAgICAgICAgICAgICAgIEJhbGxzIHRvIHRoZSBXYWxsICAgICAgICAgMlxuMiAgICAgICAgMyAgICAgICAgICAgICAgICAgICAgICBSZXN0bGVzcyBhbmQgV2lsZCAgICAgICAgIDJcbjMgICAgICAgIDQgICAgICAgICAgICAgICAgICAgICAgTGV0IFRoZXJlIEJlIFJvY2sgICAgICAgICAxXG40ICAgICAgICA1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEJpZyBPbmVzICAgICAgICAgM1xuIn0= -->
+<pre><code>   AlbumId                                  Title  ArtistId
+0        1  For Those About To Rock We Salute You         1
+1        2                      Balls to the Wall         2
+2        3                      Restless and Wild         2
+3        4                      Let There Be Rock         1
+4        5                               Big Ones         3</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIE9wZW4gZW5naW5lIGluIGNvbnRleHQgbWFuYWdlciBhbmQgc3RvcmUgcXVlcnkgcmVzdWx0IGluIGRmMVxud2l0aCBlbmdpbmUuY29ubmVjdCgpIGFzIGNvbjpcbiAgICBycyA9IGNvbi5leGVjdXRlKFwiU0VMRUNUICogRlJPTSBBbGJ1bVwiKVxuICAgIGRmMSA9IHBkLkRhdGFGcmFtZShycy5mZXRjaGFsbCgpKVxuICAgIGRmMS5jb2x1bW5zID0gcnMua2V5cygpXG5cbiMgQ29uZmlybSB0aGF0IGJvdGggbWV0aG9kcyB5aWVsZCB0aGUgc2FtZSByZXN1bHRcbnByaW50KGRmLmVxdWFscyhkZjEpKVxuYGBgIn0= -->
+<pre class="python"><code># Open engine in context manager and store query result in df1
+with engine.connect() as con:
+    rs = con.execute(&quot;SELECT * FROM Album&quot;)
+    df1 = pd.DataFrame(rs.fetchall())
+    df1.columns = rs.keys()
+
+# Confirm that both methods yield the same result
+print(df.equals(df1))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiVHJ1ZVxuIn0= -->
+<pre><code>True</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="pandas-for-more-complex-querying" class="section level3">
+<h3><strong>Pandas for more complex querying</strong></h3>
+<p>Here, you’ll become more familiar with the pandas function <code>read_sql_query()</code> by using it to execute a more complex query: a <code>SELECT</code> statement followed by both a <code>WHERE</code> clause AND an <code>ORDER BY</code> clause.</p>
+<p>You’ll build a DataFrame that contains the rows of the <code>Employee</code> table for which the <code>EmployeeId</code> is greater than or equal to <code>6</code> and you’ll order these entries by <code>BirthDate</code>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Using the function <code>create_engine()</code>, create an engine for the SQLite database <code>Chinook.sqlite</code> and assign it to the variable <code>engine</code>.</li>
+<li>Use the pandas function <code>read_sql_query()</code> to assign to the variable <code>df</code> the DataFrame of results from the following query: <strong>select</strong> <em>all</em> records <strong>from</strong> the <code>Employee</code> table <strong>where</strong> the <code>EmployeeId</code> is greater than or equal to <code>6</code> and <strong>ordered by</strong> <code>BirthDate</code> (make sure to use <code>WHERE</code> and <code>ORDER BY</code> in this precise order).</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwYWNrYWdlc1xuZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5cbiMgQ3JlYXRlIGVuZ2luZTogZW5naW5lXG5lbmdpbmUgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vQ2hpbm9vay5zcWxpdGUnKVxuXG4jIEV4ZWN1dGUgcXVlcnkgYW5kIHN0b3JlIHJlY29yZHMgaW4gRGF0YUZyYW1lOiBkZlxuZGYgPSBwZC5yZWFkX3NxbF9xdWVyeSgnU0VMRUNUICogRlJPTSBFbXBsb3llZSBXSEVSRSBFbXBsb3llZUlkID49IDYgT1JERVIgQlkgQmlydGhEYXRlJywgZW5naW5lKVxuXG4jIFByaW50IGhlYWQgb2YgRGF0YUZyYW1lXG5wcmludChkZi5oZWFkKCkpXG5gYGAifQ== -->
+<pre class="python"><code># Import packages
+from sqlalchemy import create_engine
+import pandas as pd
+
+# Create engine: engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)
+
+# Execute query and store records in DataFrame: df
+df = pd.read_sql_query(&#39;SELECT * FROM Employee WHERE EmployeeId &gt;= 6 ORDER BY BirthDate&#39;, engine)
+
+# Print head of DataFrame
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgRW1wbG95ZWVJZCAgTGFzdE5hbWUgIC4uLiAgICAgICAgICAgICAgICBGYXggICAgICAgICAgICAgICAgICAgIEVtYWlsXG4wICAgICAgICAgICA4ICBDYWxsYWhhbiAgLi4uICArMSAoNDAzKSA0NjctODc3MiAgICBsYXVyYUBjaGlub29rY29ycC5jb21cbjEgICAgICAgICAgIDcgICAgICBLaW5nICAuLi4gICsxICg0MDMpIDQ1Ni04NDg1ICAgcm9iZXJ0QGNoaW5vb2tjb3JwLmNvbVxuMiAgICAgICAgICAgNiAgTWl0Y2hlbGwgIC4uLiAgKzEgKDQwMykgMjQ2LTk4OTkgIG1pY2hhZWxAY2hpbm9va2NvcnAuY29tXG5cblszIHJvd3MgeCAxNSBjb2x1bW5zXVxuIn0= -->
+<pre><code>   EmployeeId  LastName  ...                Fax                    Email
+0           8  Callahan  ...  +1 (403) 467-8772    laura@chinookcorp.com
+1           7      King  ...  +1 (403) 456-8485   robert@chinookcorp.com
+2           6  Mitchell  ...  +1 (403) 246-9899  michael@chinookcorp.com
+
+[3 rows x 15 columns]</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="advanced-querying-exploiting-table-relationships" class="section level3">
+<h3><strong>Advanced querying: exploiting table relationships</strong></h3>
+<p><strong>1. Advanced querying: exploiting table relationships</strong></p>
+<p>By now, you have become familiar with querying individual tables of databases, such as the ‘Orders’ table of the Northwind database. You will remember, however, that much of the power of relational databases stems from the fact that they can capture relationships between tables: the tables are linked!</p>
+<p><strong>2. Tables are linked</strong></p>
+<p>For example, as we saw earlier, the ‘Orders’ table of the the Northwind Traders database has both a column called</p>
+<p><strong>3. Tables are linked</strong></p>
+<p>‘CustomerID’ and one called ‘EmployeeID’, columns which correspond precisely to the</p>
+<p><strong>4. Tables are linked</strong></p>
+<p>primary keys in the ‘Customers’ and ‘Employees’ tables, respectively. This means that, given an Order, you can immediately look up the details of the relevant Customer or Employee in the appropriate table.</p>
+<p><strong>5. JOINing tables</strong></p>
+<p>Now what if you want to incorporate such information into your query? For example, if you want to query the ‘Orders’ table and include, for each Order, information about the corresponding Customer from the ‘Customers’ table? A specific illustrative example will go a long way here: let’s say that we wanted, for each Order, to get the</p>
+<p><strong>6. JOINing tables</strong></p>
+<p>OrderID and the</p>
+<p><strong>7. JOINing tables</strong></p>
+<p>CompanyName of the Customer. The OrderID lives in the ‘Orders’ table while the CompanyName lives in the ‘Customers’ table. SQL has a really clever way of doing this: it’s called a JOIN because what you’re really doing is joining two tables together,</p>
+<p><strong>8. JOINing tables</strong></p>
+<p>in this case, the ‘Orders’ and</p>
+<p><strong>9. JOINing tables</strong></p>
+<p>‘Customers’ tables. Specifically</p>
+<p><strong>10. INNER JOIN in Python (pandas)</strong></p>
+<p>it’s an INNER JOIN. There are other types of JOINs which we won’t cover here. As it’s the CustomerID columns of the ‘Orders’ and ‘Customers’ tables that correspond to each, you’ll want to JOIN the tables ON these columns and that is precisely what I have done in this code. The notation of dot followed by Column name is merely selecting a column of a table. The table that we are selecting from is “Orders INNER JOIN Customers on Orders dot CustomerID equals Customers dot CustomerID” and I am selecting the OrderID column and the CompanyName column of this new table. I know that that’s a bit to take in, but after you get your hands dirty performing some INNER JOINs, you’ll be far more comfortable with this advanced querying technique.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmltcG9ydCBwYW5kYXMgYXMgcGRcbmVuZ2luZTEgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vTm9ydGh3aW5kLnNxbGl0ZScpXG5kZiA9IHBkLnJlYWRfc3FsX3F1ZXJ5KCdTRUxFQ1QgT3JkZXJJRCwgQ29tcGFueU5hbWUgRk9STSBPcmRlcnMgSU5ORVIgSk9JTiBDdXN0b21lcnMgb24gT3JkZXJzLkN1c3RvbWVyc0lEID0gQ3VzdG9tZXJzLkN1c3RvbWVyc0lEJywgZW5naW5lKVxucHJpbnQoZGYuaGVhZCgpKVxuYGBgIn0= -->
+<pre class="python"><code>from sqlalchemy import create_engine
+import pandas as pd
+engine1 = create_engine(&#39;sqlite:///Northwind.sqlite&#39;)
+df = pd.read_sql_query(&#39;SELECT OrderID, CompanyName FORM Orders INNER JOIN Customers on Orders.CustomersID = Customers.CustomersID&#39;, engine)
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>11. Let’s practice!</strong></p>
+<p>It’s your turn to query!</p>
+</div>
+<div id="the-power-of-sql-lies-in-relationships-between-tables-inner-join" class="section level3">
+<h3><strong>The power of SQL lies in relationships between tables: INNER JOIN</strong></h3>
+<p>Here, you’ll perform your first <code>INNER JOIN</code>! You’ll be working with your favourite SQLite database, <code>Chinook.sqlite</code>. For each record in the <code>Album</code> table, you’ll extract the <code>Title</code> along with the <code>Name</code> of the <code>Artist</code>. The latter will come from the <code>Artist</code> table and so you will need to <code>INNER JOIN</code> these two tables on the <code>ArtistID</code> column of both.</p>
+<p>Recall that to <code>INNER JOIN</code> the <code>Orders</code> and <code>Customers</code> tables from the Northwind database, Hugo executed the following SQL query:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5cIlNFTEVDVCBPcmRlcklELCBDb21wYW55TmFtZSBGUk9NIE9yZGVycyBJTk5FUiBKT0lOIEN1c3RvbWVycyBvbiBPcmRlcnMuQ3VzdG9tZXJJRCA9IEN1c3RvbWVycy5DdXN0b21lcklEXCJcbmBgYCJ9 -->
+<pre class="python"><code>&quot;SELECT OrderID, CompanyName FROM Orders INNER JOIN Customers on Orders.CustomerID = Customers.CustomerID&quot;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The following code has already been executed to import the necessary packages and to create the engine:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmVuZ2luZSA9IGNyZWF0ZV9lbmdpbmUoJ3NxbGl0ZTovLy9DaGlub29rLnNxbGl0ZScpXG5gYGAifQ== -->
+<pre class="python"><code>import pandas as pd
+from sqlalchemy import create_engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Assign to <code>rs</code> the results from the following query: <strong>select</strong> <em>all</em> the records, extracting the <code>Title</code> of the record and <code>Name</code> of the artist of each record from the <code>Album</code> table and the <code>Artist</code> table, respectively. To do so, <code>INNER JOIN</code> these two tables on the <code>ArtistID</code> column of both.</li>
+<li>In a call to <code>pd.DataFrame()</code>, apply the method <code>fetchall()</code> to <code>rs</code> in order to fetch all records in <code>rs</code>. Store them in the DataFrame <code>df</code>.</li>
+<li>Set the DataFrame’s column names to the corresponding names of the table columns.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5yZXRpY3VsYXRlOjpyZXBsX3B5dGhvbigpXG5gYGAifQ== -->
+<pre class="python"><code>reticulate::repl_python()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUHl0aG9uIDMuNi4xMiAoQzovVXNlcnMvY2xhcmkvQXBwRGF0YS9Mb2NhbC9yLW1pbmljb25kYS9lbnZzL3ItcmV0aWN1bGF0ZS9weXRob24uZXhlKVxuUmV0aWN1bGF0ZSAxLjE4IFJFUEwgLS0gQSBQeXRob24gaW50ZXJwcmV0ZXIgaW4gUi5cbiJ9 -->
+<pre><code>Python 3.6.12 (C:/Users/clari/AppData/Local/r-miniconda/envs/r-reticulate/python.exe)
+Reticulate 1.18 REPL -- A Python interpreter in R.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIE9wZW4gZW5naW5lIGluIGNvbnRleHQgbWFuYWdlclxuIyBQZXJmb3JtIHF1ZXJ5IGFuZCBzYXZlIHJlc3VsdHMgdG8gRGF0YUZyYW1lOiBkZlxud2l0aCBlbmdpbmUuY29ubmVjdCgpIGFzIGNvbjpcbiAgICBycyA9IGNvbi5leGVjdXRlKCdTRUxFQ1QgVGl0bGUsIE5hbWUgRlJPTSBBbGJ1bSBJTk5FUiBKT0lOIEFydGlzdCBvbiBBbGJ1bS5BcnRpc3RJRCA9IEFydGlzdC5BcnRpc3RJRCcpXG4gICAgZGYgPSBwZC5EYXRhRnJhbWUocnMuZmV0Y2hhbGwoKSlcbiAgICBkZi5jb2x1bW5zID0gcnMua2V5cygpXG5cbiMgUHJpbnQgaGVhZCBvZiBEYXRhRnJhbWUgZGZcbnByaW50KGRmLmhlYWQoKSlcbmBgYCJ9 -->
+<pre class="python"><code># Open engine in context manager
+# Perform query and save results to DataFrame: df
+with engine.connect() as con:
+    rs = con.execute(&#39;SELECT Title, Name FROM Album INNER JOIN Artist on Album.ArtistID = Artist.ArtistID&#39;)
+    df = pd.DataFrame(rs.fetchall())
+    df.columns = rs.keys()
+
+# Print head of DataFrame df
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBUaXRsZSAgICAgICBOYW1lXG4wICBGb3IgVGhvc2UgQWJvdXQgVG8gUm9jayBXZSBTYWx1dGUgWW91ICAgICAgQUMvRENcbjEgICAgICAgICAgICAgICAgICAgICAgQmFsbHMgdG8gdGhlIFdhbGwgICAgIEFjY2VwdFxuMiAgICAgICAgICAgICAgICAgICAgICBSZXN0bGVzcyBhbmQgV2lsZCAgICAgQWNjZXB0XG4zICAgICAgICAgICAgICAgICAgICAgIExldCBUaGVyZSBCZSBSb2NrICAgICAgQUMvRENcbjQgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQmlnIE9uZXMgIEFlcm9zbWl0aFxuIn0= -->
+<pre><code>                                   Title       Name
+0  For Those About To Rock We Salute You      AC/DC
+1                      Balls to the Wall     Accept
+2                      Restless and Wild     Accept
+3                      Let There Be Rock      AC/DC
+4                               Big Ones  Aerosmith</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="filtering-your-inner-join" class="section level3">
+<h3><strong>Filtering your INNER JOIN</strong></h3>
+<p>Congrats on performing your first <code>INNER JOIN</code>! You’re now going to finish this chapter with one final exercise in which you perform an <code>INNER JOIN</code> and filter the result using a <code>WHERE</code> clause.</p>
+<p>Recall that to <code>INNER JOIN</code> the <code>Orders</code> and <code>Customers</code> tables from the Northwind database, Hugo executed the following SQL query:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5cIlNFTEVDVCBPcmRlcklELCBDb21wYW55TmFtZSBGUk9NIE9yZGVycyBJTk5FUiBKT0lOIEN1c3RvbWVycyBvbiBPcmRlcnMuQ3VzdG9tZXJJRCA9IEN1c3RvbWVycy5DdXN0b21lcklEXCJcbmBgYCJ9 -->
+<pre class="python"><code>&quot;SELECT OrderID, CompanyName FROM Orders INNER JOIN Customers on Orders.CustomerID = Customers.CustomerID&quot;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The following code has already been executed to import the necessary packages and to create the engine:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5pbXBvcnQgcGFuZGFzIGFzIHBkXG5mcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmVcbmVuZ2luZSA9IGNyZWF0ZV9lbmdpbmUoJ3NxbGl0ZTovLy9DaGlub29rLnNxbGl0ZScpXG5gYGAifQ== -->
+<pre class="python"><code>import pandas as pd
+from sqlalchemy import create_engine
+engine = create_engine(&#39;sqlite:///Chinook.sqlite&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use the <code>pandas</code> function <code>read_sql_query()</code> to assign to the variable <code>df</code> the DataFrame of results from the following query: <strong>select</strong> <em>all</em> records <strong>from</strong></li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG5QbGF5bGlzdFRyYWNrIElOTkVSIEpPSU4gVHJhY2sgb24gUGxheWxpc3RUcmFjay5UcmFja0lkID0gVHJhY2suVHJhY2tJZFxuYGBgIn0= -->
+<pre class="python"><code>PlaylistTrack INNER JOIN Track on PlaylistTrack.TrackId = Track.TrackId</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>that satisfy the condition <code>Milliseconds &lt; 250000</code>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEV4ZWN1dGUgcXVlcnkgYW5kIHN0b3JlIHJlY29yZHMgaW4gRGF0YUZyYW1lOiBkZlxuXG5cbiMgUHJpbnQgaGVhZCBvZiBEYXRhRnJhbWVcbnByaW50KGRmLmhlYWQoKSlcbmBgYCJ9 -->
+<pre class="python"><code># Execute query and store records in DataFrame: df
+
+
+# Print head of DataFrame
+print(df.head())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="final-thoughts" class="section level2">
+<h2><strong>Final thoughts</strong></h2>
+<p><strong>1. Final Thoughts</strong></p>
+<p>Congratulations on doing so well in a</p>
+<p><strong>2. What you’ve learned:</strong></p>
+<p>crash course on Relational Databases. Whether you have seen them before or not, you’re now able to create engines and connect to them in Python, perform simple SELECT queries, filter you results using WHERE, perform more complex queries such as JOIN and store all your querying results in pandas dataframes, among many other things. These skills will get you a long way in using Python to import data from relational databases. In fact, having made it through this course, you’re now well-equipped to import all types of files in Python, from plain text to flat files, Excel to Matlab, among many others. Well done! But that doesn’t mean there’s not more to be learnt. What about importing data from the web, where so much of it is??</p>
+<p><strong>3. Next course:</strong></p>
+<p>In the sequel to this, you’ll learn how to import web-data. It’s a short course and will equip you to import data from the world wide web and pull data from Application Programming Interfaces, also known as APIs. You’ll take a deep dive into the Twitter streaming API, which allows us to stream real-time tweets. I’m sure that you’re itching to get your hands dirty with web data;</p>
+<p><strong>4. Let’s practice!</strong></p>
+<p>so I’ll see you in the next course.</p>
+<!-- rnb-text-end -->
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIjAzIC0gV29ya2luZyB3aXRoIHJlbGF0aW9uYWwgZGF0YWJhc2VzIGluIFB5dGhvbiINCm91dHB1dDogDQogIGh0bWxfbm90ZWJvb2s6DQogICAgdG9jOiB0cnVlDQogICAgdG9jX2Zsb2F0OiBmYWxzZQ0KICAgIHRvY19kZXB0aDogNA0KLS0tDQoNCmBgYHtweXRob24gc2V0dXB9DQppbXBvcnQgcGFuZGFzIGFzIHBkDQppbXBvcnQgbnVtcHkgYXMgbnANCmltcG9ydCBtYXRwbG90bGliLnB5cGxvdCBhcyBwbHQNCmBgYA0KDQojIyAqKkludHJvZHVjdGlvbiB0byByZWxhdGlvbmFsIGRhdGFiYXNlcyoqDQoNCioqMS4gSW50cm9kdWN0aW9uIHRvIHJlbGF0aW9uYWwgZGF0YWJhc2VzKioNCg0KWW91IGhhdmUgYWxyZWFkeSBtYXN0ZXJlZCB0aGUgYXJ0IG9mIGltcG9ydGluZyBhbGwgdHlwZXMgb2Ygc2luZ2xlIGZpbGVzIGluIFB5dGhvbjogY29uZ3JhdHVsYXRpb25zISBIb3dldmVyLCB0byBlYXJuIHlvdXIgZGFpbHkgYnJlYWQgYW5kIGJ1dHRlciBhcyBhIERhdGEgU2NpZW50aXN0LCB5b3UnbGwgYmUgcmVxdWlyZWQgdG8gaW50ZXJhY3Qgd2l0aCBtb3JlIGNvbXBsZXggZGF0YSBzdHJ1Y3R1cmVzLCBzdWNoIGFzIHJlbGF0aW9uYWwgZGF0YWJhc2VzLg0KDQoqKjIuIFdoYXQgaXMgYSByZWxhdGlvbmFsIGRhdGFiYXNlPyoqDQoNCldoYXQgaXMgYSByZWxhdGlvbmFsIGRhdGFiYXNlPyBJdCdzIGEgdHlwZSBvZiBkYXRhYmFzZSB0aGF0IGlzIGJhc2VkIHVwb24gdGhlIFJlbGF0aW9uYWwgbW9kZWwgb2YgZGF0YSwgZmlyc3QgZGVzY3JpYmVkIGJ5IFRlZCBDb2RkIGluIHRoZSBsYXRlIDE5NjBzLiBCZWZvcmUgZ2V0dGluZyB0b28gdGhlb3JldGljYWwsIGhvd2V2ZXIsIGxldCdzIGNoZWNrIG91dCBhdCBhbiBpbGx1bWluYXRpbmcgZXhhbXBsZSwNCg0KKiozLiBFeGFtcGxlOiBOb3J0aHdpbmQgZGF0YWJhc2UqKg0KDQp0aGUgTm9ydGh3aW5kIFRyYWRlcnMgZGF0YWJhc2UsIGEgc3ludGhldGljIGRhdGFiYXNlIHRoYXQgY29udGFpbnMgc2FsZXMgZGF0YSBmb3IgYSBmaWN0aXRpb3VzIGNvbXBhbnkuIEZpcnN0bHksIGEgZGF0YWJhc2UgY29uc2lzdHMgb2YgdGFibGVzLiBIZXJlIHlvdSBjYW4gc2VlIDMgdGFibGVzIGZyb20gdGhlIE5vcnRod2luZCBkYXRhYmFzZToNCg0KKio0LiBFeGFtcGxlOiBOb3J0aHdpbmQgZGF0YWJhc2UqKg0KDQonT3JkZXJzJywNCg0KKio1LiBFeGFtcGxlOiBOb3J0aHdpbmQgZGF0YWJhc2UqKg0KDQonQ3VzdG9tZXJzJyBhbmQNCg0KKio2LiBFeGFtcGxlOiBOb3J0aHdpbmQgZGF0YWJhc2UqKg0KDQonRW1wbG95ZWVzJy4gU28gd2hhdCdzIGEgdGFibGU/IEEgdGFibGUgZ2VuZXJhbGx5IHJlcHJlc2VudHMgb25lIGVudGl0eSB0eXBlLA0KDQoqKjcuIFRoZSBPcmRlcnMgdGFibGUqKg0KDQpzdWNoIGFzICdPcmRlcicgLiBOb3RpY2UgdGhhdCB0aGlzIHRhYmxlIGxvb2tzIGEgZ3JlYXQgZGVhbCBsaWtlIGEgZGF0YWZyYW1lLiBUaGF0J3MgdGhlIHBvaW50LiBJbiBhIHJlbGF0aW9uYWwgZGF0YWJhc2UgdGFibGUsDQoNCioqOC4gVGhlIE9yZGVycyB0YWJsZSoqDQoNCmVhY2ggcm93IG9yIHJlY29yZCByZXByZXNlbnRzIGFuIGluc3RhbmNlIG9mIHRoZSBlbnRpdHkgdHlwZTogaW4gdGhpcyBjYXNlLCBlYWNoIHJvdyBpcyBhbiBPcmRlci4NCg0KKio5LiBUaGUgT3JkZXJzIHRhYmxlKioNCg0KRWFjaCBjb2x1bW4gcmVwcmVzZW50cyBhbiBhdHRyaWJ1dGUgb2YgZWFjaCBpbnN0YW5jZSwgc3VjaCBhcyAnT3JkZXJEYXRlJyBpbiB0aGUgY2FzZSBvZiAnT3JkZXJzJy4gSW4gdGhpcyBzZW5zZSwgYSB0YWJsZSBpcyBlbnRpcmVseSBhbmFsb2dvdXMgdG8gYSBkYXRhZnJhbWUuIEl0IGlzIGVzc2VudGlhbCB0aGF0IGVhY2ggcm93IGNvbnRhaW4gYSB1bmlxdWUgaWRlbnRpZmllciwga25vd24gYXMgYSBwcmltYXJ5IGtleSwgdGhhdCB3ZSBjYW4gdXNlIHRvIGV4cGxpY2l0bHkgYWNjZXNzIHRoZSByb3cgaW4gcXVlc3Rpb24uIEluIG91ciAnT3JkZXJzJyB0YWJsZSwgeW91IGNhbiBzZWUgdGhhdA0KDQoqKjEwLiBUaGUgT3JkZXJzIHRhYmxlKioNCg0KdGhlIGtleSBpcyAnT3JkZXJJRCcgdGhlIGZpcnN0IGNvbHVtbi4gQnV0IHJlY2FsbCB0aGF0IGEgZGF0YWJhc2UgY29uc2lzdHMgb2YgbWFueSB0YWJsZXMhIFRoZSByZWFsbHkgY29vbCB0aGluZyBhYm91dCByZWxhdGlvbmFsIGRhdGFiYXNlcyBpcyBub3QgbWVyZWx5IHRoYXQgeW91IGhhdmUgYSBidW5jaCBvZiB0YWJsZXMsDQoNCioqMTEuIFRhYmxlcyBhcmUgbGlua2VkKioNCg0KYnV0IHRoYXQgdGhlIHRhYmxlcyBhcmUgbGlua2VkLiBIb3cgdGhpcyBsaW5raW5nIHdvcmtzIGlzIHVsdHJhLWludHVpdGl2ZTogc2VlIHRoYXQgdGhlICdPcmRlcnMnIHRhYmxlIGhhcw0KDQoqKjEyLiBUYWJsZXMgYXJlIGxpbmtlZCoqDQoNCmJvdGggYSBjb2x1bW4gY2FsbGVkICdDdXN0b21lcklEJyBhbmQgb25lIGNhbGxlZCAnRW1wbG95ZWVJRCcuIFRoZXNlIGNvbHVtbnMgY29ycmVzcG9uZCBwcmVjaXNlbHkgdG8gdGhlIHByaW1hcnkga2V5cyBpbiB0aGUNCg0KKioxMy4gVGFibGVzIGFyZSBsaW5rZWQqKg0KDQonQ3VzdG9tZXJzJyBhbmQgJ0VtcGxveWVlcycgdGFibGVzLCByZXNwZWN0aXZlbHkuIFNvLCBnaXZlbiBhbiBPcmRlciwgeW91IGNhbiBpbW1lZGlhdGVseSBsb29rIHVwIHRoZSBkZXRhaWxzIG9mIHRoZSByZWxldmFudCBDdXN0b21lciBvciBFbXBsb3llZS4gVGhpcyBpcyBjb29sIGJlY2F1c2UgaXQgbWVhbnMgdGhhdCB5b3UgZG9uJ3QgbmVlZCB0byBzdG9yZSBhbGwgdGhlIEN1c3RvbWVyIGRldGFpbHMsIHN1Y2ggYXMgZmlyc3QgbmFtZSwgbGFzdCBuYW1lLCBjb21wYW55IHdpdGggZXZlcnkgb3JkZXIgdGhhdCB0aGV5IHBsYWNlOiB5b3UgbWVyZWx5IG5lZWQgdG8gbG9vayBpdCB1cCBpbiB0aGUgJ0N1c3RvbWVycycgdGFibGUuIFRoaXMgc2F2ZXMgYW4gaW5jcmVkaWJsZSBhbW91bnQgb2Ygc3BhY2UhDQoNCioqMTQuIFJlbGF0aW9uYWwgbW9kZWwqKg0KDQpBcyBzdGF0ZWQgZWFybGllciwgdGhlIHJlbGF0aW9uYWwgZGF0YWJhc2UgbW9kZWwgd2FzIG9yaWdpbmFsbHkgcHJvcG9zZWQgYnkgIlRlZCIgQ29kZCBhbmQgaGFzIGJlZW4gd2lkZWx5IGFkb3B0ZWQuIFRoZXJlIGlzIGEgZ3JlYXQgZGVhbCB0byB0aGVvcnkgYnV0IGl0IGlzIG1vc3QgbmVhdGx5IHN1bW1hcml6ZWQgaW4gQ29kZCdzIDEyIFJ1bGVzLCBhbHNvIGtub3duIGFzIENvZGQncyAxMiBDb21tYW5kbWVudHMsIHdoaWNoIGhlIGRldmVsb3BlZCBpbiB0aGUgZWFybHkgMTk4MHMgdG8gY29tYmF0IHdoYXQgaGUgdmlld2VkIGFzIGEgZGlsdXRpb24gb2YgaGlzIG9yaWdpbmFsIHJlbGF0aW9uYWwgZGF0YWJhc2UgdmlzaW9uLiBDb2RkJ3MgMTIgUnVsZXMgYWN0dWFsbHkgY29uc2lzdCBvZiAxMyBydWxlcyBidXQgdGhleSBhcmUgemVyby1pbmRleGVkLCB0aGF0IGlzLCB0aGUgZmlyc3QgcnVsZSBpcyB6ZXJvLWluZGV4ZWQuIElmIHRoYXQgbWFrZXMgeW91IGxhdWdoLCB5b3UncmUgZGVmaW5pdGVseSBhIGdlZWsgbGlrZSBtZSEgVGhlc2UgMTMgcnVsZXMgd2VyZSBkZWZpbmVkIHRvIGRlc2NyaWJlIHdoYXQgYSBSZWxhdGlvbmFsIERhdGFiYXNlIE1hbmFnZW1lbnQgU3lzdGVtIHNob3VsZCBhZGhlcmUgdG8gaW4gb3JkZXIgdG8gYmUgY29uc2lkZXJlZCByZWxhdGlvbmFsLg0KDQoqKjE1LiBSZWxhdGlvbmFsIERhdGFiYXNlIE1hbmFnZW1lbnQgU3lzdGVtcyoqDQoNCkFtb25nIHRoZSBtb3N0IHBvcHVsYXIgb2Ygc3VjaCBzeXN0ZW1zIGFyZSBQb3N0cmVTUUwgKGNvbW1vbmx5IGNhbGxlZCBQb3N0Z3JlcyksDQoNCioqMTYuIFJlbGF0aW9uYWwgRGF0YWJhc2UgTWFuYWdlbWVudCBTeXN0ZW1zKioNCg0KTXlTUUwgYW5kDQoNCioqMTcuIFJlbGF0aW9uYWwgRGF0YWJhc2UgTWFuYWdlbWVudCBTeXN0ZW1zKioNCg0KU1FMaXRlLCBhbGwgb2Ygd2hpY2ggdXNlIHRoZSBTUUwgcXVlcnkgbGFuZ3VhZ2UuIEluIGZhY3QsIFNRTCBpdHNlbGYgaXMgYWN0dWFsbHkgYW4gYWNyb255bQ0KDQoqKjE4LiBSZWxhdGlvbmFsIERhdGFiYXNlIE1hbmFnZW1lbnQgU3lzdGVtcyoqDQoNCmZvciBTdHJ1Y3R1cmVkIFF1ZXJ5IExhbmd1YWdlLCB3aGljaCBkZXNjcmliZXMgaG93IHlvdSBjb21tdW5pY2F0ZSB3aXRoIGEgZGF0YWJhc2UgaW4gb3JkZXIgdG8gYm90aCBhY2Nlc3MgYW5kIHVwZGF0ZSB0aGUgaW5mb3JtYXRpb24gaXQgY29udGFpbnMuIFRoZSB0ZXJtICJxdWVyeWluZyIgaXMgcmVhbGx5IGp1c3QgYSBmYW5jeSB3YXkgb2Ygc2F5aW5nIGdldHRpbmcgZGF0YSBvdXQgZnJvbSB0aGUgZGF0YWJhc2UuIE5leHQgdXAsIHlvdSdsbCBsZWFybiBob3cgdG8gY29ubmVjdCB0byBkYXRhYmFzZXMgYnV0IGJlZm9yZSB0aGF0LA0KDQoqKjE5LiBMZXQncyBwcmFjdGljZSEqKg0KDQpsZXQncyBtYWtlIHN1cmUgdGhhdCB5b3UgaGF2ZSBhIHNvbGlkIGNvbmNlcHR1YWwgZ3JpcCBvbiB0aGUgcmVsYXRpb25hbCBtb2RlbC4NCg0KIyMjICoqUG9wIHF1aXo6IFRoZSByZWxhdGlvbmFsIG1vZGVsKioNCg0KV2hpY2ggb2YgdGhlIGZvbGxvd2luZyBpcyBub3QgcGFydCBvZiB0aGUgcmVsYXRpb25hbCBtb2RlbD8NCg0KKipQb3NzaWJsZSBBbnN3ZXJzKioNCg0KMS4gRWFjaCByb3cgb3IgcmVjb3JkIGluIGEgdGFibGUgcmVwcmVzZW50cyBhbiBpbnN0YW5jZSBvZiBhbiBlbnRpdHkgdHlwZS4NCg0KMi4gRWFjaCBjb2x1bW4gaW4gYSB0YWJsZSByZXByZXNlbnRzIGFuIGF0dHJpYnV0ZSBvciBmZWF0dXJlIG9mIGFuIGluc3RhbmNlLg0KDQozLiBFdmVyeSB0YWJsZSBjb250YWlucyBhIHByaW1hcnkga2V5IGNvbHVtbiwgd2hpY2ggaGFzIGEgdW5pcXVlIGVudHJ5IGZvciBlYWNoIHJvdy4NCg0KNC4gQSBkYXRhYmFzZSBjb25zaXN0cyBvZiBhdCBsZWFzdCAzIHRhYmxlcy4NCg0KNS4gVGhlcmUgYXJlIHJlbGF0aW9ucyBiZXR3ZWVuIHRhYmxlcy4NCg0KQW5zd2VyczogNA0KDQojIyAqKkNyZWF0aW5nIGEgZGF0YWJhc2UgZW5naW5lIGluIFB5dGhvbioqDQoNCioqMS4gQ3JlYXRpbmcgYSBkYXRhYmFzZSBlbmdpbmUgaW4gUHl0aG9uKioNCg0KQWxsIHJpZ2h0LCB3ZSdyZSBiYWNrISBXaGF0IHdlIHJlYWxseSB3YW50IHRvIGRvIGlzIHRvIGdldCBkYXRhIG91dCBvZiBvdXIgZGF0YWJhc2VzIHVzaW5nIFNRTCwgb3IgdGhlIFN0cnVjdHVyZWQgUXVlcnkgTGFuZ3VhZ2UuIEJ1dCBiZWZvcmUgd2UgZ2V0IHRvIHRoYXQsIHdlJ3JlIGdvaW5nIHRvIG5lZWQgdG8gZmlndXJlIG91dCBob3cgdG8gY29ubmVjdCB0byBhIGRhdGFiYXNlLg0KDQoqKjIuIENyZWF0aW5nIGEgZGF0YWJhc2UgZW5naW5lKioNCg0KV2UnbGwgdXNlIGFuIFNRTGl0ZSBkYXRhYmFzZSBhcyBhbiBleGFtcGxlIGJlY2F1c2UgU1FMaXRlIGlzIGZhc3QgYW5kIHNpbXBsZSB3aGlsZSBzdGlsbCBjb250YWluaW5nIGVub3VnaCBmdW5jdGlvbmFsaXR5IHRvIGludHJvZHVjZSB5b3UgdG8gYWxsIHRoZSBuZWNlc3NhcnkgY29uY2VwdHMgb2YgcXVlcnlpbmcgYSBkYXRhYmFzZS4gVGhlcmUgYXJlIHRpbWVzIHdoZW4geW91IHdvdWxkIHByZWZlciB0byB1c2UgUG9zdGdyZVNRTCBvciBNeVNRTCwgYnV0IGZvciBvdXIgcHVycG9zZXMgaGVyZSwgYW4gSW50cm9kdWN0aW9uIHRvIEludGVyYWN0aW5nIHdpdGggUmVsYXRpb25hbCBEYXRhYmFzZXMgaW4gUHl0aG9uLCBhIFNRTGl0ZSBkYXRhYmFzZSBpcyBwZXJmZWN0LiBXZSdsbCBvbmNlIGFnYWluIGxvb2sgYXQgdGhlIE5vcnRod2luZCBkYXRhYmFzZS4gVGhlcmUgYXJlIG1hbnkgcGFja2FnZXMgd2UgY291bGQgdXNlIHRvIGFjY2VzcyBhbiBTUUxpdGUgZGF0YWJhc2Ugc3VjaCBhcyBzcWxpdGUzIGFuZCBTUUxBbGNoZW15LiBXZSdsbCB1c2UgU1FMQWxjaGVteSBhcyBpdCB3b3JrcyB3aXRoIG1hbnkgb3RoZXIgUmVsYXRpb25hbCBEYXRhYmFzZSBNYW5hZ2VtZW50IFN5c3RlbXMsIHN1Y2ggYXMgUG9zdGdyZXMgYW5kIE15U1FMLiBTbyB3aXRob3V0IGZ1cnRoZXIgYWRvLCB0byBjb25uZWN0IHRvICdOb3J0aHdpbmQgZG90IHNxbGl0ZScsIHdlIG5lZWQgdG8gaW1wb3J0IHRoZSByZWxldmFudCBmdW50aW9uIGNyZWF0ZV9lbmdpbmUgZnJvbSB0aGUgcGFja2FnZSBTUUxBbGNoZW15LiBXZSB0aGVuIHVzZSB0aGUgZnVuY3Rpb24gY3JlYXRlX2VuZ2luZSB0byBmaXJlIHVwIGFuIFNRTCBlbmdpbmUgdGhhdCB3aWxsIGNvbW11bmljYXRlIG91ciBxdWVyaWVzIHRvIHRoZSBkYXRhYmFzZS4gVGhlIG9ubHkgcmVxdWlyZWQgYXJndW1lbnQgb2YgY3JlYXRlX2VuZ2luZSBpcyBhIHN0cmluZyB0aGF0IGluZGljYXRlcyB0aGUgdHlwZSBvZiBkYXRhYmFzZSB5b3UncmUgY29ubmVjdGluZyB0byBhbmQgdGhlIG5hbWUgb2YgdGhlIGRhdGFiYXNlLiBOZXh0LCBJbiBvcmRlciB0byBxdWVyeSB0aGUgZGF0YWJhc2UsIHdlIG5lZWQgdG8gY29ubmVjdCB0byB0aGUgZW5naW5lIHRvIGRvIHNvLg0KDQpgYGB7cHl0aG9ufQ0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lDQplbmdpbmUxID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL05vcnRod2luZC5zcWxpdGUnKQ0KYGBgDQoNCioqMy4gR2V0dGluZyB0YWJsZSBuYW1lcyoqDQoNCkJ1dCBiZWZvcmUgd2UgZG8gdGhpcywgd2Ugd291bGQgbGlrZSB0byBrbm93IHRoZSBuYW1lcyBvZiB0aGUgdGFibGVzIGl0IGNvbnRhaW5zLiBUbyBkbyB0aGlzLCBhcHBseSB0aGUgbWV0aG9kIHRhYmxlX25hbWVzIHRvIHRoZSBvYmplY3QgZW5naW5lLiBUaGlzIHdpbGwgcmV0dXJuIGEgbGlzdCBvZiB0aGUgdGFibGUgbmFtZXMgdGhhdCB5b3UgY2FuIHRoZW4gcHJpbnQgdGhlIGNvbnNvbGUuIE5vdyBpdCdzIHlvdXIgdHVybiB0byBkbyB0aGUgc2FtZTogZmlyZSB1cCB0aGUgZGF0YWJhc2UgZW5naW5lIGFuZCBwcmludCB0aGUgdGFibGUgbmFtZXMhDQoNCmBgYHtweXRob259DQp0YWJsZV9uYW1lczEgPSBlbmdpbmUudGFibGVfbmFtZXMoKQ0KcHJpbnQodGFibGVfbmFtZXMpDQpgYGANCg0KKio0LiBMZXQncyBwcmFjdGljZSEqKg0KDQpBZnRlciB0aGlzLCBJJ2xsIGJlIGJhY2sgdG8gc2hvdyB5b3UgaG93IHRvIGNvbm5lY3QgdG8gdGhlIGVuZ2luZSwgcXVlcnkgeW91ciBEQnMgYW5kIHRoZW4geW91J2xsIGdldCBsb2FkcyBvZiBwcmFjdGljZSB3cml0aW5nIHlvdXIgb3duIHF1ZXJpZXMgdG8gaW1wb3J0IGRhdGEgZnJvbSByZWxhdGlvbmFsIGRhdGFiYXNlcyENCg0KIyMjICoqQ3JlYXRpbmcgYSBkYXRhYmFzZSBlbmdpbmUqKg0KDQpIZXJlLCB5b3UncmUgZ29pbmcgdG8gZmlyZSB1cCB5b3VyIHZlcnkgZmlyc3QgU1FMIGVuZ2luZS4gWW91J2xsIGNyZWF0ZSBhbiBlbmdpbmUgdG8gY29ubmVjdCB0byB0aGUgU1FMaXRlIGRhdGFiYXNlIGAnQ2hpbm9vay5zcWxpdGUnYCwgd2hpY2ggaXMgaW4geW91ciB3b3JraW5nIGRpcmVjdG9yeS4gUmVtZW1iZXIgdGhhdCB0byBjcmVhdGUgYW4gZW5naW5lIHRvIGNvbm5lY3QgdG8gYCdOb3J0aHdpbmQuc3FsaXRlJ2AsIEh1Z28gZXhlY3V0ZWQgdGhlIGNvbW1hbmQNCg0KYGBge3B5dGhvbiwgZXZhbCA9IEZhbHNlfQ0KZW5naW5lMSA9IGNyZWF0ZV9lbmdpbmUoJ3NxbGl0ZTovLy9Ob3J0aHdpbmQuc2wzJykNCmBgYA0KDQoNCkhlcmUsIGAnc3FsaXRlOi8vL05vcnRod2luZC5zcWxpdGUnYCBpcyBjYWxsZWQgdGhlIGNvbm5lY3Rpb24gc3RyaW5nIHRvIHRoZSBTUUxpdGUgZGF0YWJhc2UgYE5vcnRod2luZC5zcWxpdGVgLiBBIGxpdHRsZSBiaXQgb2YgYmFja2dyb3VuZCBvbiB0aGUgW0NoaW5vb2sgZGF0YWJhc2VdKGh0dHBzOi8vZ2l0aHViLmNvbS9sZXJvY2hhL2NoaW5vb2stZGF0YWJhc2UpOiB0aGUgQ2hpbm9vayBkYXRhYmFzZSBjb250YWlucyBpbmZvcm1hdGlvbiBhYm91dCBhIHNlbWktZmljdGlvbmFsIGRpZ2l0YWwgbWVkaWEgc3RvcmUgaW4gd2hpY2ggbWVkaWEgZGF0YSBpcyByZWFsIGFuZCBjdXN0b21lciwgZW1wbG95ZWUgYW5kIHNhbGVzIGRhdGEgaGFzIGJlZW4gbWFudWFsbHkgY3JlYXRlZC4NCg0KV2h5IHRoZSBuYW1lIENoaW5vb2ssIHlvdSBhc2s/IEFjY29yZGluZyB0byB0aGVpciBbd2Vic2l0ZV0oaHR0cHM6Ly9naXRodWIuY29tL2xlcm9jaGEvY2hpbm9vay1kYXRhYmFzZSksDQoNCj4qVGhlIG5hbWUgb2YgdGhpcyBzYW1wbGUgZGF0YWJhc2Ugd2FzIGJhc2VkIG9uIHRoZSBOb3J0aHdpbmQgZGF0YWJhc2UuIENoaW5vb2tzIGFyZSB3aW5kcyBpbiB0aGUgaW50ZXJpb3IgV2VzdCBvZiBOb3J0aCBBbWVyaWNhLCB3aGVyZSB0aGUgQ2FuYWRpYW4gUHJhaXJpZXMgYW5kIEdyZWF0IFBsYWlucyBtZWV0IHZhcmlvdXMgbW91bnRhaW4gcmFuZ2VzLiBDaGlub29rcyBhcmUgbW9zdCBwcmV2YWxlbnQgb3ZlciBzb3V0aGVybiBBbGJlcnRhIGluIENhbmFkYS4gQ2hpbm9vayBpcyBhIGdvb2QgbmFtZSBjaG9pY2UgZm9yIGEgZGF0YWJhc2UgdGhhdCBpbnRlbmRzIHRvIGJlIGFuIGFsdGVybmF0aXZlIHRvIE5vcnRod2luZC4qDQoNCioqSW5zdHJ1Y3Rpb25zKioNCg0KLSBJbXBvcnQgdGhlIGZ1bmN0aW9uIGBjcmVhdGVfZW5naW5lYCBmcm9tIHRoZSBtb2R1bGUgYHNxbGFsY2hlbXlgLg0KLSBDcmVhdGUgYW4gZW5naW5lIHRvIGNvbm5lY3QgdG8gdGhlIFNRTGl0ZSBkYXRhYmFzZSBgJ0NoaW5vb2suc3FsaXRlJ2AgYW5kIGFzc2lnbiBpdCB0byBgZW5naW5lYC4NCg0KYGBge3B5dGhvbn0NCiMgSW1wb3J0IG5lY2Vzc2FyeSBtb2R1bGUNCmZyb20gc3FsYWxjaGVteSBpbXBvcnQgY3JlYXRlX2VuZ2luZQ0KDQojIENyZWF0ZSBlbmdpbmU6IGVuZ2luZQ0KZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJykNCmBgYA0KDQojIyMgKipXaGF0IGFyZSB0aGUgdGFibGVzIGluIHRoZSBkYXRhYmFzZT8qKg0KDQpJbiB0aGlzIGV4ZXJjaXNlLCB5b3UnbGwgb25jZSBhZ2FpbiBjcmVhdGUgYW4gZW5naW5lIHRvIGNvbm5lY3QgdG8gYCdDaGlub29rLnNxbGl0ZSdgLiBCZWZvcmUgeW91IGNhbiBnZXQgYW55IGRhdGEgb3V0IG9mIHRoZSBkYXRhYmFzZSwgaG93ZXZlciwgeW91J2xsIG5lZWQgdG8ga25vdyB3aGF0IHRhYmxlcyBpdCBjb250YWlucyENCg0KVG8gdGhpcyBlbmQsIHlvdSdsbCBzYXZlIHRoZSB0YWJsZSBuYW1lcyB0byBhIGxpc3QgdXNpbmcgdGhlIG1ldGhvZCBgdGFibGVfbmFtZXMoKWAgb24gdGhlIGVuZ2luZSBhbmQgdGhlbiB5b3Ugd2lsbCBwcmludCB0aGUgbGlzdC4NCg0KKipJbnN0cnVjdGlvbnMqKg0KDQotIEltcG9ydCB0aGUgZnVuY3Rpb24gYGNyZWF0ZV9lbmdpbmVgIGZyb20gdGhlIG1vZHVsZSBgc3FsYWxjaGVteWAuDQotIENyZWF0ZSBhbiBlbmdpbmUgdG8gY29ubmVjdCB0byB0aGUgU1FMaXRlIGRhdGFiYXNlIGAnQ2hpbm9vay5zcWxpdGUnYCBhbmQgYXNzaWduIGl0IHRvIGBlbmdpbmVgLg0KLSBVc2luZyB0aGUgbWV0aG9kIGB0YWJsZV9uYW1lcygpYCBvbiB0aGUgZW5naW5lIGBlbmdpbmVgLCBhc3NpZ24gdGhlIHRhYmxlIG5hbWVzIG9mIGAnQ2hpbm9vay5zcWxpdGUnYCB0byB0aGUgdmFyaWFibGUgYHRhYmxlX25hbWVzYC4NCi0gUHJpbnQgdGhlIG9iamVjdCBgdGFibGVfbmFtZXNgIHRvIHRoZSBzaGVsbC4NCg0KYGBge3B5dGhvbn0NCiMgSW1wb3J0IG5lY2Vzc2FyeSBtb2R1bGUNCmZyb20gc3FsYWxjaGVteSBpbXBvcnQgY3JlYXRlX2VuZ2luZQ0KDQojIENyZWF0ZSBlbmdpbmU6IGVuZ2luZQ0KZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJykNCg0KIyBTYXZlIHRoZSB0YWJsZSBuYW1lcyB0byBhIGxpc3Q6IHRhYmxlX25hbWVzDQp0YWJsZV9uYW1lcyA9IGVuZ2luZS50YWJsZV9uYW1lcygpDQoNCiMgUHJpbnQgdGhlIHRhYmxlIG5hbWVzIHRvIHRoZSBzaGVsbA0KcHJpbnQodGFibGVfbmFtZXMpDQoNCmBgYA0KDQojIyAqKlF1ZXJ5aW5nIHJlbGF0aW9uYWwgZGF0YWJhc2VzIGluIFB5dGhvbioqDQoNCioqMS4gUXVlcnlpbmcgcmVsYXRpb25hbCBkYXRhYmFzZXMgaW4gUHl0aG9uKioNCg0KTm93IHRoYXQgeW91IGhhdmUgZmlndXJlZCBvdXQgaG93IHRvIGNyZWF0ZSBhIGRhdGFiYXNlIGVuZ2luZSBhbmQgdG8gbGlzdCB0aGUgdGFibGVzIG9mIHRoZSBkYXRhYmFzZSBpbiBxdWVzdGlvbiwgaXQncyB0aW1lIHRvIGNvbm5lY3QgdG8gdGhlIGVuZ2luZSBhbmQgcXVlcnkgdGhlIGRhdGFiYXNlLiBPbmNlIGFnYWluLCB0aGUgdGVybSAicXVlcnlpbmciIGlzIGp1c3QgYSBmYW5jeSB3YXkgb2Ygc2F5aW5nIGdldHRpbmcgZGF0YSBvdXQgZnJvbSB0aGUgZGF0YWJhc2UuDQoNCioqMi4gQmFzaWMgU1FMIHF1ZXJ5KioNCg0KVEhlIEhFTExPIFdPUkxEIG9mIFNRTCBxdWVyaWVzIGlzICdTRUxFQ1QgKiBGUk9NIFRhYmxlX05hbWUnLCB3aGVyZSAnVGFibGVfbmFtZScgaXMgdGhlIG5hbWUgb2YgYW55IG9mIHRoZSB0YWJsZXMgaW4gdGhlIGRhdGFiYXNlLiBUaGlzIHF1ZXJ5IHJldHVybnMgYWxsIGNvbHVtbnMgb2YgYWxsIHJvd3Mgb2YgdGhlIFRhYmxlIG9mIGludGVyZXN0LiBGb3IgZXhhbXBsZSwgSSBjb3VsZCBxdWVyeSB0aGUgTm9ydGh3aW5kIGRhdGFiYXNlIHdpdGggJ1NFTEVDVCAqIEZST00gT3JkZXJzJyBhbmQgdGhpcyB3b3VsZCByZXR1cm4gYWxsIGNvbHVtbnMgb2YgYWxsIHJvd3Mgb2YgdGhlICdPcmRlcnMnIHRhYmxlLiBUaGUgc3RhciBhZnRlciBTRUxFQ1QgbWVhbnMgJ2FsbCBjb2x1bW5zJy4gU3RyYWlnaHRmb3J3YXJkLCByaWdodD8gV2VsbCwgbmVhcmx5ISBUaGlzIGlzIGFuIFNRTCBxdWVyeSBhbmQgd2UgbmVlZCB0byBmaWd1cmUgb3V0IGhvdyB0byBtYWtlIHN1Y2ggYSBxdWVyeSB1c2luZyBweXRob24sIFNRTEFsY2hlbXkgYW5kLCBpbiBmYWN0LCB3ZSdsbCBhbHNvIHVzZSBwYW5kYXMgdG8gc3RvcmUgdGhlIHJlc3VsdHMgb2Ygb3VyIHF1ZXJpZXMuDQoNCioqMy4gV29ya2Zsb3cgb2YgU1FMIHF1ZXJ5aW5nKioNCg0KVGhlIHdvcmtmbG93IHdpbGwgYmUgYXMgZm9sbG93cy4gWW91J2xsIGltcG9ydCB0aGUgcmVxdWlyZWQgcGFja2FnZXMgYW5kIGZ1bmN0aW9ucywgY3JlYXRlIHRoZSBlbmdpbmUsIGNvbm5lY3QgdG8gaXQsIHF1ZXJ5IHRoZSBkYXRhYmFzZSBzYXZlIHRoZSByZXN1bHRzIG9mIHRoZSBxdWVyeSB0byBhIGRhdGFmcmFtZSwgYW5kIGNsb3NlIHRoZSBjb25uZWN0aW9uLg0KDQoqKjQuIFlvdXIgZmlyc3QgU1FMIHF1ZXJ5KioNCg0KTGV0J3Mgbm93IGNoZWNrIG91dCBob3cgdG8gZG8gZWFjaCBvZiB0aGVzZSBzdGVwcyEgQ3JlYXRlIHRoZSBlbmdpbmUgdXNpbmcgdGhlIGZ1bmN0aW9uIGNyZWF0ZV9lbmdpbmUuIFRvIGNvbm5lY3QgdG8gdGhlIGRhdGFiYXNlIGFmdGVyIGNyZWF0aW5nIHRoZSBlbmdpbmUsIHlvdSBjcmVhdGUgYSBjb25uZWN0aW9uIG9iamVjdCBjb24gYnkgYXBwbHlpbmcgdGhlIG1ldGhvZCBjb25uZWN0IHRvIHRoZSBlbmdpbmUuIFRvIHF1ZXJ5IHRoZSBEQiwgYXBwbHkgdGhlIG1ldGhvZCBleGVjdXRlIHRvIHRoZSBjb25uZWN0aW9uIGNvbiBhbmQgcGFzcyBpdCBhIHNpbmdsZSBhcmd1bWVudCwgdGhlIHJlbGV2YW50IFNRTCBxdWVyeTsgVGhpcyBjcmVhdGVzIGEgU1FMQWxjaGVteSByZXN1bHRzIG9iamVjdCB3aGljaCB3ZSBhc3NpZ24gdG8gdGhlIHZhcmlhYmxlIHJzLiBUbyB0dXJuIHRoZSByZXN1bHRzIG9iamVjdCBycyBpbnRvIGEgZGF0YWZyYW1lLCB3ZSBhcHBseSB0aGUgbWV0aG9kIGZldGNoYWxsIHRvIHJzIGFuZCBzYXZlIGl0IGFzIGEgZGF0YWZyYW1lIHVzaW5nIHRoZSBwYW5kYXMgZnVuY3Rpb24gRGF0YUZyYW1lLiBmZXRjaGFsbCBmZXRjaGVzIGFsbCByb3dzLCBhcyB5b3Ugd291bGQgZXhwZWN0LiBUbyBjbG9zZSB0aGUgY29ubmVjdGlvbiwgZXhlY3V0ZSAnY29uIGRvdCBjbG9zZScuIERvbid0IGZvcmdldCB0byBkbyB0aGlzIQ0KDQpgYGB7cHl0aG9ufQ0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lDQppbXBvcnQgcGFuZGFzIGFzIHBkDQplbmdpbmUxID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL05vcnRod2luZC5zbDMnKQ0KY29uID0gZW5naW5lMS5jb25uZWN0KCkNCnJzID0gY29uLmV4ZWN1dGUoJ1NFTEVDVCAqIEZST00gT3JkZXJzJykNCmRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNoYWxsKCkpDQpjb24uY2xvc2UoKQ0KYGBgDQoNCioqNS4gUHJpbnRpbmcgeW91ciBxdWVyeSByZXN1bHRzKioNCg0KWW91IGNhbiB0aGVuIHByaW50IHRoZSBoZWFkIG9mIHRoZSBkYXRhZnJhbWUsIGFzIHdlIGhhdmUgZG9uZSBiZWZvcmUsIGFzIGEgc2FuaXR5IGNoZWNrOiBhbGwgdGhlIHJvd3MgbG9vayBnb29kIGJ1dCB0aGUgY29sdW1uIG5hbWVzIGFyZW4ndCBjb3JyZWN0Lg0KDQpgYGB7cHl0aG9ufQ0KcHJpbnQoZGYuaGVhZCgpKQ0KYGBgDQoNCioqNi4gU2V0IHRoZSBEYXRhRnJhbWUgY29sdW1uIG5hbWVzKioNCg0KVG8gZml4IHRoaXMsIGJlZm9yZSBjbG9zaW5nIHRoZSBjb25uZWN0aW9uLCB5b3UgY2FuIHNldCB0aGUgZGF0YWZyYW1lJ3MgY29sdW1uIG5hbWVzIGJ5IGV4ZWN1dGluZyAnZGYgZG90IGNvbHVtbnMgZXF1YWxzIHJzIGRvdCBrZXlzJy4NCg0KYGBge3B5dGhvbn0NCmZyb20gc3FsYWxjaGVteSBpbXBvcnQgY3JlYXRlX2VuZ2luZQ0KaW1wb3J0IHBhbmRhcyBhcyBwZA0KZW5naW5lMSA9IGNyZWF0ZV9lbmdpbmUoJ3NxbGl0ZTovLy9Ob3J0aHdpbmQuc2wzJykNCmNvbiA9IGVuZ2luZTEuY29ubmVjdCgpDQpycyA9IGNvbi5leGVjdXRlKCdTRUxFQ1QgKiBGUk9NIE9yZGVycycpDQpkZiA9IHBkLkRhdGFGcmFtZShycy5mZXRjaGFsbCgpKQ0KZGYuY29sdW1ucyA9IHJzLmtleXMoKQ0KY29uLmNsb3NlKCkNCmBgYA0KDQoqKjcuIFNldCB0aGUgZGF0YSBmcmFtZSBjb2x1bW4gbmFtZXMqKg0KDQpPbmUgbGFzdCBub3RlOiBhbmFsb2dvdXMgdG8gd2hhdCB5b3Ugc2F3IGluIGNoYXB0ZXIgMSB3aGVuIG9wZW5pbmcgcGxhaW4gdGV4dCBmaWxlcywgeW91IGNhbiB1c2UNCg0KYGBge3B5dGhvbn0NCnByaW50KGRmLmhlYWQoKSkNCmBgYA0KDQoqKjguIFVzaW5nIHRoZSBjb250ZXh0IG1hbmFnZXIqKg0KDQp0aGUgY29udGV4dCBtYW5hZ2VyIGNvbnN0cnVjdCB0byBvcGVuIGEgY29ubmVjdGlvbiwgd2hpY2ggd2lsbCBzYXZlIHlvdSB0aGUgdHJvdWJsZSBvZiBjbG9zaW5nIHRoZSBjb25uZWN0aW9uIGxhdGVyLCBvciBzYXZlIHlvdSB0aGUgdHJvdWJsZSBvZiBmb3JnZXR0aW5nIHRvIGNsb3NlIGl0ISBUaGVyZSBhcmUgdHdvIG90aGVyIGRpZmZlcmVuY2VzIHRoYXQgeW91IG1heSBoYXZlIG5vdGljZSBiZXR3ZWVuIHRoaXMgYW5kIHRoZSBwcmV2aW91cyBjb2RlOiBmaXJzdGx5LCBJIG5vIGxvbmdlciBoYXZlICdTRUxFQ1QgKicgaW4gdGhlIFNRTCBxdWVyeTsgSSBub3cgaGF2ZSBjb2x1bW4gbmFtZXMgb2YgdGhlIHRhYmxlICdPcmRlcnMnOyBhbGwgdGhpcyBkb2VzIGlzIGl0IGltcG9ydHMgdGhvc2UgcGFydGljdWxhciBjb2x1bW5zIGFuZCBubyBvdGhlcnMgd2hlcmVhcyAnU0VMRUNUIConIGltcG9ydHMgYWxsIGNvbHVtbnM7IHNlY29uZGx5LCBpbnN0ZWFkIG9mIGFwcGx5aW5nIHRoZSBtZXRob2QgZmV0Y2hhbGwgdG8gdGhlIHJlc3VsdHMgcnMsIEkgYXBwbHkgdGhlIG1ldGhvZCBmZXRjaG1hbnkgd2l0aCB0aGUgYXJndW1lbnQgc2l6ZSBlcXVhbHMgNTsgdGhpcyBpbXBvcnRzIDUgcm93cyBpbnN0ZWFkIG9mIGFsbCByb3dzLiBZb3UnbGwgYmVjb21lIGJldHRlciBhY3F1YWludGVkIHdpdGggdGhlc2UgZnVuY3Rpb25zIGFuZCBhcmd1bWVudHMgdmVyeSBzb29uLg0KDQpgYGB7cHl0aG9ufQ0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lDQppbXBvcnQgcGFuZGFzIGFzIHBkDQplbmdpbmUxID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL05vcnRod2luZC5zbDMnKQ0KDQp3aXRoIGVuZ2luZTEuY29ubmVjdCgpIGFzIGNvbjoNCiAgcnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUIE9yZGVySWQsIE9yZGVyRGF0ZSxTaGlwTmFtZSBGUk9NIE9yZGVycycpDQogIGRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNobWFueShzaXplID0gNSkpDQogIGRmLmNvbHVtbnMgPSBycy5rZXlzKCkNCnByaW50KGRmKQ0KYGBgDQoNCioqOS4gTGV0J3MgcHJhY3RpY2UhKioNCg0KVGhhdCdzIGVub3VnaCBvdXQgb2YgbWUhIEl0J3MgdGltZSBmb3IgeW91IHRvIHByYWN0aWNlIHdyaXRpbmcgeW91ciBvd24gU1FMIHF1ZXJpZXMgdG8gaW1wb3J0IGRhdGEgZnJvbSB5b3VyIGRhdGFiYXNlLCBlbmpveSENCg0KIyMjICoqVGhlIEhlbGxvIFdvcmxkIG9mIFNRTCBRdWVyaWVzISoqDQoNCk5vdywgaXQncyB0aW1lIGZvciBsaWZ0b2ZmISBJbiB0aGlzIGV4ZXJjaXNlLCB5b3UnbGwgcGVyZm9ybSB0aGUgSGVsbG8gV29ybGQgb2YgU1FMIHF1ZXJpZXMsIGBTRUxFQ1RgLCBpbiBvcmRlciB0byByZXRyaWV2ZSBhbGwgY29sdW1ucyBvZiB0aGUgdGFibGUgYEFsYnVtYCBpbiB0aGUgQ2hpbm9vayBkYXRhYmFzZS4gUmVjYWxsIHRoYXQgdGhlIHF1ZXJ5IGBTRUxFQ1QgKmAgc2VsZWN0cyBhbGwgY29sdW1ucy4NCg0KKipJbnN0cnVjdGlvbnMqKg0KDQotIE9wZW4gdGhlIGVuZ2luZSBjb25uZWN0aW9uIGFzIGBjb25gIHVzaW5nIHRoZSBtZXRob2QgYGNvbm5lY3QoKWAgb24gdGhlIGVuZ2luZS4NCi0gRXhlY3V0ZSB0aGUgcXVlcnkgdGhhdCAqKnNlbGVjdHMqKiAqQUxMIGNvbHVtbnMqICoqZnJvbSoqIHRoZSBgQWxidW1gIHRhYmxlLiBTdG9yZSB0aGUgcmVzdWx0cyBpbiBgcnNgLg0KLSBTdG9yZSBhbGwgb2YgeW91ciBxdWVyeSByZXN1bHRzIGluIHRoZSBEYXRhRnJhbWUgYGRmYCBieSBhcHBseWluZyB0aGUgYGZldGNoYWxsKClgIG1ldGhvZCB0byB0aGUgcmVzdWx0cyBgcnNgLg0KLSBDbG9zZSB0aGUgY29ubmVjdGlvbiENCg0KYGBge3B5dGhvbn0NCiMgSW1wb3J0IHBhY2thZ2VzDQpmcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmUNCmltcG9ydCBwYW5kYXMgYXMgcGQNCg0KIyBDcmVhdGUgZW5naW5lOiBlbmdpbmUNCmVuZ2luZSA9IGNyZWF0ZV9lbmdpbmUoJ3NxbGl0ZTovLy9DaGlub29rLnNxbGl0ZScpDQoNCiMgT3BlbiBlbmdpbmUgY29ubmVjdGlvbjogY29uDQpjb24gPSBlbmdpbmUuY29ubmVjdCgpDQoNCiMgUGVyZm9ybSBxdWVyeTogcnMNCnJzID0gY29uLmV4ZWN1dGUoJ1NFTEVDVCAqIEZST00gQWxidW0nKQ0KDQojIFNhdmUgcmVzdWx0cyBvZiB0aGUgcXVlcnkgdG8gRGF0YUZyYW1lOiBkZg0KZGYgPSBwZC5EYXRhRnJhbWUocnMuZmV0Y2hhbGwoKSkNCg0KIyBDbG9zZSBjb25uZWN0aW9uDQpjb24uY2xvc2UoKQ0KDQojIFByaW50IGhlYWQgb2YgRGF0YUZyYW1lIGRmDQpwcmludChkZi5oZWFkKCkpDQoNCmBgYA0KDQojIyMgKipDdXN0b21pemluZyB0aGUgSGVsbG8gV29ybGQgb2YgU1FMIFF1ZXJpZXMqKg0KDQpDb25ncmF0dWxhdGlvbnMgb24gZXhlY3V0aW5nIHlvdXIgZmlyc3QgU1FMIHF1ZXJ5ISBOb3cgeW91J3JlIGdvaW5nIHRvIGZpZ3VyZSBvdXQgaG93IHRvIGN1c3RvbWl6ZSB5b3VyIHF1ZXJ5IGluIG9yZGVyIHRvOg0KDQogIC0gU2VsZWN0IHNwZWNpZmllZCBjb2x1bW5zIGZyb20gYSB0YWJsZTsNCiAgLSBTZWxlY3QgYSBzcGVjaWZpZWQgbnVtYmVyIG9mIHJvd3M7DQogIC0gSW1wb3J0IGNvbHVtbiBuYW1lcyBmcm9tIHRoZSBkYXRhYmFzZSB0YWJsZS4NCiAgDQpSZWNhbGwgdGhhdCBIdWdvIHBlcmZvcm1lZCBhIHZlcnkgc2ltaWxhciBxdWVyeSBjdXN0b21pemF0aW9uIGluIHRoZSB2aWRlbzoNCg0KYGBge3B5dGhvbiwgZWNobyA9IFRydWUsIGV2YWwgPSBGYWxzZX0NCmVuZ2luZSA9IGNyZWF0ZV9lbmdpbmUoJ3NxbGl0ZTovLy9Ob3J0aHdpbmQuc3FsaXRlJykNCg0Kd2l0aCBlbmdpbmUuY29ubmVjdCgpIGFzIGNvbjoNCiAgICBycyA9IGNvbi5leGVjdXRlKCJTRUxFQ1QgT3JkZXJJRCwgT3JkZXJEYXRlLCBTaGlwTmFtZSBGUk9NIE9yZGVycyIpDQogICAgZGYgPSBwZC5EYXRhRnJhbWUocnMuZmV0Y2htYW55KHNpemU9NSkpDQogICAgZGYuY29sdW1ucyA9IHJzLmtleXMoKQ0KYGBgDQoNClBhY2thZ2VzIGhhdmUgYWxyZWFkeSBiZWVuIGltcG9ydGVkIGFzIGZvbGxvd3M6DQoNCmBgYHtweXRob24sIGV2YWwgPSBUcnVlfQ0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lDQppbXBvcnQgcGFuZGFzIGFzIHBkDQpgYGANCg0KVGhlIGVuZ2luZSBoYXMgYWxzbyBhbHJlYWR5IGJlZW4gY3JlYXRlZDoNCg0KYGBge3B5dGhvbiwgZXZhbCA9IFRydWV9DQplbmdpbmUgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vQ2hpbm9vay5zcWxpdGUnKQ0KYGBgDQoNClRoZSBlbmdpbmUgY29ubmVjdGlvbiBpcyBhbHJlYWR5IG9wZW4gd2l0aCB0aGUgc3RhdGVtZW50DQoNCmBgYHtweXRob24sIGV2YWwgPSBGYWxzZX0NCndpdGggZW5naW5lLmNvbm5lY3QoKSBhcyBjb246DQpgYGANCg0KQWxsIHRoZSBjb2RlIHlvdSBuZWVkIHRvIGNvbXBsZXRlIGlzIHdpdGhpbiB0aGlzIGNvbnRleHQuDQoNCioqSW5zdHJ1Y3Rpb25zKioNCg0KLSBFeGVjdXRlIHRoZSBTUUwgcXVlcnkgdGhhdCAqKnNlbGVjdHMqKiB0aGUgY29sdW1ucyBgTGFzdE5hbWVgIGFuZCBgVGl0bGVgICoqZnJvbSoqIHRoZSBgRW1wbG95ZWVgIHRhYmxlLiBTdG9yZSB0aGUgcmVzdWx0cyBpbiB0aGUgdmFyaWFibGUgYHJzYC4NCi0gQXBwbHkgdGhlIG1ldGhvZCBgZmV0Y2htYW55KClgIHRvIGByc2AgaW4gb3JkZXIgdG8gcmV0cmlldmUgMyBvZiB0aGUgcmVjb3Jkcy4gU3RvcmUgdGhlbSBpbiB0aGUgRGF0YUZyYW1lIGBkZmAuDQotIFVzaW5nIHRoZSBgcnNgIG9iamVjdCwgc2V0IHRoZSBEYXRhRnJhbWUncyBjb2x1bW4gbmFtZXMgdG8gdGhlIGNvcnJlc3BvbmRpbmcgbmFtZXMgb2YgdGhlIHRhYmxlIGNvbHVtbnMuDQoNCmBgYHtweXRob259DQojIE9wZW4gZW5naW5lIGluIGNvbnRleHQgbWFuYWdlcg0KIyBQZXJmb3JtIHF1ZXJ5IGFuZCBzYXZlIHJlc3VsdHMgdG8gRGF0YUZyYW1lOiBkZg0Kd2l0aCBlbmdpbmUuY29ubmVjdCgpIGFzIGNvbjoNCiAgICBycyA9IGNvbi5leGVjdXRlKCdTRUxFQ1QgTGFzdE5hbWUsIFRpdGxlIEZST00gRW1wbG95ZWUnKQ0KICAgIGRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNobWFueShzaXplID0gMykpDQogICAgZGYuY29sdW1ucyA9IHJzLmtleXMoKQ0KDQojIFByaW50IHRoZSBsZW5ndGggb2YgdGhlIERhdGFGcmFtZSBkZg0KcHJpbnQobGVuKGRmKSkNCg0KIyBQcmludCB0aGUgaGVhZCBvZiB0aGUgRGF0YUZyYW1lIGRmDQpwcmludChkZi5oZWFkKCkpDQpgYGANCg0KIyMjICoqRmlsdGVyaW5nIHlvdXIgZGF0YWJhc2UgcmVjb3JkcyB1c2luZyBTUUwncyBXSEVSRSoqDQoNCllvdSBjYW4gbm93IGV4ZWN1dGUgYSBiYXNpYyBTUUwgcXVlcnkgdG8gc2VsZWN0IHJlY29yZHMgZnJvbSBhbnkgdGFibGUgaW4geW91ciBkYXRhYmFzZSBhbmQgeW91IGNhbiBhbHNvIHBlcmZvcm0gc2ltcGxlIHF1ZXJ5IGN1c3RvbWl6YXRpb25zIHRvIHNlbGVjdCBwYXJ0aWN1bGFyIGNvbHVtbnMgYW5kIG51bWJlcnMgb2Ygcm93cy4NCg0KVGhlcmUgYXJlIGEgY291cGxlIG1vcmUgc3RhbmRhcmQgU1FMIHF1ZXJ5IGNob3BzIHRoYXQgd2lsbCBhaWQgeW91IGluIHlvdXIgam91cm5leSB0byBiZWNvbWluZyBhbiBTUUwgbmluamEuDQoNCkxldCdzIHNheSwgZm9yIGV4YW1wbGUgdGhhdCB5b3Ugd2FudGVkIHRvIGdldCBhbGwgcmVjb3JkcyBmcm9tIHRoZSBgQ3VzdG9tZXJgIHRhYmxlIG9mIHRoZSBDaGlub29rIGRhdGFiYXNlIGZvciB3aGljaCB0aGUgYENvdW50cnlgIGlzIGAnQ2FuYWRhJ2AuIFlvdSBjYW4gZG8gdGhpcyB2ZXJ5IGVhc2lseSBpbiBTUUwgdXNpbmcgYSBgU0VMRUNUYCBzdGF0ZW1lbnQgZm9sbG93ZWQgYnkgYSBgV0hFUkVgIGNsYXVzZSBhcyBmb2xsb3dzOg0KDQpgYGB7cHl0aG9uLCBldmFsID0gRmFsc2V9DQpTRUxFQ1QgKiBGUk9NIEN1c3RvbWVyIFdIRVJFIENvdW50cnkgPSAnQ2FuYWRhJw0KYGBgDQoNCkluIGZhY3QsIHlvdSBjYW4gZmlsdGVyIGFueSBgU0VMRUNUYCBzdGF0ZW1lbnQgYnkgYW55IGNvbmRpdGlvbiB1c2luZyBhIGBXSEVSRWAgY2xhdXNlLiBUaGlzIGlzIGNhbGxlZCAqZmlsdGVyaW5nKiB5b3VyIHJlY29yZHMuDQoNCkluIHRoaXMgaW50ZXJhY3RpdmUgZXhlcmNpc2UsIHlvdSdsbCBzZWxlY3QgYWxsIHJlY29yZHMgb2YgdGhlIGBFbXBsb3llZWAgdGFibGUgZm9yIHdoaWNoIGAnRW1wbG95ZWVJZCdgIGlzIGdyZWF0ZXIgdGhhbiBvciBlcXVhbCB0byBgNmAuDQoNClBhY2thZ2VzIGFyZSBhbHJlYWR5IGltcG9ydGVkIGFzIGZvbGxvd3M6DQoNCmBgYHtweXRob24sIGV2YWwgPSBUcnVlfQ0KaW1wb3J0IHBhbmRhcyBhcyBwZA0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lDQpgYGANCg0KUXVlcnkgYXdheSENCg0KKipJbnN0cnVjdGlvbnMqKg0KDQotIENvbXBsZXRlIHRoZSBhcmd1bWVudCBvZiBgY3JlYXRlX2VuZ2luZSgpYCBzbyB0aGF0IHRoZSBlbmdpbmUgZm9yIHRoZSBTUUxpdGUgZGF0YWJhc2UgYCdDaGlub29rLnNxbGl0ZSdgIGlzIGNyZWF0ZWQuDQotIEV4ZWN1dGUgdGhlIHF1ZXJ5IHRoYXQgKipzZWxlY3RzKiogYWxsIHJlY29yZHMgKipmcm9tKiogdGhlIGBFbXBsb3llZWAgdGFibGUgKip3aGVyZSoqIGAnRW1wbG95ZWVJZCdgIGlzIGdyZWF0ZXIgdGhhbiBvciBlcXVhbCB0byBgNmAuIFVzZSB0aGUgYD49YCBvcGVyYXRvciBhbmQgYXNzaWduIHRoZSByZXN1bHRzIHRvIGByc2AuDQotIEFwcGx5IHRoZSBtZXRob2QgYGZldGNoYWxsKClgIHRvIGByc2AgaW4gb3JkZXIgdG8gZmV0Y2ggYWxsIHJlY29yZHMgaW4gYHJzYC4gU3RvcmUgdGhlbSBpbiB0aGUgRGF0YUZyYW1lIGBkZmAuDQotIFVzaW5nIHRoZSBgcnNgIG9iamVjdCwgc2V0IHRoZSBEYXRhRnJhbWUncyBjb2x1bW4gbmFtZXMgdG8gdGhlIGNvcnJlc3BvbmRpbmcgbmFtZXMgb2YgdGhlIHRhYmxlIGNvbHVtbnMuDQoNCmBgYHtweXRob259DQojIENyZWF0ZSBlbmdpbmU6IGVuZ2luZQ0KZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJykNCg0KIyBPcGVuIGVuZ2luZSBpbiBjb250ZXh0IG1hbmFnZXINCiMgUGVyZm9ybSBxdWVyeSBhbmQgc2F2ZSByZXN1bHRzIHRvIERhdGFGcmFtZTogZGYNCndpdGggZW5naW5lLmNvbm5lY3QoKSBhcyBjb246DQogICAgcnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUICogRlJPTSBFbXBsb3llZSBXSEVSRSBFbXBsb3llZUlkID49IDYnKQ0KICAgIGRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNoYWxsKCkpDQogICAgZGYuY29sdW1ucyA9IHJzLmtleXMoKQ0KDQojIFByaW50IHRoZSBoZWFkIG9mIHRoZSBEYXRhRnJhbWUgZGYNCnByaW50KGRmLmhlYWQoKSkNCmBgYA0KDQojIyMgKipPcmRlcmluZyB5b3VyIFNRTCByZWNvcmRzIHdpdGggT1JERVIgQlkqKg0KDQpZb3UgY2FuIGFsc28gb3JkZXIgeW91ciBTUUwgcXVlcnkgcmVzdWx0cy4gRm9yIGV4YW1wbGUsIGlmIHlvdSB3YW50ZWQgdG8gZ2V0IGFsbCByZWNvcmRzIGZyb20gdGhlIGBDdXN0b21lcmAgdGFibGUgb2YgdGhlIENoaW5vb2sgZGF0YWJhc2UgYW5kIG9yZGVyIHRoZW0gaW4gaW5jcmVhc2luZyBvcmRlciBieSB0aGUgY29sdW1uIGBTdXBwb3J0UmVwSWRgLCB5b3UgY291bGQgZG8gc28gd2l0aCB0aGUgZm9sbG93aW5nIHF1ZXJ5Og0KDQpgYGB7cHl0aG9uLCBldmFsID0gRmFsc2V9DQoiU0VMRUNUICogRlJPTSBDdXN0b21lciBPUkRFUiBCWSBTdXBwb3J0UmVwSWQiDQpgYGANCg0KSW4gZmFjdCwgeW91IGNhbiBvcmRlciBhbnkgYFNFTEVDVGAgc3RhdGVtZW50IGJ5IGFueSBjb2x1bW4uDQoNCkluIHRoaXMgaW50ZXJhY3RpdmUgZXhlcmNpc2UsIHlvdSdsbCBzZWxlY3QgYWxsIHJlY29yZHMgb2YgdGhlIGBFbXBsb3llZWAgdGFibGUgYW5kIG9yZGVyIHRoZW0gaW4gaW5jcmVhc2luZyBvcmRlciBieSB0aGUgY29sdW1uIGBCaXJ0aERhdGVgLg0KDQpQYWNrYWdlcyBhcmUgYWxyZWFkeSBpbXBvcnRlZCBhcyBmb2xsb3dzOg0KDQpgYGB7cHl0aG9uLCBldmFsID0gVHJ1ZX0NCmltcG9ydCBwYW5kYXMgYXMgcGQNCmZyb20gc3FsYWxjaGVteSBpbXBvcnQgY3JlYXRlX2VuZ2luZQ0KYGBgDQoNCkdldCBxdWVyeWluZyENCg0KKipJbnN0cnVjdGlvbnMqKg0KDQotIFVzaW5nIHRoZSBmdW5jdGlvbiBgY3JlYXRlX2VuZ2luZSgpYCwgY3JlYXRlIGFuIGVuZ2luZSBmb3IgdGhlIFNRTGl0ZSBkYXRhYmFzZSBgQ2hpbm9vay5zcWxpdGVgIGFuZCBhc3NpZ24gaXQgdG8gdGhlIHZhcmlhYmxlIGBlbmdpbmVgLg0KLSBJbiB0aGUgY29udGV4dCBtYW5hZ2VyLCBleGVjdXRlIHRoZSBxdWVyeSB0aGF0ICoqc2VsZWN0cyoqICphbGwqIHJlY29yZHMgKipmcm9tKiogdGhlIGBFbXBsb3llZWAgdGFibGUgYW5kICoqb3JkZXJzKiogdGhlbSBpbiBpbmNyZWFzaW5nIG9yZGVyICoqYnkqKiB0aGUgY29sdW1uIGBCaXJ0aERhdGVgLiBBc3NpZ24gdGhlIHJlc3VsdCB0byBgcnNgLg0KLSBJbiBhIGNhbGwgdG8gYHBkLkRhdGFGcmFtZSgpYCwgYXBwbHkgdGhlIG1ldGhvZCBgZmV0Y2hhbGwoKWAgdG8gYHJzYCBpbiBvcmRlciB0byBmZXRjaCBhbGwgcmVjb3JkcyBpbiBgcnNgLiBTdG9yZSB0aGVtIGluIHRoZSBEYXRhRnJhbWUgYGRmYC4NCi0gU2V0IHRoZSBEYXRhRnJhbWUncyBjb2x1bW4gbmFtZXMgdG8gdGhlIGNvcnJlc3BvbmRpbmcgbmFtZXMgb2YgdGhlIHRhYmxlIGNvbHVtbnMuDQoNCmBgYHtweXRob259DQojIENyZWF0ZSBlbmdpbmU6IGVuZ2luZQ0KZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJykNCg0KIyBPcGVuIGVuZ2luZSBpbiBjb250ZXh0IG1hbmFnZXINCndpdGggZW5naW5lLmNvbm5lY3QoKSBhcyBjb246DQogICAgcnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUICogRlJPTSBFbXBsb3llZSBPUkRFUiBCWSBCaXJ0aERhdGUnKQ0KICAgIGRmID0gcGQuRGF0YUZyYW1lKHJzLmZldGNoYWxsKCkpDQoNCiAgICAjIFNldCB0aGUgRGF0YUZyYW1lJ3MgY29sdW1uIG5hbWVzDQogICAgZGYuY29sdW1ucyA9IHJzLmtleXMoKQ0KDQojIFByaW50IGhlYWQgb2YgRGF0YUZyYW1lDQpwcmludChkZi5oZWFkKCkpDQoNCmBgYA0KDQojIyAqKlF1ZXJpbmcgcmVsYXRpb25hbCBkYXRhYmFzZXMgZGlyZWN0bHkgd2l0aCBwYW5kYXMqKg0KDQoqKjEuIFF1ZXJ5aW5nIHJlbGF0aW9uYWwgZGF0YWJhc2VzIGRpcmVjdGx5IHdpdGggcGFuZGFzKioNCg0KWW91IGhhdmUgc2VlbiB0aGF0LA0KDQoqKjIuIFRoZSBwYW5kYXMgd2F5IHRvIHF1ZXJ5KioNCg0KYWZ0ZXIgY3JlYXRpbmcgYSBkYXRhYmFzZSBlbmdpbmUsIHlvdSBjYW4gZ2V0IHRoZSByZXN1bHRzIG9mIGFueSBwYXJ0aWN1bGFyIGxpbmUgdXNpbmcgNCBsaW5lcyBvZiBjb2RlOiBjb25uZWN0aW5nLCBleGVjdXRpbmcgYSBxdWVyeSwgcGFzc2luZyB0aGUgcmVzdWx0cyB0byBhIGRhdGFmcmFtZSBhbmQgbmFtaW5nIHRoZSBjb2x1bW5zOiA0IGxpbmVzIG9mIGNvZGUgaXMgcHJldHR5IGdvb2QgYnV0IHlvdSBjYW4gZG8gYmV0dGVyISBZb3UgY2FuIGFjdHVhbGx5IGRvIGl0IGluIDEgbGluZSwgdXRpbGl6aW5nIHRoZSBwYW5kYXMgZnVuY3Rpb24gcmVhZF9zcWxfcXVlcnkgYW5kIHBhc3NpbmcgaXQgMiBhcmd1bWVudHMuIFRoZSBmaXJzdCBhcmd1bWVudCB3aWxsIGJlIHRoZSBxdWVyeSB5b3Ugd2lzaCB0byBtYWtlLCB0aGUgMm5kIGFyZ3VtZW50IHRoZSBlbmdpbmUgeW91IHdhbnQgdG8gY29ubmVjdCB0by4gQW5kIHRodXMgeW91IGNhbiBhY2hpZXZlIHRoZSBzYW1lIGFzIHRoaXMgY29kZSBieSBleGVjdXRpbmcgdGhpcyBzaW5nbGUgbGluZS4gVGhlIHBvd2VyIG9mIHBhbmRhcyEgSW4gdGhlIGZvbGxvd2luZyBleGVyY2lzZXMsIHlvdSdsbCBnYWluIG1vcmUgZXhwZXJ0aXNlIGluIHdyaXRpbmcgU1FMIHF1ZXJpZXMgYW5kIHVzaW5nIHBhbmRhcyB0byBleGVjdXRlIHRoZW0uDQoNCmBgYHtweXRob259DQpmcm9tIHNxbGFsY2hlbXkgaW1wb3J0IGNyZWF0ZV9lbmdpbmUNCmltcG9ydCBwYW5kYXMgYXMgcGQNCmVuZ2luZTEgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vTm9ydGh3aW5kLnNxbGl0ZScpDQp3aXRoIGVuZ2luZTEuY29ubmVjdCgpIGFzIGNvbjoNCiAgcnMgPSBjb24uZXhlY3V0ZSgnU0VMRUNUICogRlJPTSBPcmRlcnMnKQ0KICBkZiA9IHBkLkRhdGFGcmFtZShycy5mZXRjaGFsbCgpKQ0KICBkZi5jb2x1bW5zID0gcnMua2V5cygpDQpgYGANCg0KYGBge3B5dGhvbn0NCmRmID0gcGQucmVhZF9zcWxfcXVlcnkoJ1NFTEVDVCAqIEZST00gT3JkZXJzJywgZW5naW5lKQ0KYGBgDQoNCioqMy4gTGV0J3MgcHJhY3RpY2UhKioNCg0KV2hhdCBhcmUgeW91IHdhaXRpbmcgZm9yPyBUaGUgZW5kIG9mIHRoaXMgdmlkZW8/IExldCdzIGRvIGl0IQ0KDQojIyMgKipQYW5kYXMgYW5kIFRoZSBIZWxsbyBXb3JsZCBvZiBTUUwgUXVlcmllcyEqKg0KDQpIZXJlLCB5b3UnbGwgdGFrZSBhZHZhbnRhZ2Ugb2YgdGhlIHBvd2VyIG9mIGBwYW5kYXNgIHRvIHdyaXRlIHRoZSByZXN1bHRzIG9mIHlvdXIgU1FMIHF1ZXJ5IHRvIGEgRGF0YUZyYW1lIGluIG9uZSBzd2lmdCBsaW5lIG9mIFB5dGhvbiBjb2RlIQ0KDQpZb3UnbGwgZmlyc3QgaW1wb3J0IGBwYW5kYXNgIGFuZCBjcmVhdGUgdGhlIFNRTGl0ZSBgJ0NoaW5vb2suc3FsaXRlJ2AgZW5naW5lLiBUaGVuIHlvdSdsbCBxdWVyeSB0aGUgZGF0YWJhc2UgdG8gc2VsZWN0IGFsbCByZWNvcmRzIGZyb20gdGhlIGBBbGJ1bWAgdGFibGUuDQoNClJlY2FsbCB0aGF0IHRvIHNlbGVjdCBhbGwgcmVjb3JkcyBmcm9tIHRoZSBgT3JkZXJzYCB0YWJsZSBpbiB0aGUgTm9ydGh3aW5kIGRhdGFiYXNlLCBIdWdvIGV4ZWN1dGVkIHRoZSBmb2xsb3dpbmcgY29tbWFuZDoNCg0KYGBge3B5dGhvbiwgZXZhbCA9IEZhbHNlfQ0KZGYgPSBwZC5yZWFkX3NxbF9xdWVyeSgiU0VMRUNUICogRlJPTSBPcmRlcnMiLCBlbmdpbmUpDQpgYGANCg0KKipJbnN0cnVjdGlvbnMqKg0KDQotIEltcG9ydCB0aGUgYHBhbmRhc2AgcGFja2FnZSB1c2luZyB0aGUgYWxpYXMgYHBkYC4NCi0gVXNpbmcgdGhlIGZ1bmN0aW9uIGBjcmVhdGVfZW5naW5lKClgLCBjcmVhdGUgYW4gZW5naW5lIGZvciB0aGUgU1FMaXRlIGRhdGFiYXNlIGBDaGlub29rLnNxbGl0ZWAgYW5kIGFzc2lnbiBpdCB0byB0aGUgdmFyaWFibGUgYGVuZ2luZWAuDQotIFVzZSB0aGUgYHBhbmRhc2AgZnVuY3Rpb24gYHJlYWRfc3FsX3F1ZXJ5KClgIHRvIGFzc2lnbiB0byB0aGUgdmFyaWFibGUgYGRmYCB0aGUgRGF0YUZyYW1lIG9mIHJlc3VsdHMgZnJvbSB0aGUgZm9sbG93aW5nIHF1ZXJ5OiAqKnNlbGVjdCoqICphbGwqIHJlY29yZHMgKipmcm9tKiogdGhlIHRhYmxlIGBBbGJ1bWAuDQotIFRoZSByZW1haW5kZXIgb2YgdGhlIGNvZGUgaXMgaW5jbHVkZWQgdG8gY29uZmlybSB0aGF0IHRoZSBEYXRhRnJhbWUgY3JlYXRlZCBieSB0aGlzIG1ldGhvZCBpcyBlcXVhbCB0byB0aGF0IGNyZWF0ZWQgYnkgdGhlIHByZXZpb3VzIG1ldGhvZCB0aGF0IHlvdSBsZWFybmVkLg0KDQpgYGB7cHl0aG9ufQ0KIyBJbXBvcnQgcGFja2FnZXMNCmZyb20gc3FsYWxjaGVteSBpbXBvcnQgY3JlYXRlX2VuZ2luZQ0KaW1wb3J0IHBhbmRhcyBhcyBwZA0KDQojIENyZWF0ZSBlbmdpbmU6IGVuZ2luZQ0KZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJykNCg0KIyBFeGVjdXRlIHF1ZXJ5IGFuZCBzdG9yZSByZWNvcmRzIGluIERhdGFGcmFtZTogZGYNCmRmID0gcGQucmVhZF9zcWxfcXVlcnkoJ1NFTEVDVCAqIEZST00gQWxidW0nLCBlbmdpbmUpDQoNCiMgUHJpbnQgaGVhZCBvZiBEYXRhRnJhbWUNCnByaW50KGRmLmhlYWQoKSkNCg0KIyBPcGVuIGVuZ2luZSBpbiBjb250ZXh0IG1hbmFnZXIgYW5kIHN0b3JlIHF1ZXJ5IHJlc3VsdCBpbiBkZjENCndpdGggZW5naW5lLmNvbm5lY3QoKSBhcyBjb246DQogICAgcnMgPSBjb24uZXhlY3V0ZSgiU0VMRUNUICogRlJPTSBBbGJ1bSIpDQogICAgZGYxID0gcGQuRGF0YUZyYW1lKHJzLmZldGNoYWxsKCkpDQogICAgZGYxLmNvbHVtbnMgPSBycy5rZXlzKCkNCg0KIyBDb25maXJtIHRoYXQgYm90aCBtZXRob2RzIHlpZWxkIHRoZSBzYW1lIHJlc3VsdA0KcHJpbnQoZGYuZXF1YWxzKGRmMSkpDQpgYGANCg0KIyMjICoqUGFuZGFzIGZvciBtb3JlIGNvbXBsZXggcXVlcnlpbmcqKg0KDQpIZXJlLCB5b3UnbGwgYmVjb21lIG1vcmUgZmFtaWxpYXIgd2l0aCB0aGUgcGFuZGFzIGZ1bmN0aW9uIGByZWFkX3NxbF9xdWVyeSgpYCBieSB1c2luZyBpdCB0byBleGVjdXRlIGEgbW9yZSBjb21wbGV4IHF1ZXJ5OiBhIGBTRUxFQ1RgIHN0YXRlbWVudCBmb2xsb3dlZCBieSBib3RoIGEgYFdIRVJFYCBjbGF1c2UgQU5EIGFuIGBPUkRFUiBCWWAgY2xhdXNlLg0KDQpZb3UnbGwgYnVpbGQgYSBEYXRhRnJhbWUgdGhhdCBjb250YWlucyB0aGUgcm93cyBvZiB0aGUgYEVtcGxveWVlYCB0YWJsZSBmb3Igd2hpY2ggdGhlIGBFbXBsb3llZUlkYCBpcyBncmVhdGVyIHRoYW4gb3IgZXF1YWwgdG8gYDZgIGFuZCB5b3UnbGwgb3JkZXIgdGhlc2UgZW50cmllcyBieSBgQmlydGhEYXRlYC4NCg0KKipJbnN0cnVjdGlvbnMqKg0KDQotIFVzaW5nIHRoZSBmdW5jdGlvbiBgY3JlYXRlX2VuZ2luZSgpYCwgY3JlYXRlIGFuIGVuZ2luZSBmb3IgdGhlIFNRTGl0ZSBkYXRhYmFzZSBgQ2hpbm9vay5zcWxpdGVgIGFuZCBhc3NpZ24gaXQgdG8gdGhlIHZhcmlhYmxlIGBlbmdpbmVgLg0KLSBVc2UgdGhlIHBhbmRhcyBmdW5jdGlvbiBgcmVhZF9zcWxfcXVlcnkoKWAgdG8gYXNzaWduIHRvIHRoZSB2YXJpYWJsZSBgZGZgIHRoZSBEYXRhRnJhbWUgb2YgcmVzdWx0cyBmcm9tIHRoZSBmb2xsb3dpbmcgcXVlcnk6ICoqc2VsZWN0KiogKmFsbCogcmVjb3JkcyAqKmZyb20qKiB0aGUgYEVtcGxveWVlYCB0YWJsZSAqKndoZXJlKiogdGhlIGBFbXBsb3llZUlkYCBpcyBncmVhdGVyIHRoYW4gb3IgZXF1YWwgdG8gYDZgIGFuZCAqKm9yZGVyZWQgYnkqKiBgQmlydGhEYXRlYCAobWFrZSBzdXJlIHRvIHVzZSBgV0hFUkVgIGFuZCBgT1JERVIgQllgIGluIHRoaXMgcHJlY2lzZSBvcmRlcikuDQoNCmBgYHtweXRob259DQojIEltcG9ydCBwYWNrYWdlcw0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lDQppbXBvcnQgcGFuZGFzIGFzIHBkDQoNCiMgQ3JlYXRlIGVuZ2luZTogZW5naW5lDQplbmdpbmUgPSBjcmVhdGVfZW5naW5lKCdzcWxpdGU6Ly8vQ2hpbm9vay5zcWxpdGUnKQ0KDQojIEV4ZWN1dGUgcXVlcnkgYW5kIHN0b3JlIHJlY29yZHMgaW4gRGF0YUZyYW1lOiBkZg0KZGYgPSBwZC5yZWFkX3NxbF9xdWVyeSgnU0VMRUNUICogRlJPTSBFbXBsb3llZSBXSEVSRSBFbXBsb3llZUlkID49IDYgT1JERVIgQlkgQmlydGhEYXRlJywgZW5naW5lKQ0KDQojIFByaW50IGhlYWQgb2YgRGF0YUZyYW1lDQpwcmludChkZi5oZWFkKCkpDQoNCmBgYA0KDQojIyMgKipBZHZhbmNlZCBxdWVyeWluZzogZXhwbG9pdGluZyB0YWJsZSByZWxhdGlvbnNoaXBzKioNCg0KKioxLiBBZHZhbmNlZCBxdWVyeWluZzogZXhwbG9pdGluZyB0YWJsZSByZWxhdGlvbnNoaXBzKioNCg0KQnkgbm93LCB5b3UgaGF2ZSBiZWNvbWUgZmFtaWxpYXIgd2l0aCBxdWVyeWluZyBpbmRpdmlkdWFsIHRhYmxlcyBvZiBkYXRhYmFzZXMsIHN1Y2ggYXMgdGhlICdPcmRlcnMnIHRhYmxlIG9mIHRoZSBOb3J0aHdpbmQgZGF0YWJhc2UuIFlvdSB3aWxsIHJlbWVtYmVyLCBob3dldmVyLCB0aGF0IG11Y2ggb2YgdGhlIHBvd2VyIG9mIHJlbGF0aW9uYWwgZGF0YWJhc2VzIHN0ZW1zIGZyb20gdGhlIGZhY3QgdGhhdCB0aGV5IGNhbiBjYXB0dXJlIHJlbGF0aW9uc2hpcHMgYmV0d2VlbiB0YWJsZXM6IHRoZSB0YWJsZXMgYXJlIGxpbmtlZCENCg0KKioyLiBUYWJsZXMgYXJlIGxpbmtlZCoqDQoNCkZvciBleGFtcGxlLCBhcyB3ZSBzYXcgZWFybGllciwgdGhlICdPcmRlcnMnIHRhYmxlIG9mIHRoZSB0aGUgTm9ydGh3aW5kIFRyYWRlcnMgZGF0YWJhc2UgaGFzIGJvdGggYSBjb2x1bW4gY2FsbGVkDQoNCioqMy4gVGFibGVzIGFyZSBsaW5rZWQqKg0KDQonQ3VzdG9tZXJJRCcgYW5kIG9uZSBjYWxsZWQgJ0VtcGxveWVlSUQnLCBjb2x1bW5zIHdoaWNoIGNvcnJlc3BvbmQgcHJlY2lzZWx5IHRvIHRoZQ0KDQoqKjQuIFRhYmxlcyBhcmUgbGlua2VkKioNCg0KcHJpbWFyeSBrZXlzIGluIHRoZSAnQ3VzdG9tZXJzJyBhbmQgJ0VtcGxveWVlcycgdGFibGVzLCByZXNwZWN0aXZlbHkuIFRoaXMgbWVhbnMgdGhhdCwgZ2l2ZW4gYW4gT3JkZXIsIHlvdSBjYW4gaW1tZWRpYXRlbHkgbG9vayB1cCB0aGUgZGV0YWlscyBvZiB0aGUgcmVsZXZhbnQgQ3VzdG9tZXIgb3IgRW1wbG95ZWUgaW4gdGhlIGFwcHJvcHJpYXRlIHRhYmxlLg0KDQoqKjUuIEpPSU5pbmcgdGFibGVzKioNCg0KTm93IHdoYXQgaWYgeW91IHdhbnQgdG8gaW5jb3Jwb3JhdGUgc3VjaCBpbmZvcm1hdGlvbiBpbnRvIHlvdXIgcXVlcnk/IEZvciBleGFtcGxlLCBpZiB5b3Ugd2FudCB0byBxdWVyeSB0aGUgJ09yZGVycycgdGFibGUgYW5kIGluY2x1ZGUsIGZvciBlYWNoIE9yZGVyLCBpbmZvcm1hdGlvbiBhYm91dCB0aGUgY29ycmVzcG9uZGluZyBDdXN0b21lciBmcm9tIHRoZSAnQ3VzdG9tZXJzJyB0YWJsZT8gQSBzcGVjaWZpYyBpbGx1c3RyYXRpdmUgZXhhbXBsZSB3aWxsIGdvIGEgbG9uZyB3YXkgaGVyZTogbGV0J3Mgc2F5IHRoYXQgd2Ugd2FudGVkLCBmb3IgZWFjaCBPcmRlciwgdG8gZ2V0IHRoZQ0KDQoqKjYuIEpPSU5pbmcgdGFibGVzKioNCg0KT3JkZXJJRCBhbmQgdGhlDQoNCioqNy4gSk9JTmluZyB0YWJsZXMqKg0KDQpDb21wYW55TmFtZSBvZiB0aGUgQ3VzdG9tZXIuIFRoZSBPcmRlcklEIGxpdmVzIGluIHRoZSAnT3JkZXJzJyB0YWJsZSB3aGlsZSB0aGUgQ29tcGFueU5hbWUgbGl2ZXMgaW4gdGhlICdDdXN0b21lcnMnIHRhYmxlLiBTUUwgaGFzIGEgcmVhbGx5IGNsZXZlciB3YXkgb2YgZG9pbmcgdGhpczogaXQncyBjYWxsZWQgYSBKT0lOIGJlY2F1c2Ugd2hhdCB5b3UncmUgcmVhbGx5IGRvaW5nIGlzIGpvaW5pbmcgdHdvIHRhYmxlcyB0b2dldGhlciwNCg0KKio4LiBKT0lOaW5nIHRhYmxlcyoqDQoNCmluIHRoaXMgY2FzZSwgdGhlICdPcmRlcnMnIGFuZA0KDQoqKjkuIEpPSU5pbmcgdGFibGVzKioNCg0KJ0N1c3RvbWVycycgdGFibGVzLiBTcGVjaWZpY2FsbHkNCg0KKioxMC4gSU5ORVIgSk9JTiBpbiBQeXRob24gKHBhbmRhcykqKg0KDQppdCdzIGFuIElOTkVSIEpPSU4uIFRoZXJlIGFyZSBvdGhlciB0eXBlcyBvZiBKT0lOcyB3aGljaCB3ZSB3b24ndCBjb3ZlciBoZXJlLiBBcyBpdCdzIHRoZSBDdXN0b21lcklEIGNvbHVtbnMgb2YgdGhlICdPcmRlcnMnIGFuZCAnQ3VzdG9tZXJzJyB0YWJsZXMgdGhhdCBjb3JyZXNwb25kIHRvIGVhY2gsIHlvdSdsbCB3YW50IHRvIEpPSU4gdGhlIHRhYmxlcyBPTiB0aGVzZSBjb2x1bW5zIGFuZCB0aGF0IGlzIHByZWNpc2VseSB3aGF0IEkgaGF2ZSBkb25lIGluIHRoaXMgY29kZS4gVGhlIG5vdGF0aW9uIG9mIGRvdCBmb2xsb3dlZCBieSBDb2x1bW4gbmFtZSBpcyBtZXJlbHkgc2VsZWN0aW5nIGEgY29sdW1uIG9mIGEgdGFibGUuIFRoZSB0YWJsZSB0aGF0IHdlIGFyZSBzZWxlY3RpbmcgZnJvbSBpcyAiT3JkZXJzIElOTkVSIEpPSU4gQ3VzdG9tZXJzIG9uIE9yZGVycyBkb3QgQ3VzdG9tZXJJRCBlcXVhbHMgQ3VzdG9tZXJzIGRvdCBDdXN0b21lcklEIiBhbmQgSSBhbSBzZWxlY3RpbmcgdGhlIE9yZGVySUQgY29sdW1uIGFuZCB0aGUgQ29tcGFueU5hbWUgY29sdW1uIG9mIHRoaXMgbmV3IHRhYmxlLiBJIGtub3cgdGhhdCB0aGF0J3MgYSBiaXQgdG8gdGFrZSBpbiwgYnV0IGFmdGVyIHlvdSBnZXQgeW91ciBoYW5kcyBkaXJ0eSBwZXJmb3JtaW5nIHNvbWUgSU5ORVIgSk9JTnMsIHlvdSdsbCBiZSBmYXIgbW9yZSBjb21mb3J0YWJsZSB3aXRoIHRoaXMgYWR2YW5jZWQgcXVlcnlpbmcgdGVjaG5pcXVlLg0KDQpgYGB7cHl0aG9ufQ0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCBjcmVhdGVfZW5naW5lDQppbXBvcnQgcGFuZGFzIGFzIHBkDQplbmdpbmUxID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL05vcnRod2luZC5zcWxpdGUnKQ0KZGYgPSBwZC5yZWFkX3NxbF9xdWVyeSgnU0VMRUNUIE9yZGVySUQsIENvbXBhbnlOYW1lIEZPUk0gT3JkZXJzIElOTkVSIEpPSU4gQ3VzdG9tZXJzIG9uIE9yZGVycy5DdXN0b21lcnNJRCA9IEN1c3RvbWVycy5DdXN0b21lcnNJRCcsIGVuZ2luZSkNCnByaW50KGRmLmhlYWQoKSkNCmBgYA0KDQoqKjExLiBMZXQncyBwcmFjdGljZSEqKg0KDQpJdCdzIHlvdXIgdHVybiB0byBxdWVyeSENCg0KIyMjICoqVGhlIHBvd2VyIG9mIFNRTCBsaWVzIGluIHJlbGF0aW9uc2hpcHMgYmV0d2VlbiB0YWJsZXM6IElOTkVSIEpPSU4qKg0KDQpIZXJlLCB5b3UnbGwgcGVyZm9ybSB5b3VyIGZpcnN0IGBJTk5FUiBKT0lOYCEgWW91J2xsIGJlIHdvcmtpbmcgd2l0aCB5b3VyIGZhdm91cml0ZSBTUUxpdGUgZGF0YWJhc2UsIGBDaGlub29rLnNxbGl0ZWAuIEZvciBlYWNoIHJlY29yZCBpbiB0aGUgYEFsYnVtYCB0YWJsZSwgeW91J2xsIGV4dHJhY3QgdGhlIGBUaXRsZWAgYWxvbmcgd2l0aCB0aGUgYE5hbWVgIG9mIHRoZSBgQXJ0aXN0YC4gVGhlIGxhdHRlciB3aWxsIGNvbWUgZnJvbSB0aGUgYEFydGlzdGAgdGFibGUgYW5kIHNvIHlvdSB3aWxsIG5lZWQgdG8gYElOTkVSIEpPSU5gIHRoZXNlIHR3byB0YWJsZXMgb24gdGhlIGBBcnRpc3RJRGAgY29sdW1uIG9mIGJvdGguDQoNClJlY2FsbCB0aGF0IHRvIGBJTk5FUiBKT0lOYCB0aGUgYE9yZGVyc2AgYW5kIGBDdXN0b21lcnNgIHRhYmxlcyBmcm9tIHRoZSBOb3J0aHdpbmQgZGF0YWJhc2UsIEh1Z28gZXhlY3V0ZWQgdGhlIGZvbGxvd2luZyBTUUwgcXVlcnk6DQoNCmBgYHtweXRob24sIGV2YWwgPSBGYWxzZX0NCiJTRUxFQ1QgT3JkZXJJRCwgQ29tcGFueU5hbWUgRlJPTSBPcmRlcnMgSU5ORVIgSk9JTiBDdXN0b21lcnMgb24gT3JkZXJzLkN1c3RvbWVySUQgPSBDdXN0b21lcnMuQ3VzdG9tZXJJRCINCmBgYA0KDQpUaGUgZm9sbG93aW5nIGNvZGUgaGFzIGFscmVhZHkgYmVlbiBleGVjdXRlZCB0byBpbXBvcnQgdGhlIG5lY2Vzc2FyeSBwYWNrYWdlcyBhbmQgdG8gY3JlYXRlIHRoZSBlbmdpbmU6DQoNCmBgYHtweXRob24sIGV2YWwgPSBGYWxzZX0NCmltcG9ydCBwYW5kYXMgYXMgcGQNCmZyb20gc3FsYWxjaGVteSBpbXBvcnQgY3JlYXRlX2VuZ2luZQ0KZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJykNCmBgYA0KDQoqKkluc3RydWN0aW9ucyoqDQoNCi0gQXNzaWduIHRvIGByc2AgdGhlIHJlc3VsdHMgZnJvbSB0aGUgZm9sbG93aW5nIHF1ZXJ5OiAqKnNlbGVjdCoqICphbGwqIHRoZSByZWNvcmRzLCBleHRyYWN0aW5nIHRoZSBgVGl0bGVgIG9mIHRoZSByZWNvcmQgYW5kIGBOYW1lYCBvZiB0aGUgYXJ0aXN0IG9mIGVhY2ggcmVjb3JkIGZyb20gdGhlIGBBbGJ1bWAgdGFibGUgYW5kIHRoZSBgQXJ0aXN0YCB0YWJsZSwgcmVzcGVjdGl2ZWx5LiBUbyBkbyBzbywgYElOTkVSIEpPSU5gIHRoZXNlIHR3byB0YWJsZXMgb24gdGhlIGBBcnRpc3RJRGAgY29sdW1uIG9mIGJvdGguDQotIEluIGEgY2FsbCB0byBgcGQuRGF0YUZyYW1lKClgLCBhcHBseSB0aGUgbWV0aG9kIGBmZXRjaGFsbCgpYCB0byBgcnNgIGluIG9yZGVyIHRvIGZldGNoIGFsbCByZWNvcmRzIGluIGByc2AuIFN0b3JlIHRoZW0gaW4gdGhlIERhdGFGcmFtZSBgZGZgLg0KLSBTZXQgdGhlIERhdGFGcmFtZSdzIGNvbHVtbiBuYW1lcyB0byB0aGUgY29ycmVzcG9uZGluZyBuYW1lcyBvZiB0aGUgdGFibGUgY29sdW1ucy4NCg0KYGBge3B5dGhvbn0NCiMgT3BlbiBlbmdpbmUgaW4gY29udGV4dCBtYW5hZ2VyDQojIFBlcmZvcm0gcXVlcnkgYW5kIHNhdmUgcmVzdWx0cyB0byBEYXRhRnJhbWU6IGRmDQp3aXRoIGVuZ2luZS5jb25uZWN0KCkgYXMgY29uOg0KICAgIHJzID0gY29uLmV4ZWN1dGUoJ1NFTEVDVCBUaXRsZSwgTmFtZSBGUk9NIEFsYnVtIElOTkVSIEpPSU4gQXJ0aXN0IG9uIEFsYnVtLkFydGlzdElEID0gQXJ0aXN0LkFydGlzdElEJykNCiAgICBkZiA9IHBkLkRhdGFGcmFtZShycy5mZXRjaGFsbCgpKQ0KICAgIGRmLmNvbHVtbnMgPSBycy5rZXlzKCkNCg0KIyBQcmludCBoZWFkIG9mIERhdGFGcmFtZSBkZg0KcHJpbnQoZGYuaGVhZCgpKQ0KDQpgYGANCg0KIyMjICoqRmlsdGVyaW5nIHlvdXIgSU5ORVIgSk9JTioqDQoNCkNvbmdyYXRzIG9uIHBlcmZvcm1pbmcgeW91ciBmaXJzdCBgSU5ORVIgSk9JTmAhIFlvdSdyZSBub3cgZ29pbmcgdG8gZmluaXNoIHRoaXMgY2hhcHRlciB3aXRoIG9uZSBmaW5hbCBleGVyY2lzZSBpbiB3aGljaCB5b3UgcGVyZm9ybSBhbiBgSU5ORVIgSk9JTmAgYW5kIGZpbHRlciB0aGUgcmVzdWx0IHVzaW5nIGEgYFdIRVJFYCBjbGF1c2UuDQoNClJlY2FsbCB0aGF0IHRvIGBJTk5FUiBKT0lOYCB0aGUgYE9yZGVyc2AgYW5kIGBDdXN0b21lcnNgIHRhYmxlcyBmcm9tIHRoZSBOb3J0aHdpbmQgZGF0YWJhc2UsIEh1Z28gZXhlY3V0ZWQgdGhlIGZvbGxvd2luZyBTUUwgcXVlcnk6DQoNCmBgYHtweXRob24sIGV2YWwgPSBGYWxzZX0NCiJTRUxFQ1QgT3JkZXJJRCwgQ29tcGFueU5hbWUgRlJPTSBPcmRlcnMgSU5ORVIgSk9JTiBDdXN0b21lcnMgb24gT3JkZXJzLkN1c3RvbWVySUQgPSBDdXN0b21lcnMuQ3VzdG9tZXJJRCINCmBgYA0KDQpUaGUgZm9sbG93aW5nIGNvZGUgaGFzIGFscmVhZHkgYmVlbiBleGVjdXRlZCB0byBpbXBvcnQgdGhlIG5lY2Vzc2FyeSBwYWNrYWdlcyBhbmQgdG8gY3JlYXRlIHRoZSBlbmdpbmU6DQoNCmBgYHtweXRob24sIGV2YWwgPSBGYWxzZX0NCmltcG9ydCBwYW5kYXMgYXMgcGQNCmZyb20gc3FsYWxjaGVteSBpbXBvcnQgY3JlYXRlX2VuZ2luZQ0KZW5naW5lID0gY3JlYXRlX2VuZ2luZSgnc3FsaXRlOi8vL0NoaW5vb2suc3FsaXRlJykNCmBgYA0KDQoqKkluc3RydWN0aW9ucyoqDQoNCi0gVXNlIHRoZSBgcGFuZGFzYCBmdW5jdGlvbiBgcmVhZF9zcWxfcXVlcnkoKWAgdG8gYXNzaWduIHRvIHRoZSB2YXJpYWJsZSBgZGZgIHRoZSBEYXRhRnJhbWUgb2YgcmVzdWx0cyBmcm9tIHRoZSBmb2xsb3dpbmcgcXVlcnk6ICoqc2VsZWN0KiogKmFsbCogcmVjb3JkcyAqKmZyb20qKiANCmBgYHtweXRob24sIGV2YWwgPSBGYWxzZX0NClBsYXlsaXN0VHJhY2sgSU5ORVIgSk9JTiBUcmFjayBvbiBQbGF5bGlzdFRyYWNrLlRyYWNrSWQgPSBUcmFjay5UcmFja0lkDQpgYGANCnRoYXQgc2F0aXNmeSB0aGUgY29uZGl0aW9uIA0KYE1pbGxpc2Vjb25kcyA8IDI1MDAwMGAuDQoNCmBgYHtweXRob259DQojIEV4ZWN1dGUgcXVlcnkgYW5kIHN0b3JlIHJlY29yZHMgaW4gRGF0YUZyYW1lOiBkZg0KDQoNCiMgUHJpbnQgaGVhZCBvZiBEYXRhRnJhbWUNCnByaW50KGRmLmhlYWQoKSkNCmBgYA0KDQojIyAqKkZpbmFsIHRob3VnaHRzKioNCg0KKioxLiBGaW5hbCBUaG91Z2h0cyoqDQoNCkNvbmdyYXR1bGF0aW9ucyBvbiBkb2luZyBzbyB3ZWxsIGluIGENCg0KKioyLiBXaGF0IHlvdeKAmXZlIGxlYXJuZWQ6KioNCg0KY3Jhc2ggY291cnNlIG9uIFJlbGF0aW9uYWwgRGF0YWJhc2VzLiBXaGV0aGVyIHlvdSBoYXZlIHNlZW4gdGhlbSBiZWZvcmUgb3Igbm90LCB5b3UncmUgbm93IGFibGUgdG8gY3JlYXRlIGVuZ2luZXMgYW5kIGNvbm5lY3QgdG8gdGhlbSBpbiBQeXRob24sIHBlcmZvcm0gc2ltcGxlIFNFTEVDVCBxdWVyaWVzLCBmaWx0ZXIgeW91IHJlc3VsdHMgdXNpbmcgV0hFUkUsIHBlcmZvcm0gbW9yZSBjb21wbGV4IHF1ZXJpZXMgc3VjaCBhcyBKT0lOIGFuZCBzdG9yZSBhbGwgeW91ciBxdWVyeWluZyByZXN1bHRzIGluIHBhbmRhcyBkYXRhZnJhbWVzLCBhbW9uZyBtYW55IG90aGVyIHRoaW5ncy4gVGhlc2Ugc2tpbGxzIHdpbGwgZ2V0IHlvdSBhIGxvbmcgd2F5IGluIHVzaW5nIFB5dGhvbiB0byBpbXBvcnQgZGF0YSBmcm9tIHJlbGF0aW9uYWwgZGF0YWJhc2VzLiBJbiBmYWN0LCBoYXZpbmcgbWFkZSBpdCB0aHJvdWdoIHRoaXMgY291cnNlLCB5b3UncmUgbm93IHdlbGwtZXF1aXBwZWQgdG8gaW1wb3J0IGFsbCB0eXBlcyBvZiBmaWxlcyBpbiBQeXRob24sIGZyb20gcGxhaW4gdGV4dCB0byBmbGF0IGZpbGVzLCBFeGNlbCB0byBNYXRsYWIsIGFtb25nIG1hbnkgb3RoZXJzLiBXZWxsIGRvbmUhIEJ1dCB0aGF0IGRvZXNuJ3QgbWVhbiB0aGVyZSdzIG5vdCBtb3JlIHRvIGJlIGxlYXJudC4gV2hhdCBhYm91dCBpbXBvcnRpbmcgZGF0YSBmcm9tIHRoZSB3ZWIsIHdoZXJlIHNvIG11Y2ggb2YgaXQgaXM/Pw0KDQoqKjMuIE5leHQgY291cnNlOioqDQoNCkluIHRoZSBzZXF1ZWwgdG8gdGhpcywgeW91J2xsIGxlYXJuIGhvdyB0byBpbXBvcnQgd2ViLWRhdGEuIEl0J3MgYSBzaG9ydCBjb3Vyc2UgYW5kIHdpbGwgZXF1aXAgeW91IHRvIGltcG9ydCBkYXRhIGZyb20gdGhlIHdvcmxkIHdpZGUgd2ViIGFuZCBwdWxsIGRhdGEgZnJvbSBBcHBsaWNhdGlvbiBQcm9ncmFtbWluZyBJbnRlcmZhY2VzLCBhbHNvIGtub3duIGFzIEFQSXMuIFlvdSdsbCB0YWtlIGEgZGVlcCBkaXZlIGludG8gdGhlIFR3aXR0ZXIgc3RyZWFtaW5nIEFQSSwgd2hpY2ggYWxsb3dzIHVzIHRvIHN0cmVhbSByZWFsLXRpbWUgdHdlZXRzLiBJJ20gc3VyZSB0aGF0IHlvdSdyZSBpdGNoaW5nIHRvIGdldCB5b3VyIGhhbmRzIGRpcnR5IHdpdGggd2ViIGRhdGE7DQoNCioqNC4gTGV0J3MgcHJhY3RpY2UhKioNCg0Kc28gSSdsbCBzZWUgeW91IGluIHRoZSBuZXh0IGNvdXJzZS4=</div>
 
 
 
@@ -269,7 +1139,7 @@ $(document).ready(function () {
 <script>
 $(document).ready(function () {
   window.initializeSourceEmbed("03-Working-with-relational-databases-in-Python.Rmd");
-  window.initializeCodeFolding("hide" === "show");
+  window.initializeCodeFolding("show" === "show");
 });
 </script>
 
