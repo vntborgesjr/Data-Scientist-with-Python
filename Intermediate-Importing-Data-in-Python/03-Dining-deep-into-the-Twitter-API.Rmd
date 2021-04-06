@@ -1,0 +1,284 @@
+---
+title: "03 - Diving deep into the Twitter API"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: false
+    toc_depth: 4
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{python setup}
+import pandas as pd
+import numpy as np
+```
+
+## **The Twitter API and Authentication**
+
+**1. The Twitter API and Authentication**
+
+Congratulations on interacting with your very first APIs and getting data from them! You're on the home stretch now.
+
+**2. Herein, you’ll learn**
+
+As a final deep dive, you're going to stream data from the Twitter API. You'll learn how to filter incoming tweets for keywords, you'll learn about the principles of API authentication and OAuth. You'll also learn the basics of the package
+
+**3. Herein, you’ll learn**
+
+tweepy, which many people in PythonLand use to interact with the Twitter API.
+
+**4. Access the Twitter API**
+
+One of the first major differences between the Twitter API and all the APIs you have seen so far is that you were able to access all the others anonymously and Twitter requires that you have an account. In order gain access to the Twitter API, one needs to create a twitter account if you don't already have one,
+
+**5. Access the Twitter API**
+
+log into Twitter Apps and click "Create a New App" - you'll need to agree to a variety of terms and conditions here,
+
+**6. Access the Twitter API**
+
+then , go to your "Keys and Access Tokens" tab and Copy your API key, your API secret,
+
+**7. Access the Twitter API**
+
+your Access Token and your Access Token secret. These are the Authentication credentials that will allow you to access the Twitter API from Python. In the following interactive exercises, we won't require that you create your own Twitter account and App: we'll do a mock run-through of how you would stream data and analyze as if you had done so.
+
+**8. Twitter has a number of APIs**
+
+It is now important to mention that Twitter has a number of APIs. Firstly, they have a REST API; we won't go into the gory details of REST APIs here but I'll say two things - one: REST is short for Representational State Transfer; two: Twitter's REST API allows the user to "read and write Twitter data"; In order "monitor or process Tweets in real-time",
+
+**9. Twitter has a number of APIs**
+
+that is, to stream Twitter data, however, we'll want to use Twitter's Streaming API. In particular,
+
+**10. Twitter has a number of APIs**
+
+we'll use the public stream, which Twitter's API documentation states "Streams of the public data flowing through Twitter.". The Public Stream itself contains a number of options. As we want to read and process tweets,
+
+**11. Twitter has a number of APIs**
+
+we'll want to use the GET statuses/sample API, which "Returns a small random sample of all public statuses."
+
+**12. Twitter has a number of APIs**
+
+If you wanted to access absolutely "All public statuses", you would need to use Twitter's Firehose API, which is not publicly available and would most likely cost you a pretty penny.
+
+**13. Tweets are returned as JSONs**
+
+One last point to note before we begin streaming tweets: tweets are returned to us as JSONs and they contain numerous possible fields. Check out the Twitter tweet field guide here. You can get tweet text, user, language, time of tweet,
+
+**14. Tweets are returned as JSONs**
+
+among many other fields. Lets see how to access and stream data from the Twitter API!. For first-time Python tweet-streamers, I usually recommend the package tweepy,
+
+**15. Using Tweepy: Authentication handler**
+
+which has a nice balance of usability and capability. Let's now use it to stream some tweets! First off, it has an OAuth handler which takes care of all of that nasty stuff for you: all you need to do is to pass the API Key and Secret to the handler and then to pass to access credentials using the set_access_token method.
+
+**16. Tweepy: define stream listener class**
+
+After this, you'll need to define you Twitter stream listener Class. I wouldn't necessarily expect you to be able to do this yourself so I'm going to do that for you both here and in the interactive exercises that follow. Here I define a Tweet listener that creates a file called 'tweets dot txt', collects streaming tweets and writes them to the file 'tweets dot txt'; once 100 tweets have been streamed, the listener closes the file and stops listening.
+
+**17. Using Tweepy: stream tweets!!**
+
+Now that we have written our Twitter Stream Listener Class, all you need to do is to create an instance of it and authenticate it. You can then stream tweets that containing keywords of choice by applying the filter method to the object stream! In the following exercises, you'll practice writing Python code to stream tweets and then you'll do some basic analysis of these tweets to see how often particular keywords are mentioned.
+
+**18. Let's practice!**
+
+Happy streaming!
+
+### **API Authentication**
+
+The package `tweepy` is great at handling all the Twitter API OAuth Authentication details for you. All you need to do is pass it your authentication credentials. In this interactive exercise, we have created some mock authentication credentials (if you wanted to replicate this at home, you would need to create a [Twitter App](https://apps.twitter.com/) as Hugo detailed in the video). Your task is to pass these credentials to tweepy's OAuth handler.
+
+**Instructions**
+
+- Import the package `tweepy`.
+- Pass the parameters `consumer_key` and `consumer_secret` to the function `tweepy.OAuthHandler()`.
+- Complete the passing of OAuth credentials to the OAuth handler `auth` by applying to it the method `set_access_token()`, along with arguments `access_token` and `access_token_secret`.
+
+```{python}
+# Import package
+
+
+# Store OAuth authentication credentials in relevant variables
+access_token = "1092294848-aHN7DcRP9B4VMTQIhwqOYiB14YkW92fFO8k8EPy"
+access_token_secret = "X4dHmhPfaksHcQ7SCbmZa2oYBBVSD2g8uIHXsp5CTaksx"
+consumer_key = "nZ6EA0FxZ293SxGNg8g8aP0HM"
+consumer_secret = "fJGEodwe3KiKUnsYJC3VRndj7jevVvXbK2D5EiJ2nehafRgA6i"
+
+# Pass OAuth details to tweepy's OAuth handler
+auth = tweepy.OAuthHandler(____, ____)
+____
+
+```
+
+### **Streaming tweets**
+
+Now that you have set up your authentication credentials, it is time to stream some tweets! We have already defined the tweet stream listener class, `MyStreamListener`, just as Hugo did in the introductory video. You can find the code for the tweet stream listener class [here](https://gist.github.com/hugobowne/18f1c0c0709ed1a52dc5bcd462ac69f4).
+
+Your task is to create the `Stream` object and to filter tweets according to particular keywords.
+
+**Instructions**
+
+- Create your `Stream` object with authentication by passing `tweepy.Stream()` the authentication handler `auth` and the Stream listener `l`;
+- To filter Twitter streams, pass to the `track` argument in `stream.filter()` a list containing the desired keywords `'clinton'`, `'trump'`, `'sanders'`, and `'cruz'`.
+
+```{python}
+# Initialize Stream listener
+l = MyStreamListener()
+
+# Create your Stream object with authentication
+stream = tweepy.Stream(____, ____)
+
+# Filter Twitter Streams to capture data by the keywords:
+stream.filter(____)
+```
+
+### **Load and explore your Twitter data**
+
+Now that you've got your Twitter data sitting locally in a text file, it's time to explore it! This is what you'll do in the next few interactive exercises. In this exercise, you'll read the Twitter data into a list: `tweets_data`.
+
+*Be aware that this is real data from Twitter and as such there is always a risk that it may contain profanity or other offensive content (in this exercise, and any following exercises that also use real Twitter data).*
+
+**Instructions**
+
+- Assign the filename `'tweets.txt'` to the variable `tweets_data_path`.
+- Initialize `tweets_data` as an empty list to store the tweets in.
+- Within the `for` loop initiated by `for line in tweets_file:`, load each tweet into a variable, `tweet`, using `json.loads()`, then append `tweet` to `tweets_data` using the `append()` method.
+- Hit submit and check out the keys of the first tweet dictionary printed to the shell.
+
+```{python}
+# Import package
+import json
+
+# String of path to file: tweets_data_path
+
+
+# Initialize empty list to store tweets: tweets_data
+
+
+# Open connection to file
+tweets_file = open(tweets_data_path, "r")
+
+# Read in tweets and store in list: tweets_data
+for line in tweets_file:
+    ____
+    ____
+
+# Close connection to file
+tweets_file.close()
+
+# Print the keys of the first tweet dict
+print(tweets_data[0].keys())
+
+```
+
+### **Twitter data to DataFrame**
+
+Now you have the Twitter data in a list of dictionaries, `tweets_data`, where each dictionary corresponds to a single tweet. Next, you're going to extract the text and language of each tweet. The text in a tweet, `t1`, is stored as the value `t1['text']`; similarly, the language is stored in `t1['lang']`. Your task is to build a DataFrame in which each row is a tweet and the columns are `'text'` and `'lang'`.
+
+**Instructions**
+
+- Use `pd.DataFrame()` to construct a DataFrame of tweet texts and languages; to do so, the first argument should be `tweets_data`, a list of dictionaries. The second argument to `pd.DataFrame()` is a list of the keys you wish to have as columns. Assign the result of the `pd.DataFrame()` call to `df`.
+- Print the head of the DataFrame.
+
+```{python}
+# Import package
+import pandas as pd
+
+# Build DataFrame of tweet texts and languages
+df = pd.DataFrame(____, columns=____)
+
+# Print head of DataFrame
+
+
+```
+
+### **A little bit of Twitter text analysis**
+
+Now that you have your DataFrame of tweets set up, you're going to do a bit of text analysis to count how many tweets contain the words `'clinton'`, `'trump'`, `'sanders'` and `'cruz'`. In the pre-exercise code, we have defined the following function `word_in_text()`, which will tell you whether the first argument (a word) occurs within the 2nd argument (a tweet).
+
+```{python}
+import re
+
+def word_in_text(word, text):
+    word = word.lower()
+    text = text.lower()
+    match = re.search(word, text)
+
+    if match:
+        return True
+    return False
+
+```
+
+You're going to iterate over the rows of the DataFrame and calculate how many tweets contain each of our keywords! The list of objects for each candidate has been initialized to 0.
+
+**Instructions**
+
+- Within the `for` loop `for index, row in df.iterrows()`:, the code currently increases the value of `clinton` by `1` each time a tweet (text row) mentioning 'Clinton' is encountered; complete the code so that the same happens for `trump`, `sanders` and `cruz`.
+
+```{python}
+# Initialize list to store tweet counts
+[clinton, trump, sanders, cruz] = [0, 0, 0, 0]
+
+# Iterate through df, counting the number of tweets in which
+# each candidate is mentioned
+for index, row in df.iterrows():
+    clinton += word_in_text('clinton', row['text'])
+    trump += word_in_text(____, ____)
+    sanders += word_in_text(____, ____)
+    cruz += word_in_text(____, ____)
+
+```
+
+### **Plotting your Twitter data**
+
+Now that you have the number of tweets that each candidate was mentioned in, you can plot a bar chart of this data. You'll use the statistical data visualization library `seaborn`, which you may not have seen before, but we'll guide you through. You'll first import `seaborn` as `sns`. You'll then construct a barplot of the data using `sns.barplot`, passing it two arguments:
+
+  1. a list of *labels* and
+  2. a list containing the variables you wish to plot (`clinton`, `trump` and so on.)
+  
+Hopefully, you'll see that Trump was unreasonably represented! We have already run the previous exercise solutions in your environment.
+
+**Instructions**
+
+- Import both `matplotlib.pyplot` and `seaborn` using the aliases `plt` and `sns`, respectively.
+- Complete the arguments of `sns.barplot`:
+- The first argument should be the list of labels to appear on the x-axis (created in the previous step).
+- The second argument should be a list of the variables you wish to plot, as produced in the previous exercise (i.e. a list containing `clinton`, `trump`, etc).
+
+```{python}
+# Import packages
+
+
+
+# Set seaborn style
+sns.set(color_codes=True)
+
+# Create a list of labels:cd
+cd = ['clinton', 'trump', 'sanders', 'cruz']
+
+# Plot the bar chart
+ax = sns.barplot(____, ____)
+ax.set(ylabel="count")
+plt.show()
+
+```
+
+## **Final thoughts**
+
+
+**1. Final Thoughts**
+
+Wowee congratulations! You've just completed your deep dive into the Twitter API, in which you streamed tweets, processed them and visualized your results. Amazing! If you've made it this far,
+
+**2. What you’ve learned:**
+
+you're now be able to import data in Python from a wide array of sources. To recap the skill-set and data importing chops that you have gained in this course AND its prequel, you're now adept at importing basic text files and flat files, the basic bread and butter of any working Data Scientist's professional life, local files in other formats, such as Excel spreadsheets, SAS, Stata and MATLAB files, pickled and HDF5 files. These skills will make you an even better collaborator for many working professionals out there. You've built up your basic skills at writing SQL queries and can now get all types of data out of relational databases. You're able to pull data from the web: not only can you import basic web files, but you know a number of ways to issue GET requests and can even do some basic web scraping and HTML parsing! On top of all of this, you've learnt how to pull data from APIs and have had hands-on experience doing so with dives into several examples. You've learned a great deal and
+
+**3. Let's practice!**
+
+successfully completed these two courses on Importing Data in Python. Happy importing!
