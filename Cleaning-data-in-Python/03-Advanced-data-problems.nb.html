@@ -238,7 +238,23 @@ summary {
 
 <div id="TOC">
 <ul>
-<li><a href="#section">**</a></li>
+<li><a href="#uniformity"><strong>Uniformity</strong></a>
+<ul>
+<li><a href="#ambiguous-dates"><strong>Ambiguous dates</strong></a></li>
+<li><a href="#uniform-currencies"><strong>Uniform currencies</strong></a></li>
+<li><a href="#uniform-dates"><strong>Uniform dates</strong></a></li>
+</ul></li>
+<li><a href="#cross-field-validation"><strong>Cross field validation</strong></a>
+<ul>
+<li><a href="#cross-field-or-no-cross-field"><strong>Cross field or no cross field?</strong></a></li>
+<li><a href="#hows-our-data-integrity"><strong>How’s our data integrity?</strong></a></li>
+</ul></li>
+<li><a href="#completeness"><strong>Completeness</strong></a>
+<ul>
+<li><a href="#is-this-missing-at-random"><strong>Is this missing at random?</strong></a></li>
+<li><a href="#missing-investors"><strong>Missing investors</strong></a></li>
+<li><a href="#follow-the-money"><strong>Follow the money</strong></a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -251,12 +267,290 @@ import numpy as np</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<div id="section" class="section level2">
-<h2>**</h2>
+<div id="uniformity" class="section level2">
+<h2><strong>Uniformity</strong></h2>
+<p><strong>1. Uniformity</strong></p>
+<p>Stellar work on chapter 2! You’re now an expert at handling categorical and text variables.</p>
+<p><strong>2. In this chapter</strong></p>
+<p>In this chapter, we’re looking at more advanced data cleaning problems, such as uniformity, cross field validation and dealing with missing data.</p>
+<p><strong>3. Data range constraints</strong></p>
+<p>In chapter 1, we saw how out of range values are a common problem when cleaning data, and that when left untouched, can skew your analysis.</p>
+<p><strong>4. Uniformity</strong></p>
+<p>In this lesson, we’re going to tackle a problem that could similarly skew our data, which is unit uniformity. For example, we can have temperature data that has values in both Fahrenheit and Celsius, weight data in Kilograms and in stones, dates in multiple formats, and so on. Verifying unit uniformity is imperative to having accurate analysis.</p>
+<p><strong>5. An example</strong></p>
+<p>Here’s a dataset with average temperature data throughout the month of March in New York City. The dataset was collected from different sources with temperature data in Celsius and Fahrenheit merged together. We can see that unless a major climate event occurred,</p>
+<p><strong>6. An example</strong></p>
+<p>this value here is most likely Fahrenheit, not Celsius. Let’s confirm the presence of these values visually.</p>
+<p><strong>7. An example</strong></p>
+<p>We can do so by plotting a scatter plot of our data. We can do this using matplotlib.pyplot, which was imported as plt. We use the plt dot scatter function, which takes in what to plot on the x axis, the y axis, and which data source to use. We set the title, axis labels with the helper functions seen here, show the plot with plt dot show,</p>
+<p><strong>8. An example</strong> and voila.</p>
+<p><strong>9. Insert title here…</strong> Notice these values here? They all must be fahrenheit.</p>
+<p><strong>10. Treating temperature data</strong></p>
+<p>A simple web search returns the formula for converting Fahrenheit to Celsius. To convert our temperature data, we isolate all rows of temperature column where it is above 40 using the loc method. We chose 40 because it’s a common sense maximum for Celsius temperatures in New York City. We then convert these values to Celsius using the formula above, and reassign them to their respective Fahrenheit values in temperatures. We can make sure that our conversion was correct with an assert statement, by making sure the maximum value of temperature is less than 40.</p>
+<p><strong>11. Treating date data</strong></p>
+<p>Here’s another common uniformity problem with date data. This is a DataFrame called birthdays containing birth dates for a variety of individuals. It has been collected from a variety of sources and merged into one.</p>
+<p><strong>12. Treating date data</strong></p>
+<p>Notice the dates here? The one in blue has the month, day, year format, whereas the one in orange has the month written out. The one in red is obviously an error, with what looks like a day day year format. We’ll learn how to deal with that one as well.</p>
+<p><strong>13. Datetime formatting</strong></p>
+<p>We already discussed datetime objects. Without getting too much into detail, datetime accepts different formats that help you format your dates as pleased. The pandas to datetime function automatically accepts most date formats, but could raise errors when certain formats are unrecognizable. You don’t have to memorize these formats, just know that they exist and are easily searchable!</p>
+<p><strong>14. Treating date data</strong></p>
+<p>You can treat these date inconsistencies easily by converting your date column to datetime. We can do this in pandas with the to_datetime function. However this isn’t enough and will most likely return an error, since we have dates in multiple formats, especially the weird day/day/format which triggers an error with months. Instead we set the infer_datetime_format argument to True, and set errors equal to coerce. This will infer the format and return missing value for dates that couldn’t be identified and converted instead of a value error.</p>
+<p><strong>15. Treating date data</strong></p>
+<p>This returns the birthday column with aligned formats, with the initial ambiguous format of day day year, being set to NAT, which represents missing values in Pandas for datetime objects.</p>
+<p><strong>16. Treating date data</strong></p>
+<p>We can also convert the format of a datetime column using the dt dot strftime method, which accepts a datetime format of your choice. For example, here we convert the Birthday column to day month year, instead of year month day.</p>
+<p><strong>17. Treating ambiguous date data</strong></p>
+<p>However a common problem is having ambiguous dates with vague formats. For example, is this date value set in March or August? Unfortunately there’s no clear cut way to spot this inconsistency or to treat it. Depending on the size of the dataset and suspected ambiguities, we can either convert these dates to NAs and deal with them accordingly. If you have additional context on the source of your data, you can probably infer the format. If the majority of subsequent or previous data is of one format, you can probably infer the format as well. All in all, it is essential to properly understand where your data comes from, before trying to treat it, as it will make making these decisions much easier.</p>
+<p><strong>18. Let’s practice!</strong></p>
+<p>Now let’s make our data uniform!</p>
+<div id="ambiguous-dates" class="section level3">
+<h3><strong>Ambiguous dates</strong></h3>
+<p>You have a DataFrame containing a subscription_date column that was collected from various sources with different Date formats such as <code>YYYY-mm-dd</code> and <code>YYYY-dd-mm</code>. What is the best way to unify the formats for ambiguous values such as <code>2019-04-07</code>?</p>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>Set them to <code>NA</code> and drop them.</p></li>
+<li><p>Infer the format of the data in question by checking the format of subsequent and previous values.</p></li>
+<li><p>Infer the format from the original data source.</p></li>
+<li><p>All of the above are possible, as long as we investigate where our data comes from, and understand the dynamics affecting it before cleaning it.</p></li>
+</ol>
+</div>
+<div id="uniform-currencies" class="section level3">
+<h3><strong>Uniform currencies</strong></h3>
+<p>In this exercise and throughout this chapter, you will be working with a retail banking dataset stored in the <code>banking</code> DataFrame. The dataset contains data on the amount of money stored in accounts, their currency, amount invested, account opening date and last transaction date that were consolidated from American and European branches.</p>
+<p>You are tasked with understanding the average account size and how investments vary by the size of account, however in order to produce this analysis accurately, you first need to unify the currency amount into dollars. The <code>pandas</code> package has been imported as <code>pd</code>, and the <code>banking</code> DataFrame is in your environment.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Find the rows of <code>acct_cur</code> in banking that are equal to <code>&#39;euro&#39;</code> and store them in <code>acct_eu</code>.</li>
+<li>Find all the rows of <code>acct_amount</code> in <code>banking</code> that fit the <code>acct_eu</code> condition, and convert them to USD by multiplying them with <code>1.1</code>.</li>
+<li>Find all the rows of <code>acct_cur</code> in banking that fit the <code>acct_eu</code> condition, set them to <code>&#39;dollar&#39;</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEZpbmQgdmFsdWVzIG9mIGFjY3RfY3VyIHRoYXQgYXJlIGVxdWFsIHRvICdldXJvJ1xuYWNjdF9ldSA9IGJhbmtpbmdbJ19fX18nXSA9PSAnX19fXydcblxuIyBDb252ZXJ0IGFjY3RfYW1vdW50IHdoZXJlIGl0IGlzIGluIGV1cm8gdG8gZG9sbGFyc1xuYmFua2luZy5sb2NbX19fXywgJ19fX18nXSA9IGJhbmtpbmcubG9jW19fX18sICdfX19fJ10gKiBfX19fXG5cbiMgVW5pZnkgYWNjdF9jdXIgY29sdW1uIGJ5IGNoYW5naW5nICdldXJvJyB2YWx1ZXMgdG8gJ2RvbGxhcidcbmJhbmtpbmcubG9jW19fX18sICdfX19fJ10gPSBfX19fXG5cbiMgQXNzZXJ0IHRoYXQgb25seSBkb2xsYXIgY3VycmVuY3kgcmVtYWluc1xuYXNzZXJ0IGJhbmtpbmdbJ2FjY3RfY3VyJ10udW5pcXVlKCkgPT0gJ2RvbGxhcidcbmBgYCJ9 -->
+<pre class="python"><code># Find values of acct_cur that are equal to &#39;euro&#39;
+acct_eu = banking[&#39;____&#39;] == &#39;____&#39;
+
+# Convert acct_amount where it is in euro to dollars
+banking.loc[____, &#39;____&#39;] = banking.loc[____, &#39;____&#39;] * ____
+
+# Unify acct_cur column by changing &#39;euro&#39; values to &#39;dollar&#39;
+banking.loc[____, &#39;____&#39;] = ____
+
+# Assert that only dollar currency remains
+assert banking[&#39;acct_cur&#39;].unique() == &#39;dollar&#39;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="uniform-dates" class="section level3">
+<h3><strong>Uniform dates</strong></h3>
+<p>After having unified the currencies of your different account amounts, you want to add a temporal dimension to your analysis and see how customers have been investing their money given the size of their account over each year. The <code>account_opened</code> column represents when customers opened their accounts and is a good proxy for segmenting customer activity and investment over time.</p>
+<p>However, since this data was consolidated from multiple sources, you need to make sure that all dates are of the same format. You will do so by converting this column into a <code>datetime</code> object, while making sure that the format is inferred and potentially incorrect formats are set to missing. The <code>banking</code> DataFrame is in your environment and <code>pandas</code> was imported as <code>pd</code>.</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li>Print the header of <code>account_opened</code> from the <code>banking</code> DataFrame and take a look at the different results.</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFByaW50IHRoZSBoZWFkZXIgb2YgYWNjb3VudF9vcGVuZWRcbnByaW50KF9fX18pXG5gYGAifQ== -->
+<pre class="python"><code># Print the header of account_opened
+print(____)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="cross-field-validation" class="section level2">
+<h2><strong>Cross field validation</strong></h2>
+<p><strong>1. Cross field validation</strong></p>
+<p>Hi and welcome to the second lesson of this chapter! In this lesson we’ll talk about cross field validation for diagnosing dirty data.</p>
+<p><strong>2. Motivation</strong></p>
+<p>Let’s take a look at the following dataset. It contains flight statistics on the total number of passengers in economy, business and first class as well as the total passengers for each flight. We know that these columns have been collected and merged from different data sources, and a common challenge when merging data from different sources is data integrity, or more broadly making sure that our data is correct.</p>
+<p><strong>3. Cross field validation</strong></p>
+<p>This is where cross field validation comes in. Cross field validation is the use of multiple fields in your dataset to sanity check the integrity of your data. For example in our flights dataset, this could be summing economy, business and first class values and making sure they are equal to the total passengers on the plane. This could be easily done in Pandas, by first subsetting on the columns to sum, then using the sum method with the axis argument set to 1 to indicate row wise summing. We then find instances where the total passengers column is equal to the sum of the classes. And find and filter out instances of inconsistent passenger amounts by subsetting on the equality we created with brackets and the tilde symbol.</p>
+<p><strong>4. Cross field validation</strong></p>
+<p>Here’s another example containing user IDs, birthdays and age values for a set of users. We can for example make sure that the age and birthday columns are correct by subtracting the number of years between today’s date and each birthday.</p>
+<p><strong>5. Cross field validation</strong></p>
+<p>We can do this by first making sure the Birthday column is converted to datetime with the pandas to datetime function. We then create an object storing today’s date using the datetime package’s date dot today function. We then calculate the difference in years between today’s date’s year, and the year of each birthday by using the dot dt dot year attribute of the user’s Birthday column. We then find instances where the calculated ages are equal to the actual age column in the users DataFrame. We then find and filter out the instances where we have inconsistencies using subsetting with brackets and the tilde symbol on the equality we created.</p>
+<p><strong>6. What to do when we catch inconsistencies?</strong></p>
+<p>So what should be the course of action in case we spot inconsistencies with cross-field validation? Just like other data cleaning problems, there is no one size fits all solution, as often the best solution requires an in depth understanding of our dataset. We can decide to either drop inconsistent data, set it to missing and impute it, or apply some rules due to domain knowledge. All these routes and assumptions can be decided upon only when you have a good understanding of where your dataset comes from and the different sources feeding into it.</p>
+<p><strong>7. Let’s practice!</strong></p>
+<p>Now that you know about cross field validation, let’s get to practice!</p>
+<div id="cross-field-or-no-cross-field" class="section level3">
+<h3><strong>Cross field or no cross field?</strong></h3>
+<p>Throughout this course, you’ve been immersed in a variety of data cleaning problems from range constraints, data type constraints, uniformity and more.</p>
+<p>In this lesson, you were introduced to cross field validation as a means to sanity check your data and making sure you have strong data integrity.</p>
+<p>Now, you will map different applicable concepts and techniques to their respective categories.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li><p>Map different applicable concepts and techniques to their respective categories.</p></li>
+<li><p>Cross field validation:</p></li>
+<li><p>Not cross field validation:</p></li>
+</ul>
+</div>
+<div id="hows-our-data-integrity" class="section level3">
+<h3><strong>How’s our data integrity?</strong></h3>
+<p>New data has been merged into the <code>banking</code> DataFrame that contains details on how investments in the <code>inv_amount</code> column are allocated across four different funds A, B, C and D.</p>
+<p>Furthermore, the age and birthdays of customers are now stored in the <code>age</code> and <code>birth_date</code> columns respectively.</p>
+<p>You want to understand how customers of different age groups invest. However, you want to first make sure the data you’re analyzing is correct. You will do so by cross field checking values of <code>inv_amount</code> and <code>age</code> against the amount invested in different funds and customers’ birthdays. Both <code>pandas</code> and <code>datetime</code> have been imported as <code>pd</code> and <code>dt</code> respectively.</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li></li>
+</ol>
+<ul>
+<li>Find the rows where the sum of all rows of the <code>fund_columns</code> in <code>banking</code> are equal to the <code>inv_amount</code> column.</li>
+<li>Store the values of <code>banking</code> with consistent <code>inv_amount</code> in <code>consistent_inv</code>, and those with inconsistent ones in <code>inconsistent_inv</code>.</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li></li>
+</ol>
+<ul>
+<li>Store today’s date into <code>today</code>, and manually calculate customers’ ages and store them in <code>ages_manual</code>.</li>
+<li>Find all rows of <code>banking</code> where the <code>age</code> column is equal to <code>ages_manual</code> and then filter <code>banking</code> into <code>consistent_ages</code> and <code>inconsistent_ages</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFN0b3JlIGZ1bmQgY29sdW1ucyB0byBzdW0gYWdhaW5zdFxuZnVuZF9jb2x1bW5zID0gWydmdW5kX0EnLCAnZnVuZF9CJywgJ2Z1bmRfQycsICdmdW5kX0QnXVxuXG4jIEZpbmQgcm93cyB3aGVyZSBmdW5kX2NvbHVtbnMgcm93IHN1bSA9PSBpbnZfYW1vdW50XG5pbnZfZXF1ID0gYmFua2luZ1tfX19fXS5fX19fKF9fX18pID09IF9fX19cblxuIyBTdG9yZSBjb25zaXN0ZW50IGFuZCBpbmNvbnNpc3RlbnQgZGF0YVxuY29uc2lzdGVudF9pbnYgPSBfX19fW19fX19dXG5pbmNvbnNpc3RlbnRfaW52ID0gX19fX1tfX19fXVxuXG4jIFN0b3JlIGNvbnNpc3RlbnQgYW5kIGluY29uc2lzdGVudCBkYXRhXG5wcmludChcIk51bWJlciBvZiBpbmNvbnNpc3RlbnQgaW52ZXN0bWVudHM6IFwiLCBpbmNvbnNpc3RlbnRfaW52LnNoYXBlWzBdKVxuYGBgIn0= -->
+<pre class="python"><code># Store fund columns to sum against
+fund_columns = [&#39;fund_A&#39;, &#39;fund_B&#39;, &#39;fund_C&#39;, &#39;fund_D&#39;]
+
+# Find rows where fund_columns row sum == inv_amount
+inv_equ = banking[____].____(____) == ____
+
+# Store consistent and inconsistent data
+consistent_inv = ____[____]
+inconsistent_inv = ____[____]
+
+# Store consistent and inconsistent data
+print(&quot;Number of inconsistent investments: &quot;, inconsistent_inv.shape[0])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="completeness" class="section level2">
+<h2><strong>Completeness</strong></h2>
+<p><strong>1. Completeness</strong></p>
+<p>Hi and welcome to the last lesson of this chapter. In this lesson, we’re going to discuss completeness and missing data.</p>
+<p><strong>2. What is missing data?</strong></p>
+<p>Missing data is one of the most common and most important data cleaning problems. Essentially, missing data is when no data value is stored for a variable in an observation. Missing data is most commonly represented as NA or NaN, but can take on arbitrary values like 0 or dot. Like a lot of the problems that we’ve seen thus far in the course, it’s commonly due to technical or human errors. Missing data can take many forms, so let’s take a look at an example.</p>
+<p><strong>3. Airquality example</strong></p>
+<p>Let’s take a look at the airquality dataset. It contains temperature and CO2 measurements for different dates.</p>
+<p><strong>4. Airquality example</strong></p>
+<p>We can see that the CO2 value in this row is represented as NaN</p>
+<p><strong>5. Airquality example</strong></p>
+<p>We can find rows with missing values by using the dot is na method, which returns True for missing values and False for complete values across all our rows and columns.</p>
+<p><strong>6. Airquality example</strong></p>
+<p>We can also chain the isna method with the sum method, which returns a breakdown of missing values per column in our dataframe. We notice that the CO2 column is the only column with missing values - let’s find out why and dig further into the nature of this missingness by first visualizing our missing values.</p>
+<p><strong>7. Missingno</strong></p>
+<p>The missingno package allows to create useful visualizations of our missing data. Digging into its details is not part of the course, but you can also check out other courses on missing data in DataCamp’s course library. We visualize the missingness of the airquality DataFrame with the msno dot matrix function, and show it with pyplot’s show function from matplotlib, which returns</p>
+<p><strong>8. Missingno</strong></p>
+<p>the following image. This matrix essentially shows how missing values are distributed across a column. We see that missing CO2 values are randomly scattered throughout the column, but is that really the case? Let’s dig deeper.</p>
+<p><strong>9. Airquality example</strong></p>
+<p>We first isolate the rows of airquality with missing CO2 values in one DataFrame, and complete CO2 values in another.</p>
+<p><strong>10. Airquality example</strong></p>
+<p>Then, let’s use the describe method on each of the created DataFrames.</p>
+<p><strong>11. Airquality example</strong></p>
+<p>We see that for all missing values of CO2, they occur at really low temperatures, with the mean temperature at minus 39 degrees and a minimum and maximum of -49 and -30 respectively. Let’s confirm this visually with the missngno package.</p>
+<p><strong>12. Airquality example</strong></p>
+<p>We first sort the DataFrame by the temperature column. Then we input the sorted dataframe to the matrix function from msno. This leaves us with this matrix.</p>
+<p><strong>13. Airquality example</strong></p>
+<p>Notice how all missing values are on the top? This is because values are sorted from smallest to largest by default. This essentially confirms that CO2 measurements are lost for really low temperatures. Must be a sensor failure!</p>
+<p><strong>14. Missingness types</strong></p>
+<p>This leads us to missingness types. Without going too much into the details, there are a variety of types of missing data. It could missing completely at random, missing at random, or missing not at random.</p>
+<p><strong>15. Missingness types</strong></p>
+<p>Missing completely at random data is when there missing data completely due to randomness, and there is no relationship between missing data and remaining values, such data entry errors.</p>
+<p><strong>16. Missingness types</strong></p>
+<p>Despite a slightly deceiving name, Missing at random data is when there is a relationship between missing data and other observed values, such as our CO2 data being missing for low temperatures.</p>
+<p><strong>17. Missingness types</strong></p>
+<p>When data is missing not at random, there is a systematic relationship between the missing data and unobserved values. For example, when it’s really hot outside, the thermometer might stop working, so we don’t have temperature measurements for days with high temperatures. However, we have no way to tell this just from looking at the data since we can’t actually see what the missing temperatures are.</p>
+<p><strong>18. How to deal with missing data?</strong></p>
+<p>There’s a variety of ways of dealing with missing data, from dropping missing data, to imputing them with statistical measures such as mean, median or mode, or imputing them with more complicated algorithmic approaches or ones that require some machine learning. Each missingness type requires a specific approach, and each type of approach has drawbacks and positives, so make sure to dig deeper in DataCamp’s course library on dealing with missing data.</p>
+<p><strong>19. Dealing with missing data</strong></p>
+<p>In this lesson, we’ll just explore the simple approaches to dealing with missing data. Let’s grab another look at the header of airquality.</p>
+<p><strong>20. Dropping missing values</strong></p>
+<p>We can drop missing values, by using the dot dropna method, alongside the subset argument which lets us pick which column’s missing values to drop.</p>
+<p><strong>21. Replacing with statistical measures</strong></p>
+<p>We can also replace the missing values of CO2 with the mean value of CO2, by using the fillna method, which is in this case 1.73. Fillna takes in a dictionary with columns as keys, and the imputed value as values. We can even feed custom values into fillna pertaining to our missing data if we have enough domain knowledge about our dataset.</p>
+<p><strong>22. Let’s practice!</strong></p>
+<p>Now that you know how to tackle missing data, let’s get started!</p>
+<div id="is-this-missing-at-random" class="section level3">
+<h3><strong>Is this missing at random?</strong></h3>
+<p>You’ve seen in the video exercise how there are a variety of missingness types when observing missing data. As a reminder, missingness types can be described as the following:</p>
+<ul>
+<li><strong><em>Missing Completely at Random</em></strong>: <em>No systematic relationship between a column’s missing values and other or own values</em>.</li>
+<li><strong><em>Missing at Random</em></strong>: <em>There is a systematic relationship between a column’s missing values and other observed values</em>.</li>
+<li><strong><em>Missing not at Random</em></strong>: <em>There is a systematic relationship between a column’s missing values and unobserved values</em>.</li>
+</ul>
+<p>You have a DataFrame containing customer satisfaction scores for a service. What type of missingness is the following?</p>
+<pre><code>                          *A customer `satisfaction_score` column with missing values for highly dissatisfied customers.*</code></pre>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>Missing completely at random.</p></li>
+<li><p>Missing at random.</p></li>
+<li><p>Missing not at random.</p></li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="missing-investors" class="section level3">
+<h3><strong>Missing investors</strong></h3>
+<p>Dealing with missing data is one of the most common tasks in data science. There are a variety of types of missingness, as well as a variety of types of solutions to missing data.</p>
+<p>You just received a new version of the <code>banking</code> DataFrame containing data on the amount held and invested for new and existing customers. However, there are rows with missing <code>inv_amount</code> values.</p>
+<p>You know for a fact that most customers below 25 do not have investment accounts yet, and suspect it could be driving the missingness. The <code>pandas</code>, <code>missingno</code> and <code>matplotlib.pyplot</code> packages have been imported as <code>pd</code>, <code>msno</code> and <code>plt</code> respectively. The <code>banking</code> DataFrame is in your environment.</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li></li>
+</ol>
+<ul>
+<li>Print the number of missing values by column in the <code>banking</code> DataFrame.</li>
+<li>Plot and show the missingness matrix of <code>banking</code> with the <code>msno.matrix()</code> function.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIFByaW50IG51bWJlciBvZiBtaXNzaW5nIHZhbHVlcyBpbiBiYW5raW5nXG5wcmludChfX19fKVxuXG4jIFZpc3VhbGl6ZSBtaXNzaW5nbmVzcyBtYXRyaXhcbl9fX19cbl9fX19cbmBgYCJ9 -->
+<pre class="python"><code># Print number of missing values in banking
+print(____)
+
+# Visualize missingness matrix
+____
+____</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="follow-the-money" class="section level3">
+<h3><strong>Follow the money</strong></h3>
+<p>In this exercise, you’re working with another version of the <code>banking</code> DataFrame that contains missing values for both the <code>cust_id</code> column and the <code>acct_amount</code> column.</p>
+<p>You want to produce analysis on how many unique customers the bank has, the average amount held by customers and more. You know that rows with missing <code>cust_id</code> don’t really help you, and that on average <code>acct_amount</code> is usually 5 times the amount of <code>inv_amount</code>.</p>
+<p>In this exercise, you will drop rows of <code>banking</code> with missing <code>cust_ids</code>, and impute missing values of <code>acct_amount</code> with some domain knowledge.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Use <code>.dropna()</code> to drop missing values of the <code>cust_id</code> column in <code>banking</code> and store the results in <code>banking_fullid</code>.</li>
+<li>Compute the estimated <code>acct_amount</code> of <code>banking_fullid</code> knowing that <code>acct_amount</code> is usually <code>inv_amount * 5</code> and assign the results to <code>acct_imp</code>.</li>
+<li>Impute the missing values of <code>acct_amount</code> in <code>banking_fullid</code> with the newly created <code>acct_imp</code> using <code>.fillna()</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIERyb3AgbWlzc2luZyB2YWx1ZXMgb2YgY3VzdF9pZFxuYmFua2luZ19mdWxsaWQgPSBiYW5raW5nLl9fX18oc3Vic2V0ID0gWydfX19fJ10pXG5cbiMgQ29tcHV0ZSBlc3RpbWF0ZWQgYWNjdF9hbW91bnRcbmFjY3RfaW1wID0gX19fX1xuXG4jIEltcHV0ZSBtaXNzaW5nIGFjY3RfYW1vdW50IHdpdGggY29ycmVzcG9uZGluZyBhY2N0X2ltcFxuYmFua2luZ19pbXB1dGVkID0gYmFua2luZ19mdWxsaWQuX19fXyh7J19fX18nOl9fX199KVxuXG4jIFByaW50IG51bWJlciBvZiBtaXNzaW5nIHZhbHVlc1xucHJpbnQoYmFua2luZ19pbXB1dGVkLmlzbmEoKS5zdW0oKSlcbmBgYCJ9 -->
+<pre class="python"><code># Drop missing values of cust_id
+banking_fullid = banking.____(subset = [&#39;____&#39;])
+
+# Compute estimated acct_amount
+acct_imp = ____
+
+# Impute missing acct_amount with corresponding acct_imp
+banking_imputed = banking_fullid.____({&#39;____&#39;:____})
+
+# Print number of missing values
+print(banking_imputed.isna().sum())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDMgLSBBZHZhbmNlZCBkYXRhIHByb2JsZW1zIgpvdXRwdXQ6IAogIGh0bWxfbm90ZWJvb2s6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogZmFsc2UKICAgIHRvY19kZXB0aDogNAplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGlubGluZQotLS0KCmBgYHtweXRob24gc2V0dXB9CmltcG9ydCBwYW5kYXMgYXMgcGQKaW1wb3J0IG51bXB5IGFzIG5wCmBgYAoKIyMgKio=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDMgLSBBZHZhbmNlZCBkYXRhIHByb2JsZW1zIgpvdXRwdXQ6IAogIGh0bWxfbm90ZWJvb2s6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogZmFsc2UKICAgIHRvY19kZXB0aDogNAplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGlubGluZQotLS0KCmBgYHtweXRob24gc2V0dXB9CmltcG9ydCBwYW5kYXMgYXMgcGQKaW1wb3J0IG51bXB5IGFzIG5wCmBgYAoKIyMgKipVbmlmb3JtaXR5KioKCioqMS4gVW5pZm9ybWl0eSoqCgpTdGVsbGFyIHdvcmsgb24gY2hhcHRlciAyISBZb3UncmUgbm93IGFuIGV4cGVydCBhdCBoYW5kbGluZyBjYXRlZ29yaWNhbCBhbmQgdGV4dCB2YXJpYWJsZXMuCgoqKjIuIEluIHRoaXMgY2hhcHRlcioqCgpJbiB0aGlzIGNoYXB0ZXIsIHdlJ3JlIGxvb2tpbmcgYXQgbW9yZSBhZHZhbmNlZCBkYXRhIGNsZWFuaW5nIHByb2JsZW1zLCBzdWNoIGFzIHVuaWZvcm1pdHksIGNyb3NzIGZpZWxkIHZhbGlkYXRpb24gYW5kIGRlYWxpbmcgd2l0aCBtaXNzaW5nIGRhdGEuCgoqKjMuIERhdGEgcmFuZ2UgY29uc3RyYWludHMqKgoKSW4gY2hhcHRlciAxLCB3ZSBzYXcgaG93IG91dCBvZiByYW5nZSB2YWx1ZXMgYXJlIGEgY29tbW9uIHByb2JsZW0gd2hlbiBjbGVhbmluZyBkYXRhLCBhbmQgdGhhdCB3aGVuIGxlZnQgdW50b3VjaGVkLCBjYW4gc2tldyB5b3VyIGFuYWx5c2lzLgoKKio0LiBVbmlmb3JtaXR5KioKCkluIHRoaXMgbGVzc29uLCB3ZSdyZSBnb2luZyB0byB0YWNrbGUgYSBwcm9ibGVtIHRoYXQgY291bGQgc2ltaWxhcmx5IHNrZXcgb3VyIGRhdGEsIHdoaWNoIGlzIHVuaXQgdW5pZm9ybWl0eS4gRm9yIGV4YW1wbGUsIHdlIGNhbiBoYXZlIHRlbXBlcmF0dXJlIGRhdGEgdGhhdCBoYXMgdmFsdWVzIGluIGJvdGggRmFocmVuaGVpdCBhbmQgQ2Vsc2l1cywgd2VpZ2h0IGRhdGEgaW4gS2lsb2dyYW1zIGFuZCBpbiBzdG9uZXMsIGRhdGVzIGluIG11bHRpcGxlIGZvcm1hdHMsIGFuZCBzbyBvbi4gVmVyaWZ5aW5nIHVuaXQgdW5pZm9ybWl0eSBpcyBpbXBlcmF0aXZlIHRvIGhhdmluZyBhY2N1cmF0ZSBhbmFseXNpcy4KCioqNS4gQW4gZXhhbXBsZSoqCgpIZXJlJ3MgYSBkYXRhc2V0IHdpdGggYXZlcmFnZSB0ZW1wZXJhdHVyZSBkYXRhIHRocm91Z2hvdXQgdGhlIG1vbnRoIG9mIE1hcmNoIGluIE5ldyBZb3JrIENpdHkuIFRoZSBkYXRhc2V0IHdhcyBjb2xsZWN0ZWQgZnJvbSBkaWZmZXJlbnQgc291cmNlcyB3aXRoIHRlbXBlcmF0dXJlIGRhdGEgaW4gQ2Vsc2l1cyBhbmQgRmFocmVuaGVpdCBtZXJnZWQgdG9nZXRoZXIuIFdlIGNhbiBzZWUgdGhhdCB1bmxlc3MgYSBtYWpvciBjbGltYXRlIGV2ZW50IG9jY3VycmVkLAoKKio2LiBBbiBleGFtcGxlKioKCnRoaXMgdmFsdWUgaGVyZSBpcyBtb3N0IGxpa2VseSBGYWhyZW5oZWl0LCBub3QgQ2Vsc2l1cy4gTGV0J3MgY29uZmlybSB0aGUgcHJlc2VuY2Ugb2YgdGhlc2UgdmFsdWVzIHZpc3VhbGx5LgoKKio3LiBBbiBleGFtcGxlKioKCldlIGNhbiBkbyBzbyBieSBwbG90dGluZyBhIHNjYXR0ZXIgcGxvdCBvZiBvdXIgZGF0YS4gV2UgY2FuIGRvIHRoaXMgdXNpbmcgbWF0cGxvdGxpYi5weXBsb3QsIHdoaWNoIHdhcyBpbXBvcnRlZCBhcyBwbHQuIFdlIHVzZSB0aGUgcGx0IGRvdCBzY2F0dGVyIGZ1bmN0aW9uLCB3aGljaCB0YWtlcyBpbiB3aGF0IHRvIHBsb3Qgb24gdGhlIHggYXhpcywgdGhlIHkgYXhpcywgYW5kIHdoaWNoIGRhdGEgc291cmNlIHRvIHVzZS4gV2Ugc2V0IHRoZSB0aXRsZSwgYXhpcyBsYWJlbHMgd2l0aCB0aGUgaGVscGVyIGZ1bmN0aW9ucyBzZWVuIGhlcmUsIHNob3cgdGhlIHBsb3Qgd2l0aCBwbHQgZG90IHNob3csCgoqKjguIEFuIGV4YW1wbGUqKgphbmQgdm9pbGEuCgoqKjkuIEluc2VydCB0aXRsZSBoZXJlLi4uKioKTm90aWNlIHRoZXNlIHZhbHVlcyBoZXJlPyBUaGV5IGFsbCBtdXN0IGJlIGZhaHJlbmhlaXQuCgoqKjEwLiBUcmVhdGluZyB0ZW1wZXJhdHVyZSBkYXRhKioKCkEgc2ltcGxlIHdlYiBzZWFyY2ggcmV0dXJucyB0aGUgZm9ybXVsYSBmb3IgY29udmVydGluZyBGYWhyZW5oZWl0IHRvIENlbHNpdXMuIFRvIGNvbnZlcnQgb3VyIHRlbXBlcmF0dXJlIGRhdGEsIHdlIGlzb2xhdGUgYWxsIHJvd3Mgb2YgdGVtcGVyYXR1cmUgY29sdW1uIHdoZXJlIGl0IGlzIGFib3ZlIDQwIHVzaW5nIHRoZSBsb2MgbWV0aG9kLiBXZSBjaG9zZSA0MCBiZWNhdXNlIGl0J3MgYSBjb21tb24gc2Vuc2UgbWF4aW11bSBmb3IgQ2Vsc2l1cyB0ZW1wZXJhdHVyZXMgaW4gTmV3IFlvcmsgQ2l0eS4gV2UgdGhlbiBjb252ZXJ0IHRoZXNlIHZhbHVlcyB0byBDZWxzaXVzIHVzaW5nIHRoZSBmb3JtdWxhIGFib3ZlLCBhbmQgcmVhc3NpZ24gdGhlbSB0byB0aGVpciByZXNwZWN0aXZlIEZhaHJlbmhlaXQgdmFsdWVzIGluIHRlbXBlcmF0dXJlcy4gV2UgY2FuIG1ha2Ugc3VyZSB0aGF0IG91ciBjb252ZXJzaW9uIHdhcyBjb3JyZWN0IHdpdGggYW4gYXNzZXJ0IHN0YXRlbWVudCwgYnkgbWFraW5nIHN1cmUgdGhlIG1heGltdW0gdmFsdWUgb2YgdGVtcGVyYXR1cmUgaXMgbGVzcyB0aGFuIDQwLgoKKioxMS4gVHJlYXRpbmcgZGF0ZSBkYXRhKioKCkhlcmUncyBhbm90aGVyIGNvbW1vbiB1bmlmb3JtaXR5IHByb2JsZW0gd2l0aCBkYXRlIGRhdGEuIFRoaXMgaXMgYSBEYXRhRnJhbWUgY2FsbGVkIGJpcnRoZGF5cyBjb250YWluaW5nIGJpcnRoIGRhdGVzIGZvciBhIHZhcmlldHkgb2YgaW5kaXZpZHVhbHMuIEl0IGhhcyBiZWVuIGNvbGxlY3RlZCBmcm9tIGEgdmFyaWV0eSBvZiBzb3VyY2VzIGFuZCBtZXJnZWQgaW50byBvbmUuCgoqKjEyLiBUcmVhdGluZyBkYXRlIGRhdGEqKgoKTm90aWNlIHRoZSBkYXRlcyBoZXJlPyBUaGUgb25lIGluIGJsdWUgaGFzIHRoZSBtb250aCwgZGF5LCB5ZWFyIGZvcm1hdCwgd2hlcmVhcyB0aGUgb25lIGluIG9yYW5nZSBoYXMgdGhlIG1vbnRoIHdyaXR0ZW4gb3V0LiBUaGUgb25lIGluIHJlZCBpcyBvYnZpb3VzbHkgYW4gZXJyb3IsIHdpdGggd2hhdCBsb29rcyBsaWtlIGEgZGF5IGRheSB5ZWFyIGZvcm1hdC4gV2UnbGwgbGVhcm4gaG93IHRvIGRlYWwgd2l0aCB0aGF0IG9uZSBhcyB3ZWxsLgoKKioxMy4gRGF0ZXRpbWUgZm9ybWF0dGluZyoqCgpXZSBhbHJlYWR5IGRpc2N1c3NlZCBkYXRldGltZSBvYmplY3RzLiBXaXRob3V0IGdldHRpbmcgdG9vIG11Y2ggaW50byBkZXRhaWwsIGRhdGV0aW1lIGFjY2VwdHMgZGlmZmVyZW50IGZvcm1hdHMgdGhhdCBoZWxwIHlvdSBmb3JtYXQgeW91ciBkYXRlcyBhcyBwbGVhc2VkLiBUaGUgcGFuZGFzIHRvIGRhdGV0aW1lIGZ1bmN0aW9uIGF1dG9tYXRpY2FsbHkgYWNjZXB0cyBtb3N0IGRhdGUgZm9ybWF0cywgYnV0IGNvdWxkIHJhaXNlIGVycm9ycyB3aGVuIGNlcnRhaW4gZm9ybWF0cyBhcmUgdW5yZWNvZ25pemFibGUuIFlvdSBkb24ndCBoYXZlIHRvIG1lbW9yaXplIHRoZXNlIGZvcm1hdHMsIGp1c3Qga25vdyB0aGF0IHRoZXkgZXhpc3QgYW5kIGFyZSBlYXNpbHkgc2VhcmNoYWJsZSEKCioqMTQuIFRyZWF0aW5nIGRhdGUgZGF0YSoqCgpZb3UgY2FuIHRyZWF0IHRoZXNlIGRhdGUgaW5jb25zaXN0ZW5jaWVzIGVhc2lseSBieSBjb252ZXJ0aW5nIHlvdXIgZGF0ZSBjb2x1bW4gdG8gZGF0ZXRpbWUuIFdlIGNhbiBkbyB0aGlzIGluIHBhbmRhcyB3aXRoIHRoZSB0b19kYXRldGltZSBmdW5jdGlvbi4gSG93ZXZlciB0aGlzIGlzbid0IGVub3VnaCBhbmQgd2lsbCBtb3N0IGxpa2VseSByZXR1cm4gYW4gZXJyb3IsIHNpbmNlIHdlIGhhdmUgZGF0ZXMgaW4gbXVsdGlwbGUgZm9ybWF0cywgZXNwZWNpYWxseSB0aGUgd2VpcmQgZGF5L2RheS9mb3JtYXQgd2hpY2ggdHJpZ2dlcnMgYW4gZXJyb3Igd2l0aCBtb250aHMuIEluc3RlYWQgd2Ugc2V0IHRoZSBpbmZlcl9kYXRldGltZV9mb3JtYXQgYXJndW1lbnQgdG8gVHJ1ZSwgYW5kIHNldCBlcnJvcnMgZXF1YWwgdG8gY29lcmNlLiBUaGlzIHdpbGwgaW5mZXIgdGhlIGZvcm1hdCBhbmQgcmV0dXJuIG1pc3NpbmcgdmFsdWUgZm9yIGRhdGVzIHRoYXQgY291bGRuJ3QgYmUgaWRlbnRpZmllZCBhbmQgY29udmVydGVkIGluc3RlYWQgb2YgYSB2YWx1ZSBlcnJvci4KCioqMTUuIFRyZWF0aW5nIGRhdGUgZGF0YSoqCgpUaGlzIHJldHVybnMgdGhlIGJpcnRoZGF5IGNvbHVtbiB3aXRoIGFsaWduZWQgZm9ybWF0cywgd2l0aCB0aGUgaW5pdGlhbCBhbWJpZ3VvdXMgZm9ybWF0IG9mIGRheSBkYXkgeWVhciwgYmVpbmcgc2V0IHRvIE5BVCwgd2hpY2ggcmVwcmVzZW50cyBtaXNzaW5nIHZhbHVlcyBpbiBQYW5kYXMgZm9yIGRhdGV0aW1lIG9iamVjdHMuCgoqKjE2LiBUcmVhdGluZyBkYXRlIGRhdGEqKgoKV2UgY2FuIGFsc28gY29udmVydCB0aGUgZm9ybWF0IG9mIGEgZGF0ZXRpbWUgY29sdW1uIHVzaW5nIHRoZSBkdCBkb3Qgc3RyZnRpbWUgbWV0aG9kLCB3aGljaCBhY2NlcHRzIGEgZGF0ZXRpbWUgZm9ybWF0IG9mIHlvdXIgY2hvaWNlLiBGb3IgZXhhbXBsZSwgaGVyZSB3ZSBjb252ZXJ0IHRoZSBCaXJ0aGRheSBjb2x1bW4gdG8gZGF5IG1vbnRoIHllYXIsIGluc3RlYWQgb2YgeWVhciBtb250aCBkYXkuCgoqKjE3LiBUcmVhdGluZyBhbWJpZ3VvdXMgZGF0ZSBkYXRhKioKCkhvd2V2ZXIgYSBjb21tb24gcHJvYmxlbSBpcyBoYXZpbmcgYW1iaWd1b3VzIGRhdGVzIHdpdGggdmFndWUgZm9ybWF0cy4gRm9yIGV4YW1wbGUsIGlzIHRoaXMgZGF0ZSB2YWx1ZSBzZXQgaW4gTWFyY2ggb3IgQXVndXN0PyBVbmZvcnR1bmF0ZWx5IHRoZXJlJ3Mgbm8gY2xlYXIgY3V0IHdheSB0byBzcG90IHRoaXMgaW5jb25zaXN0ZW5jeSBvciB0byB0cmVhdCBpdC4gRGVwZW5kaW5nIG9uIHRoZSBzaXplIG9mIHRoZSBkYXRhc2V0IGFuZCBzdXNwZWN0ZWQgYW1iaWd1aXRpZXMsIHdlIGNhbiBlaXRoZXIgY29udmVydCB0aGVzZSBkYXRlcyB0byBOQXMgYW5kIGRlYWwgd2l0aCB0aGVtIGFjY29yZGluZ2x5LiBJZiB5b3UgaGF2ZSBhZGRpdGlvbmFsIGNvbnRleHQgb24gdGhlIHNvdXJjZSBvZiB5b3VyIGRhdGEsIHlvdSBjYW4gcHJvYmFibHkgaW5mZXIgdGhlIGZvcm1hdC4gSWYgdGhlIG1ham9yaXR5IG9mIHN1YnNlcXVlbnQgb3IgcHJldmlvdXMgZGF0YSBpcyBvZiBvbmUgZm9ybWF0LCB5b3UgY2FuIHByb2JhYmx5IGluZmVyIHRoZSBmb3JtYXQgYXMgd2VsbC4gQWxsIGluIGFsbCwgaXQgaXMgZXNzZW50aWFsIHRvIHByb3Blcmx5IHVuZGVyc3RhbmQgd2hlcmUgeW91ciBkYXRhIGNvbWVzIGZyb20sIGJlZm9yZSB0cnlpbmcgdG8gdHJlYXQgaXQsIGFzIGl0IHdpbGwgbWFrZSBtYWtpbmcgdGhlc2UgZGVjaXNpb25zIG11Y2ggZWFzaWVyLgoKKioxOC4gTGV0J3MgcHJhY3RpY2UhKioKCk5vdyBsZXQncyBtYWtlIG91ciBkYXRhIHVuaWZvcm0hCgojIyMgKipBbWJpZ3VvdXMgZGF0ZXMqKgoKWW91IGhhdmUgYSBEYXRhRnJhbWUgY29udGFpbmluZyBhIHN1YnNjcmlwdGlvbl9kYXRlIGNvbHVtbiB0aGF0IHdhcyBjb2xsZWN0ZWQgZnJvbSB2YXJpb3VzIHNvdXJjZXMgd2l0aCBkaWZmZXJlbnQgRGF0ZSBmb3JtYXRzIHN1Y2ggYXMgYFlZWVktbW0tZGRgIGFuZCBgWVlZWS1kZC1tbWAuIFdoYXQgaXMgdGhlIGJlc3Qgd2F5IHRvIHVuaWZ5IHRoZSBmb3JtYXRzIGZvciBhbWJpZ3VvdXMgdmFsdWVzIHN1Y2ggYXMgYDIwMTktMDQtMDdgPwoKKipQb3NzaWJsZSBBbnN3ZXJzKioKCjEuIFNldCB0aGVtIHRvIGBOQWAgYW5kIGRyb3AgdGhlbS4KCjIuIEluZmVyIHRoZSBmb3JtYXQgb2YgdGhlIGRhdGEgaW4gcXVlc3Rpb24gYnkgY2hlY2tpbmcgdGhlIGZvcm1hdCBvZiBzdWJzZXF1ZW50IGFuZCBwcmV2aW91cyB2YWx1ZXMuCgozLiBJbmZlciB0aGUgZm9ybWF0IGZyb20gdGhlIG9yaWdpbmFsIGRhdGEgc291cmNlLgoKNC4gQWxsIG9mIHRoZSBhYm92ZSBhcmUgcG9zc2libGUsIGFzIGxvbmcgYXMgd2UgaW52ZXN0aWdhdGUgd2hlcmUgb3VyIGRhdGEgY29tZXMgZnJvbSwgYW5kIHVuZGVyc3RhbmQgdGhlIGR5bmFtaWNzIGFmZmVjdGluZyBpdCBiZWZvcmUgY2xlYW5pbmcgaXQuCgojIyMgKipVbmlmb3JtIGN1cnJlbmNpZXMqKgoKSW4gdGhpcyBleGVyY2lzZSBhbmQgdGhyb3VnaG91dCB0aGlzIGNoYXB0ZXIsIHlvdSB3aWxsIGJlIHdvcmtpbmcgd2l0aCBhIHJldGFpbCBiYW5raW5nIGRhdGFzZXQgc3RvcmVkIGluIHRoZSBgYmFua2luZ2AgRGF0YUZyYW1lLiBUaGUgZGF0YXNldCBjb250YWlucyBkYXRhIG9uIHRoZSBhbW91bnQgb2YgbW9uZXkgc3RvcmVkIGluIGFjY291bnRzLCB0aGVpciBjdXJyZW5jeSwgYW1vdW50IGludmVzdGVkLCBhY2NvdW50IG9wZW5pbmcgZGF0ZSBhbmQgbGFzdCB0cmFuc2FjdGlvbiBkYXRlIHRoYXQgd2VyZSBjb25zb2xpZGF0ZWQgZnJvbSBBbWVyaWNhbiBhbmQgRXVyb3BlYW4gYnJhbmNoZXMuCgpZb3UgYXJlIHRhc2tlZCB3aXRoIHVuZGVyc3RhbmRpbmcgdGhlIGF2ZXJhZ2UgYWNjb3VudCBzaXplIGFuZCBob3cgaW52ZXN0bWVudHMgdmFyeSBieSB0aGUgc2l6ZSBvZiBhY2NvdW50LCBob3dldmVyIGluIG9yZGVyIHRvIHByb2R1Y2UgdGhpcyBhbmFseXNpcyBhY2N1cmF0ZWx5LCB5b3UgZmlyc3QgbmVlZCB0byB1bmlmeSB0aGUgY3VycmVuY3kgYW1vdW50IGludG8gZG9sbGFycy4gVGhlIGBwYW5kYXNgIHBhY2thZ2UgaGFzIGJlZW4gaW1wb3J0ZWQgYXMgYHBkYCwgYW5kIHRoZSBgYmFua2luZ2AgRGF0YUZyYW1lIGlzIGluIHlvdXIgZW52aXJvbm1lbnQuCgoqKkluc3RydWN0aW9ucyoqCgotIEZpbmQgdGhlIHJvd3Mgb2YgYGFjY3RfY3VyYCBpbiBiYW5raW5nIHRoYXQgYXJlIGVxdWFsIHRvIGAnZXVybydgIGFuZCBzdG9yZSB0aGVtIGluIGBhY2N0X2V1YC4KLSBGaW5kIGFsbCB0aGUgcm93cyBvZiBgYWNjdF9hbW91bnRgIGluIGBiYW5raW5nYCB0aGF0IGZpdCB0aGUgYGFjY3RfZXVgIGNvbmRpdGlvbiwgYW5kIGNvbnZlcnQgdGhlbSB0byBVU0QgYnkgbXVsdGlwbHlpbmcgdGhlbSB3aXRoIGAxLjFgLgotIEZpbmQgYWxsIHRoZSByb3dzIG9mIGBhY2N0X2N1cmAgaW4gYmFua2luZyB0aGF0IGZpdCB0aGUgYGFjY3RfZXVgIGNvbmRpdGlvbiwgc2V0IHRoZW0gdG8gYCdkb2xsYXInYC4KCmBgYHtweXRob259CiMgRmluZCB2YWx1ZXMgb2YgYWNjdF9jdXIgdGhhdCBhcmUgZXF1YWwgdG8gJ2V1cm8nCmFjY3RfZXUgPSBiYW5raW5nWydfX19fJ10gPT0gJ19fX18nCgojIENvbnZlcnQgYWNjdF9hbW91bnQgd2hlcmUgaXQgaXMgaW4gZXVybyB0byBkb2xsYXJzCmJhbmtpbmcubG9jW19fX18sICdfX19fJ10gPSBiYW5raW5nLmxvY1tfX19fLCAnX19fXyddICogX19fXwoKIyBVbmlmeSBhY2N0X2N1ciBjb2x1bW4gYnkgY2hhbmdpbmcgJ2V1cm8nIHZhbHVlcyB0byAnZG9sbGFyJwpiYW5raW5nLmxvY1tfX19fLCAnX19fXyddID0gX19fXwoKIyBBc3NlcnQgdGhhdCBvbmx5IGRvbGxhciBjdXJyZW5jeSByZW1haW5zCmFzc2VydCBiYW5raW5nWydhY2N0X2N1ciddLnVuaXF1ZSgpID09ICdkb2xsYXInCmBgYAoKIyMjICoqVW5pZm9ybSBkYXRlcyoqCgpBZnRlciBoYXZpbmcgdW5pZmllZCB0aGUgY3VycmVuY2llcyBvZiB5b3VyIGRpZmZlcmVudCBhY2NvdW50IGFtb3VudHMsIHlvdSB3YW50IHRvIGFkZCBhIHRlbXBvcmFsIGRpbWVuc2lvbiB0byB5b3VyIGFuYWx5c2lzIGFuZCBzZWUgaG93IGN1c3RvbWVycyBoYXZlIGJlZW4gaW52ZXN0aW5nIHRoZWlyIG1vbmV5IGdpdmVuIHRoZSBzaXplIG9mIHRoZWlyIGFjY291bnQgb3ZlciBlYWNoIHllYXIuIFRoZSBgYWNjb3VudF9vcGVuZWRgIGNvbHVtbiByZXByZXNlbnRzIHdoZW4gY3VzdG9tZXJzIG9wZW5lZCB0aGVpciBhY2NvdW50cyBhbmQgaXMgYSBnb29kIHByb3h5IGZvciBzZWdtZW50aW5nIGN1c3RvbWVyIGFjdGl2aXR5IGFuZCBpbnZlc3RtZW50IG92ZXIgdGltZS4KCkhvd2V2ZXIsIHNpbmNlIHRoaXMgZGF0YSB3YXMgY29uc29saWRhdGVkIGZyb20gbXVsdGlwbGUgc291cmNlcywgeW91IG5lZWQgdG8gbWFrZSBzdXJlIHRoYXQgYWxsIGRhdGVzIGFyZSBvZiB0aGUgc2FtZSBmb3JtYXQuIFlvdSB3aWxsIGRvIHNvIGJ5IGNvbnZlcnRpbmcgdGhpcyBjb2x1bW4gaW50byBhIGBkYXRldGltZWAgb2JqZWN0LCB3aGlsZSBtYWtpbmcgc3VyZSB0aGF0IHRoZSBmb3JtYXQgaXMgaW5mZXJyZWQgYW5kIHBvdGVudGlhbGx5IGluY29ycmVjdCBmb3JtYXRzIGFyZSBzZXQgdG8gbWlzc2luZy4gVGhlIGBiYW5raW5nYCBEYXRhRnJhbWUgaXMgaW4geW91ciBlbnZpcm9ubWVudCBhbmQgYHBhbmRhc2Agd2FzIGltcG9ydGVkIGFzIGBwZGAuCgoqKkluc3RydWN0aW9ucyoqCgoxLiBQcmludCB0aGUgaGVhZGVyIG9mIGBhY2NvdW50X29wZW5lZGAgZnJvbSB0aGUgYGJhbmtpbmdgIERhdGFGcmFtZSBhbmQgdGFrZSBhIGxvb2sgYXQgdGhlIGRpZmZlcmVudCByZXN1bHRzLgoKYGBge3B5dGhvbn0KIyBQcmludCB0aGUgaGVhZGVyIG9mIGFjY291bnRfb3BlbmVkCnByaW50KF9fX18pCmBgYAoKIyMgICoqQ3Jvc3MgZmllbGQgdmFsaWRhdGlvbioqCgoqKjEuIENyb3NzIGZpZWxkIHZhbGlkYXRpb24qKgoKSGkgYW5kIHdlbGNvbWUgdG8gdGhlIHNlY29uZCBsZXNzb24gb2YgdGhpcyBjaGFwdGVyISBJbiB0aGlzIGxlc3NvbiB3ZSdsbCB0YWxrIGFib3V0IGNyb3NzIGZpZWxkIHZhbGlkYXRpb24gZm9yIGRpYWdub3NpbmcgZGlydHkgZGF0YS4KCioqMi4gTW90aXZhdGlvbioqCgpMZXQncyB0YWtlIGEgbG9vayBhdCB0aGUgZm9sbG93aW5nIGRhdGFzZXQuIEl0IGNvbnRhaW5zIGZsaWdodCBzdGF0aXN0aWNzIG9uIHRoZSB0b3RhbCBudW1iZXIgb2YgcGFzc2VuZ2VycyBpbiBlY29ub215LCBidXNpbmVzcyBhbmQgZmlyc3QgY2xhc3MgYXMgd2VsbCBhcyB0aGUgdG90YWwgcGFzc2VuZ2VycyBmb3IgZWFjaCBmbGlnaHQuIFdlIGtub3cgdGhhdCB0aGVzZSBjb2x1bW5zIGhhdmUgYmVlbiBjb2xsZWN0ZWQgYW5kIG1lcmdlZCBmcm9tIGRpZmZlcmVudCBkYXRhIHNvdXJjZXMsIGFuZCBhIGNvbW1vbiBjaGFsbGVuZ2Ugd2hlbiBtZXJnaW5nIGRhdGEgZnJvbSBkaWZmZXJlbnQgc291cmNlcyBpcyBkYXRhIGludGVncml0eSwgb3IgbW9yZSBicm9hZGx5IG1ha2luZyBzdXJlIHRoYXQgb3VyIGRhdGEgaXMgY29ycmVjdC4KCioqMy4gQ3Jvc3MgZmllbGQgdmFsaWRhdGlvbioqCgpUaGlzIGlzIHdoZXJlIGNyb3NzIGZpZWxkIHZhbGlkYXRpb24gY29tZXMgaW4uIENyb3NzIGZpZWxkIHZhbGlkYXRpb24gaXMgdGhlIHVzZSBvZiBtdWx0aXBsZSBmaWVsZHMgaW4geW91ciBkYXRhc2V0IHRvIHNhbml0eSBjaGVjayB0aGUgaW50ZWdyaXR5IG9mIHlvdXIgZGF0YS4gRm9yIGV4YW1wbGUgaW4gb3VyIGZsaWdodHMgZGF0YXNldCwgdGhpcyBjb3VsZCBiZSBzdW1taW5nIGVjb25vbXksIGJ1c2luZXNzIGFuZCBmaXJzdCBjbGFzcyB2YWx1ZXMgYW5kIG1ha2luZyBzdXJlIHRoZXkgYXJlIGVxdWFsIHRvIHRoZSB0b3RhbCBwYXNzZW5nZXJzIG9uIHRoZSBwbGFuZS4gVGhpcyBjb3VsZCBiZSBlYXNpbHkgZG9uZSBpbiBQYW5kYXMsIGJ5IGZpcnN0IHN1YnNldHRpbmcgb24gdGhlIGNvbHVtbnMgdG8gc3VtLCB0aGVuIHVzaW5nIHRoZSBzdW0gbWV0aG9kIHdpdGggdGhlIGF4aXMgYXJndW1lbnQgc2V0IHRvIDEgdG8gaW5kaWNhdGUgcm93IHdpc2Ugc3VtbWluZy4gV2UgdGhlbiBmaW5kIGluc3RhbmNlcyB3aGVyZSB0aGUgdG90YWwgcGFzc2VuZ2VycyBjb2x1bW4gaXMgZXF1YWwgdG8gdGhlIHN1bSBvZiB0aGUgY2xhc3Nlcy4gQW5kIGZpbmQgYW5kIGZpbHRlciBvdXQgaW5zdGFuY2VzIG9mIGluY29uc2lzdGVudCBwYXNzZW5nZXIgYW1vdW50cyBieSBzdWJzZXR0aW5nIG9uIHRoZSBlcXVhbGl0eSB3ZSBjcmVhdGVkIHdpdGggYnJhY2tldHMgYW5kIHRoZSB0aWxkZSBzeW1ib2wuCgoqKjQuIENyb3NzIGZpZWxkIHZhbGlkYXRpb24qKgoKSGVyZSdzIGFub3RoZXIgZXhhbXBsZSBjb250YWluaW5nIHVzZXIgSURzLCBiaXJ0aGRheXMgYW5kIGFnZSB2YWx1ZXMgZm9yIGEgc2V0IG9mIHVzZXJzLiBXZSBjYW4gZm9yIGV4YW1wbGUgbWFrZSBzdXJlIHRoYXQgdGhlIGFnZSBhbmQgYmlydGhkYXkgY29sdW1ucyBhcmUgY29ycmVjdCBieSBzdWJ0cmFjdGluZyB0aGUgbnVtYmVyIG9mIHllYXJzIGJldHdlZW4gdG9kYXkncyBkYXRlIGFuZCBlYWNoIGJpcnRoZGF5LgoKKio1LiBDcm9zcyBmaWVsZCB2YWxpZGF0aW9uKioKCldlIGNhbiBkbyB0aGlzIGJ5IGZpcnN0IG1ha2luZyBzdXJlIHRoZSBCaXJ0aGRheSBjb2x1bW4gaXMgY29udmVydGVkIHRvIGRhdGV0aW1lIHdpdGggdGhlIHBhbmRhcyB0byBkYXRldGltZSBmdW5jdGlvbi4gV2UgdGhlbiBjcmVhdGUgYW4gb2JqZWN0IHN0b3JpbmcgdG9kYXkncyBkYXRlIHVzaW5nIHRoZSBkYXRldGltZSBwYWNrYWdlJ3MgZGF0ZSBkb3QgdG9kYXkgZnVuY3Rpb24uIFdlIHRoZW4gY2FsY3VsYXRlIHRoZSBkaWZmZXJlbmNlIGluIHllYXJzIGJldHdlZW4gdG9kYXkncyBkYXRlJ3MgeWVhciwgYW5kIHRoZSB5ZWFyIG9mIGVhY2ggYmlydGhkYXkgYnkgdXNpbmcgdGhlIGRvdCBkdCBkb3QgeWVhciBhdHRyaWJ1dGUgb2YgdGhlIHVzZXIncyBCaXJ0aGRheSBjb2x1bW4uIFdlIHRoZW4gZmluZCBpbnN0YW5jZXMgd2hlcmUgdGhlIGNhbGN1bGF0ZWQgYWdlcyBhcmUgZXF1YWwgdG8gdGhlIGFjdHVhbCBhZ2UgY29sdW1uIGluIHRoZSB1c2VycyBEYXRhRnJhbWUuIFdlIHRoZW4gZmluZCBhbmQgZmlsdGVyIG91dCB0aGUgaW5zdGFuY2VzIHdoZXJlIHdlIGhhdmUgaW5jb25zaXN0ZW5jaWVzIHVzaW5nIHN1YnNldHRpbmcgd2l0aCBicmFja2V0cyBhbmQgdGhlIHRpbGRlIHN5bWJvbCBvbiB0aGUgZXF1YWxpdHkgd2UgY3JlYXRlZC4KCioqNi4gV2hhdCB0byBkbyB3aGVuIHdlIGNhdGNoIGluY29uc2lzdGVuY2llcz8qKgoKU28gd2hhdCBzaG91bGQgYmUgdGhlIGNvdXJzZSBvZiBhY3Rpb24gaW4gY2FzZSB3ZSBzcG90IGluY29uc2lzdGVuY2llcyB3aXRoIGNyb3NzLWZpZWxkIHZhbGlkYXRpb24/IEp1c3QgbGlrZSBvdGhlciBkYXRhIGNsZWFuaW5nIHByb2JsZW1zLCB0aGVyZSBpcyBubyBvbmUgc2l6ZSBmaXRzIGFsbCBzb2x1dGlvbiwgYXMgb2Z0ZW4gdGhlIGJlc3Qgc29sdXRpb24gcmVxdWlyZXMgYW4gaW4gZGVwdGggdW5kZXJzdGFuZGluZyBvZiBvdXIgZGF0YXNldC4gV2UgY2FuIGRlY2lkZSB0byBlaXRoZXIgZHJvcCBpbmNvbnNpc3RlbnQgZGF0YSwgc2V0IGl0IHRvIG1pc3NpbmcgYW5kIGltcHV0ZSBpdCwgb3IgYXBwbHkgc29tZSBydWxlcyBkdWUgdG8gZG9tYWluIGtub3dsZWRnZS4gQWxsIHRoZXNlIHJvdXRlcyBhbmQgYXNzdW1wdGlvbnMgY2FuIGJlIGRlY2lkZWQgdXBvbiBvbmx5IHdoZW4geW91IGhhdmUgYSBnb29kIHVuZGVyc3RhbmRpbmcgb2Ygd2hlcmUgeW91ciBkYXRhc2V0IGNvbWVzIGZyb20gYW5kIHRoZSBkaWZmZXJlbnQgc291cmNlcyBmZWVkaW5nIGludG8gaXQuCgoqKjcuIExldCdzIHByYWN0aWNlISoqCgpOb3cgdGhhdCB5b3Uga25vdyBhYm91dCBjcm9zcyBmaWVsZCB2YWxpZGF0aW9uLCBsZXQncyBnZXQgdG8gcHJhY3RpY2UhCgojIyMgKipDcm9zcyBmaWVsZCBvciBubyBjcm9zcyBmaWVsZD8qKgoKVGhyb3VnaG91dCB0aGlzIGNvdXJzZSwgeW91J3ZlIGJlZW4gaW1tZXJzZWQgaW4gYSB2YXJpZXR5IG9mIGRhdGEgY2xlYW5pbmcgcHJvYmxlbXMgZnJvbSByYW5nZSBjb25zdHJhaW50cywgZGF0YSB0eXBlIGNvbnN0cmFpbnRzLCB1bmlmb3JtaXR5IGFuZCBtb3JlLgoKSW4gdGhpcyBsZXNzb24sIHlvdSB3ZXJlIGludHJvZHVjZWQgdG8gY3Jvc3MgZmllbGQgdmFsaWRhdGlvbiBhcyBhIG1lYW5zIHRvIHNhbml0eSBjaGVjayB5b3VyIGRhdGEgYW5kIG1ha2luZyBzdXJlIHlvdSBoYXZlIHN0cm9uZyBkYXRhIGludGVncml0eS4KCk5vdywgeW91IHdpbGwgbWFwIGRpZmZlcmVudCBhcHBsaWNhYmxlIGNvbmNlcHRzIGFuZCB0ZWNobmlxdWVzIHRvIHRoZWlyIHJlc3BlY3RpdmUgY2F0ZWdvcmllcy4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gTWFwIGRpZmZlcmVudCBhcHBsaWNhYmxlIGNvbmNlcHRzIGFuZCB0ZWNobmlxdWVzIHRvIHRoZWlyIHJlc3BlY3RpdmUgY2F0ZWdvcmllcy4KCi0gQ3Jvc3MgZmllbGQgdmFsaWRhdGlvbjoKCi0gTm90IGNyb3NzIGZpZWxkIHZhbGlkYXRpb246CgojIyMgKipIb3cncyBvdXIgZGF0YSBpbnRlZ3JpdHk/KioKCk5ldyBkYXRhIGhhcyBiZWVuIG1lcmdlZCBpbnRvIHRoZSBgYmFua2luZ2AgRGF0YUZyYW1lIHRoYXQgY29udGFpbnMgZGV0YWlscyBvbiBob3cgaW52ZXN0bWVudHMgaW4gdGhlIGBpbnZfYW1vdW50YCBjb2x1bW4gYXJlIGFsbG9jYXRlZCBhY3Jvc3MgZm91ciBkaWZmZXJlbnQgZnVuZHMgQSwgQiwgQyBhbmQgRC4KCkZ1cnRoZXJtb3JlLCB0aGUgYWdlIGFuZCBiaXJ0aGRheXMgb2YgY3VzdG9tZXJzIGFyZSBub3cgc3RvcmVkIGluIHRoZSBgYWdlYCBhbmQgYGJpcnRoX2RhdGVgIGNvbHVtbnMgcmVzcGVjdGl2ZWx5LgoKWW91IHdhbnQgdG8gdW5kZXJzdGFuZCBob3cgY3VzdG9tZXJzIG9mIGRpZmZlcmVudCBhZ2UgZ3JvdXBzIGludmVzdC4gSG93ZXZlciwgeW91IHdhbnQgdG8gZmlyc3QgbWFrZSBzdXJlIHRoZSBkYXRhIHlvdSdyZSBhbmFseXppbmcgaXMgY29ycmVjdC4gWW91IHdpbGwgZG8gc28gYnkgY3Jvc3MgZmllbGQgY2hlY2tpbmcgdmFsdWVzIG9mIGBpbnZfYW1vdW50YCBhbmQgYGFnZWAgYWdhaW5zdCB0aGUgYW1vdW50IGludmVzdGVkIGluIGRpZmZlcmVudCBmdW5kcyBhbmQgY3VzdG9tZXJzJyBiaXJ0aGRheXMuIEJvdGggYHBhbmRhc2AgYW5kIGBkYXRldGltZWAgaGF2ZSBiZWVuIGltcG9ydGVkIGFzIGBwZGAgYW5kIGBkdGAgcmVzcGVjdGl2ZWx5LgoKKipJbnN0cnVjdGlvbnMqKgoKMS4gCi0gRmluZCB0aGUgcm93cyB3aGVyZSB0aGUgc3VtIG9mIGFsbCByb3dzIG9mIHRoZSBgZnVuZF9jb2x1bW5zYCBpbiBgYmFua2luZ2AgYXJlIGVxdWFsIHRvIHRoZSBgaW52X2Ftb3VudGAgY29sdW1uLgotIFN0b3JlIHRoZSB2YWx1ZXMgb2YgYGJhbmtpbmdgIHdpdGggY29uc2lzdGVudCBgaW52X2Ftb3VudGAgaW4gYGNvbnNpc3RlbnRfaW52YCwgYW5kIHRob3NlIHdpdGggaW5jb25zaXN0ZW50IG9uZXMgaW4gYGluY29uc2lzdGVudF9pbnZgLgoKMi4KLSBTdG9yZSB0b2RheSdzIGRhdGUgaW50byBgdG9kYXlgLCBhbmQgbWFudWFsbHkgY2FsY3VsYXRlIGN1c3RvbWVycycgYWdlcyBhbmQgc3RvcmUgdGhlbSBpbiBgYWdlc19tYW51YWxgLgotIEZpbmQgYWxsIHJvd3Mgb2YgYGJhbmtpbmdgIHdoZXJlIHRoZSBgYWdlYCBjb2x1bW4gaXMgZXF1YWwgdG8gYGFnZXNfbWFudWFsYCBhbmQgdGhlbiBmaWx0ZXIgYGJhbmtpbmdgIGludG8gYGNvbnNpc3RlbnRfYWdlc2AgYW5kIGBpbmNvbnNpc3RlbnRfYWdlc2AuCgpgYGB7cHl0aG9ufQojIFN0b3JlIGZ1bmQgY29sdW1ucyB0byBzdW0gYWdhaW5zdApmdW5kX2NvbHVtbnMgPSBbJ2Z1bmRfQScsICdmdW5kX0InLCAnZnVuZF9DJywgJ2Z1bmRfRCddCgojIEZpbmQgcm93cyB3aGVyZSBmdW5kX2NvbHVtbnMgcm93IHN1bSA9PSBpbnZfYW1vdW50Cmludl9lcXUgPSBiYW5raW5nW19fX19dLl9fX18oX19fXykgPT0gX19fXwoKIyBTdG9yZSBjb25zaXN0ZW50IGFuZCBpbmNvbnNpc3RlbnQgZGF0YQpjb25zaXN0ZW50X2ludiA9IF9fX19bX19fX10KaW5jb25zaXN0ZW50X2ludiA9IF9fX19bX19fX10KCiMgU3RvcmUgY29uc2lzdGVudCBhbmQgaW5jb25zaXN0ZW50IGRhdGEKcHJpbnQoIk51bWJlciBvZiBpbmNvbnNpc3RlbnQgaW52ZXN0bWVudHM6ICIsIGluY29uc2lzdGVudF9pbnYuc2hhcGVbMF0pCmBgYAoKIyMgKipDb21wbGV0ZW5lc3MqKgoKKioxLiBDb21wbGV0ZW5lc3MqKgoKSGkgYW5kIHdlbGNvbWUgdG8gdGhlIGxhc3QgbGVzc29uIG9mIHRoaXMgY2hhcHRlci4gSW4gdGhpcyBsZXNzb24sIHdlJ3JlIGdvaW5nIHRvIGRpc2N1c3MgY29tcGxldGVuZXNzIGFuZCBtaXNzaW5nIGRhdGEuCgoqKjIuIFdoYXQgaXMgbWlzc2luZyBkYXRhPyoqCgpNaXNzaW5nIGRhdGEgaXMgb25lIG9mIHRoZSBtb3N0IGNvbW1vbiBhbmQgbW9zdCBpbXBvcnRhbnQgZGF0YSBjbGVhbmluZyBwcm9ibGVtcy4gRXNzZW50aWFsbHksIG1pc3NpbmcgZGF0YSBpcyB3aGVuIG5vIGRhdGEgdmFsdWUgaXMgc3RvcmVkIGZvciBhIHZhcmlhYmxlIGluIGFuIG9ic2VydmF0aW9uLiBNaXNzaW5nIGRhdGEgaXMgbW9zdCBjb21tb25seSByZXByZXNlbnRlZCBhcyBOQSBvciBOYU4sIGJ1dCBjYW4gdGFrZSBvbiBhcmJpdHJhcnkgdmFsdWVzIGxpa2UgMCBvciBkb3QuIExpa2UgYSBsb3Qgb2YgdGhlIHByb2JsZW1zIHRoYXQgd2UndmUgc2VlbiB0aHVzIGZhciBpbiB0aGUgY291cnNlLCBpdCdzIGNvbW1vbmx5IGR1ZSB0byB0ZWNobmljYWwgb3IgaHVtYW4gZXJyb3JzLiBNaXNzaW5nIGRhdGEgY2FuIHRha2UgbWFueSBmb3Jtcywgc28gbGV0J3MgdGFrZSBhIGxvb2sgYXQgYW4gZXhhbXBsZS4KCioqMy4gQWlycXVhbGl0eSBleGFtcGxlKioKCkxldCdzIHRha2UgYSBsb29rIGF0IHRoZSBhaXJxdWFsaXR5IGRhdGFzZXQuIEl0IGNvbnRhaW5zIHRlbXBlcmF0dXJlIGFuZCBDTzIgbWVhc3VyZW1lbnRzIGZvciBkaWZmZXJlbnQgZGF0ZXMuCgoqKjQuIEFpcnF1YWxpdHkgZXhhbXBsZSoqCgpXZSBjYW4gc2VlIHRoYXQgdGhlIENPMiB2YWx1ZSBpbiB0aGlzIHJvdyBpcyByZXByZXNlbnRlZCBhcyBOYU4KCioqNS4gQWlycXVhbGl0eSBleGFtcGxlKioKCldlIGNhbiBmaW5kIHJvd3Mgd2l0aCBtaXNzaW5nIHZhbHVlcyBieSB1c2luZyB0aGUgZG90IGlzIG5hIG1ldGhvZCwgd2hpY2ggcmV0dXJucyBUcnVlIGZvciBtaXNzaW5nIHZhbHVlcyBhbmQgRmFsc2UgZm9yIGNvbXBsZXRlIHZhbHVlcyBhY3Jvc3MgYWxsIG91ciByb3dzIGFuZCBjb2x1bW5zLgoKKio2LiBBaXJxdWFsaXR5IGV4YW1wbGUqKgoKV2UgY2FuIGFsc28gY2hhaW4gdGhlIGlzbmEgbWV0aG9kIHdpdGggdGhlIHN1bSBtZXRob2QsIHdoaWNoIHJldHVybnMgYSBicmVha2Rvd24gb2YgbWlzc2luZyB2YWx1ZXMgcGVyIGNvbHVtbiBpbiBvdXIgZGF0YWZyYW1lLiBXZSBub3RpY2UgdGhhdCB0aGUgQ08yIGNvbHVtbiBpcyB0aGUgb25seSBjb2x1bW4gd2l0aCBtaXNzaW5nIHZhbHVlcyAtIGxldCdzIGZpbmQgb3V0IHdoeSBhbmQgZGlnIGZ1cnRoZXIgaW50byB0aGUgbmF0dXJlIG9mIHRoaXMgbWlzc2luZ25lc3MgYnkgZmlyc3QgdmlzdWFsaXppbmcgb3VyIG1pc3NpbmcgdmFsdWVzLgoKKio3LiBNaXNzaW5nbm8qKgoKVGhlIG1pc3NpbmdubyBwYWNrYWdlIGFsbG93cyB0byBjcmVhdGUgdXNlZnVsIHZpc3VhbGl6YXRpb25zIG9mIG91ciBtaXNzaW5nIGRhdGEuIERpZ2dpbmcgaW50byBpdHMgZGV0YWlscyBpcyBub3QgcGFydCBvZiB0aGUgY291cnNlLCBidXQgeW91IGNhbiBhbHNvIGNoZWNrIG91dCBvdGhlciBjb3Vyc2VzIG9uIG1pc3NpbmcgZGF0YSBpbiBEYXRhQ2FtcCdzIGNvdXJzZSBsaWJyYXJ5LiBXZSB2aXN1YWxpemUgdGhlIG1pc3NpbmduZXNzIG9mIHRoZSBhaXJxdWFsaXR5IERhdGFGcmFtZSB3aXRoIHRoZSBtc25vIGRvdCBtYXRyaXggZnVuY3Rpb24sIGFuZCBzaG93IGl0IHdpdGggcHlwbG90J3Mgc2hvdyBmdW5jdGlvbiBmcm9tIG1hdHBsb3RsaWIsIHdoaWNoIHJldHVybnMKCioqOC4gTWlzc2luZ25vKioKCnRoZSBmb2xsb3dpbmcgaW1hZ2UuIFRoaXMgbWF0cml4IGVzc2VudGlhbGx5IHNob3dzIGhvdyBtaXNzaW5nIHZhbHVlcyBhcmUgZGlzdHJpYnV0ZWQgYWNyb3NzIGEgY29sdW1uLiBXZSBzZWUgdGhhdCBtaXNzaW5nIENPMiB2YWx1ZXMgYXJlIHJhbmRvbWx5IHNjYXR0ZXJlZCB0aHJvdWdob3V0IHRoZSBjb2x1bW4sIGJ1dCBpcyB0aGF0IHJlYWxseSB0aGUgY2FzZT8gTGV0J3MgZGlnIGRlZXBlci4KCioqOS4gQWlycXVhbGl0eSBleGFtcGxlKioKCldlIGZpcnN0IGlzb2xhdGUgdGhlIHJvd3Mgb2YgYWlycXVhbGl0eSB3aXRoIG1pc3NpbmcgQ08yIHZhbHVlcyBpbiBvbmUgRGF0YUZyYW1lLCBhbmQgY29tcGxldGUgQ08yIHZhbHVlcyBpbiBhbm90aGVyLgoKKioxMC4gQWlycXVhbGl0eSBleGFtcGxlKioKClRoZW4sIGxldCdzIHVzZSB0aGUgZGVzY3JpYmUgbWV0aG9kIG9uIGVhY2ggb2YgdGhlIGNyZWF0ZWQgRGF0YUZyYW1lcy4KCioqMTEuIEFpcnF1YWxpdHkgZXhhbXBsZSoqCgpXZSBzZWUgdGhhdCBmb3IgYWxsIG1pc3NpbmcgdmFsdWVzIG9mIENPMiwgdGhleSBvY2N1ciBhdCByZWFsbHkgbG93IHRlbXBlcmF0dXJlcywgd2l0aCB0aGUgbWVhbiB0ZW1wZXJhdHVyZSBhdCBtaW51cyAzOSBkZWdyZWVzIGFuZCBhIG1pbmltdW0gYW5kIG1heGltdW0gb2YgLTQ5IGFuZCAtMzAgcmVzcGVjdGl2ZWx5LiBMZXQncyBjb25maXJtIHRoaXMgdmlzdWFsbHkgd2l0aCB0aGUgbWlzc25nbm8gcGFja2FnZS4KCioqMTIuIEFpcnF1YWxpdHkgZXhhbXBsZSoqCgpXZSBmaXJzdCBzb3J0IHRoZSBEYXRhRnJhbWUgYnkgdGhlIHRlbXBlcmF0dXJlIGNvbHVtbi4gVGhlbiB3ZSBpbnB1dCB0aGUgc29ydGVkIGRhdGFmcmFtZSB0byB0aGUgbWF0cml4IGZ1bmN0aW9uIGZyb20gbXNuby4gVGhpcyBsZWF2ZXMgdXMgd2l0aCB0aGlzIG1hdHJpeC4KCioqMTMuIEFpcnF1YWxpdHkgZXhhbXBsZSoqCgpOb3RpY2UgaG93IGFsbCBtaXNzaW5nIHZhbHVlcyBhcmUgb24gdGhlIHRvcD8gVGhpcyBpcyBiZWNhdXNlIHZhbHVlcyBhcmUgc29ydGVkIGZyb20gc21hbGxlc3QgdG8gbGFyZ2VzdCBieSBkZWZhdWx0LiBUaGlzIGVzc2VudGlhbGx5IGNvbmZpcm1zIHRoYXQgQ08yIG1lYXN1cmVtZW50cyBhcmUgbG9zdCBmb3IgcmVhbGx5IGxvdyB0ZW1wZXJhdHVyZXMuIE11c3QgYmUgYSBzZW5zb3IgZmFpbHVyZSEKCioqMTQuIE1pc3NpbmduZXNzIHR5cGVzKioKClRoaXMgbGVhZHMgdXMgdG8gbWlzc2luZ25lc3MgdHlwZXMuIFdpdGhvdXQgZ29pbmcgdG9vIG11Y2ggaW50byB0aGUgZGV0YWlscywgdGhlcmUgYXJlIGEgdmFyaWV0eSBvZiB0eXBlcyBvZiBtaXNzaW5nIGRhdGEuIEl0IGNvdWxkIG1pc3NpbmcgY29tcGxldGVseSBhdCByYW5kb20sIG1pc3NpbmcgYXQgcmFuZG9tLCBvciBtaXNzaW5nIG5vdCBhdCByYW5kb20uCgoqKjE1LiBNaXNzaW5nbmVzcyB0eXBlcyoqCgpNaXNzaW5nIGNvbXBsZXRlbHkgYXQgcmFuZG9tIGRhdGEgaXMgd2hlbiB0aGVyZSBtaXNzaW5nIGRhdGEgY29tcGxldGVseSBkdWUgdG8gcmFuZG9tbmVzcywgYW5kIHRoZXJlIGlzIG5vIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIG1pc3NpbmcgZGF0YSBhbmQgcmVtYWluaW5nIHZhbHVlcywgc3VjaCBkYXRhIGVudHJ5IGVycm9ycy4KCioqMTYuIE1pc3NpbmduZXNzIHR5cGVzKioKCkRlc3BpdGUgYSBzbGlnaHRseSBkZWNlaXZpbmcgbmFtZSwgTWlzc2luZyBhdCByYW5kb20gZGF0YSBpcyB3aGVuIHRoZXJlIGlzIGEgcmVsYXRpb25zaGlwIGJldHdlZW4gbWlzc2luZyBkYXRhIGFuZCBvdGhlciBvYnNlcnZlZCB2YWx1ZXMsIHN1Y2ggYXMgb3VyIENPMiBkYXRhIGJlaW5nIG1pc3NpbmcgZm9yIGxvdyB0ZW1wZXJhdHVyZXMuCgoqKjE3LiBNaXNzaW5nbmVzcyB0eXBlcyoqCgpXaGVuIGRhdGEgaXMgbWlzc2luZyBub3QgYXQgcmFuZG9tLCB0aGVyZSBpcyBhIHN5c3RlbWF0aWMgcmVsYXRpb25zaGlwIGJldHdlZW4gdGhlIG1pc3NpbmcgZGF0YSBhbmQgdW5vYnNlcnZlZCB2YWx1ZXMuIEZvciBleGFtcGxlLCB3aGVuIGl0J3MgcmVhbGx5IGhvdCBvdXRzaWRlLCB0aGUgdGhlcm1vbWV0ZXIgbWlnaHQgc3RvcCB3b3JraW5nLCBzbyB3ZSBkb24ndCBoYXZlIHRlbXBlcmF0dXJlIG1lYXN1cmVtZW50cyBmb3IgZGF5cyB3aXRoIGhpZ2ggdGVtcGVyYXR1cmVzLiBIb3dldmVyLCB3ZSBoYXZlIG5vIHdheSB0byB0ZWxsIHRoaXMganVzdCBmcm9tIGxvb2tpbmcgYXQgdGhlIGRhdGEgc2luY2Ugd2UgY2FuJ3QgYWN0dWFsbHkgc2VlIHdoYXQgdGhlIG1pc3NpbmcgdGVtcGVyYXR1cmVzIGFyZS4KCioqMTguIEhvdyB0byBkZWFsIHdpdGggbWlzc2luZyBkYXRhPyoqCgpUaGVyZSdzIGEgdmFyaWV0eSBvZiB3YXlzIG9mIGRlYWxpbmcgd2l0aCBtaXNzaW5nIGRhdGEsIGZyb20gZHJvcHBpbmcgbWlzc2luZyBkYXRhLCB0byBpbXB1dGluZyB0aGVtIHdpdGggc3RhdGlzdGljYWwgbWVhc3VyZXMgc3VjaCBhcyBtZWFuLCBtZWRpYW4gb3IgbW9kZSwgb3IgaW1wdXRpbmcgdGhlbSB3aXRoIG1vcmUgY29tcGxpY2F0ZWQgYWxnb3JpdGhtaWMgYXBwcm9hY2hlcyBvciBvbmVzIHRoYXQgcmVxdWlyZSBzb21lIG1hY2hpbmUgbGVhcm5pbmcuIEVhY2ggbWlzc2luZ25lc3MgdHlwZSByZXF1aXJlcyBhIHNwZWNpZmljIGFwcHJvYWNoLCBhbmQgZWFjaCB0eXBlIG9mIGFwcHJvYWNoIGhhcyBkcmF3YmFja3MgYW5kIHBvc2l0aXZlcywgc28gbWFrZSBzdXJlIHRvIGRpZyBkZWVwZXIgaW4gRGF0YUNhbXAncyBjb3Vyc2UgbGlicmFyeSBvbiBkZWFsaW5nIHdpdGggbWlzc2luZyBkYXRhLgoKKioxOS4gRGVhbGluZyB3aXRoIG1pc3NpbmcgZGF0YSoqCgpJbiB0aGlzIGxlc3Nvbiwgd2UnbGwganVzdCBleHBsb3JlIHRoZSBzaW1wbGUgYXBwcm9hY2hlcyB0byBkZWFsaW5nIHdpdGggbWlzc2luZyBkYXRhLiBMZXQncyBncmFiIGFub3RoZXIgbG9vayBhdCB0aGUgaGVhZGVyIG9mIGFpcnF1YWxpdHkuCgoqKjIwLiBEcm9wcGluZyBtaXNzaW5nIHZhbHVlcyoqCgpXZSBjYW4gZHJvcCBtaXNzaW5nIHZhbHVlcywgYnkgdXNpbmcgdGhlIGRvdCBkcm9wbmEgbWV0aG9kLCBhbG9uZ3NpZGUgdGhlIHN1YnNldCBhcmd1bWVudCB3aGljaCBsZXRzIHVzIHBpY2sgd2hpY2ggY29sdW1uJ3MgbWlzc2luZyB2YWx1ZXMgdG8gZHJvcC4KCioqMjEuIFJlcGxhY2luZyB3aXRoIHN0YXRpc3RpY2FsIG1lYXN1cmVzKioKCldlIGNhbiBhbHNvIHJlcGxhY2UgdGhlIG1pc3NpbmcgdmFsdWVzIG9mIENPMiB3aXRoIHRoZSBtZWFuIHZhbHVlIG9mIENPMiwgYnkgdXNpbmcgdGhlIGZpbGxuYSBtZXRob2QsIHdoaWNoIGlzIGluIHRoaXMgY2FzZSAxLjczLiBGaWxsbmEgdGFrZXMgaW4gYSBkaWN0aW9uYXJ5IHdpdGggY29sdW1ucyBhcyBrZXlzLCBhbmQgdGhlIGltcHV0ZWQgdmFsdWUgYXMgdmFsdWVzLiBXZSBjYW4gZXZlbiBmZWVkIGN1c3RvbSB2YWx1ZXMgaW50byBmaWxsbmEgcGVydGFpbmluZyB0byBvdXIgbWlzc2luZyBkYXRhIGlmIHdlIGhhdmUgZW5vdWdoIGRvbWFpbiBrbm93bGVkZ2UgYWJvdXQgb3VyIGRhdGFzZXQuCgoqKjIyLiBMZXQncyBwcmFjdGljZSEqKgoKTm93IHRoYXQgeW91IGtub3cgaG93IHRvIHRhY2tsZSBtaXNzaW5nIGRhdGEsIGxldCdzIGdldCBzdGFydGVkIQoKIyMjICoqSXMgdGhpcyBtaXNzaW5nIGF0IHJhbmRvbT8qKgoKWW91J3ZlIHNlZW4gaW4gdGhlIHZpZGVvIGV4ZXJjaXNlIGhvdyB0aGVyZSBhcmUgYSB2YXJpZXR5IG9mIG1pc3NpbmduZXNzIHR5cGVzIHdoZW4gb2JzZXJ2aW5nIG1pc3NpbmcgZGF0YS4gQXMgYSByZW1pbmRlciwgbWlzc2luZ25lc3MgdHlwZXMgY2FuIGJlIGRlc2NyaWJlZCBhcyB0aGUgZm9sbG93aW5nOgoKICAtICoqX01pc3NpbmcgQ29tcGxldGVseSBhdCBSYW5kb21fKio6IF9ObyBzeXN0ZW1hdGljIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIGEgY29sdW1uJ3MgbWlzc2luZyB2YWx1ZXMgYW5kIG90aGVyIG9yIG93biB2YWx1ZXNfLgogIC0gKipfTWlzc2luZyBhdCBSYW5kb21fKio6ICpUaGVyZSBpcyBhIHN5c3RlbWF0aWMgcmVsYXRpb25zaGlwIGJldHdlZW4gYSBjb2x1bW4ncyBtaXNzaW5nIHZhbHVlcyBhbmQgb3RoZXIgb2JzZXJ2ZWQgdmFsdWVzKi4KICAtICoqX01pc3Npbmcgbm90IGF0IFJhbmRvbV8qKjogKlRoZXJlIGlzIGEgc3lzdGVtYXRpYyByZWxhdGlvbnNoaXAgYmV0d2VlbiBhIGNvbHVtbidzIG1pc3NpbmcgdmFsdWVzIGFuZCB1bm9ic2VydmVkIHZhbHVlcyouCgpZb3UgaGF2ZSBhIERhdGFGcmFtZSBjb250YWluaW5nIGN1c3RvbWVyIHNhdGlzZmFjdGlvbiBzY29yZXMgZm9yIGEgc2VydmljZS4gV2hhdCB0eXBlIG9mIG1pc3NpbmduZXNzIGlzIHRoZSBmb2xsb3dpbmc/IAoKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKkEgY3VzdG9tZXIgYHNhdGlzZmFjdGlvbl9zY29yZWAgY29sdW1uIHdpdGggbWlzc2luZyB2YWx1ZXMgZm9yIGhpZ2hseSBkaXNzYXRpc2ZpZWQgY3VzdG9tZXJzLioKCioqUG9zc2libGUgQW5zd2VycyoqCgoxLiBNaXNzaW5nIGNvbXBsZXRlbHkgYXQgcmFuZG9tLgoKMi4gTWlzc2luZyBhdCByYW5kb20uCgozLiBNaXNzaW5nIG5vdCBhdCByYW5kb20uCgpBbnN3ZXI6CgojIyMgKipNaXNzaW5nIGludmVzdG9ycyoqCgpEZWFsaW5nIHdpdGggbWlzc2luZyBkYXRhIGlzIG9uZSBvZiB0aGUgbW9zdCBjb21tb24gdGFza3MgaW4gZGF0YSBzY2llbmNlLiBUaGVyZSBhcmUgYSB2YXJpZXR5IG9mIHR5cGVzIG9mIG1pc3NpbmduZXNzLCBhcyB3ZWxsIGFzIGEgdmFyaWV0eSBvZiB0eXBlcyBvZiBzb2x1dGlvbnMgdG8gbWlzc2luZyBkYXRhLgoKWW91IGp1c3QgcmVjZWl2ZWQgYSBuZXcgdmVyc2lvbiBvZiB0aGUgYGJhbmtpbmdgIERhdGFGcmFtZSBjb250YWluaW5nIGRhdGEgb24gdGhlIGFtb3VudCBoZWxkIGFuZCBpbnZlc3RlZCBmb3IgbmV3IGFuZCBleGlzdGluZyBjdXN0b21lcnMuIEhvd2V2ZXIsIHRoZXJlIGFyZSByb3dzIHdpdGggbWlzc2luZyBgaW52X2Ftb3VudGAgdmFsdWVzLgoKWW91IGtub3cgZm9yIGEgZmFjdCB0aGF0IG1vc3QgY3VzdG9tZXJzIGJlbG93IDI1IGRvIG5vdCBoYXZlIGludmVzdG1lbnQgYWNjb3VudHMgeWV0LCBhbmQgc3VzcGVjdCBpdCBjb3VsZCBiZSBkcml2aW5nIHRoZSBtaXNzaW5nbmVzcy4gVGhlIGBwYW5kYXNgLCBgbWlzc2luZ25vYCBhbmQgYG1hdHBsb3RsaWIucHlwbG90YCBwYWNrYWdlcyBoYXZlIGJlZW4gaW1wb3J0ZWQgYXMgYHBkYCwgYG1zbm9gIGFuZCBgcGx0YCByZXNwZWN0aXZlbHkuIFRoZSBgYmFua2luZ2AgRGF0YUZyYW1lIGlzIGluIHlvdXIgZW52aXJvbm1lbnQuCgoqKkluc3RydWN0aW9ucyoqCgoxLgotIFByaW50IHRoZSBudW1iZXIgb2YgbWlzc2luZyB2YWx1ZXMgYnkgY29sdW1uIGluIHRoZSBgYmFua2luZ2AgRGF0YUZyYW1lLgotIFBsb3QgYW5kIHNob3cgdGhlIG1pc3NpbmduZXNzIG1hdHJpeCBvZiBgYmFua2luZ2Agd2l0aCB0aGUgYG1zbm8ubWF0cml4KClgIGZ1bmN0aW9uLgoKYGBge3B5dGhvbn0KIyBQcmludCBudW1iZXIgb2YgbWlzc2luZyB2YWx1ZXMgaW4gYmFua2luZwpwcmludChfX19fKQoKIyBWaXN1YWxpemUgbWlzc2luZ25lc3MgbWF0cml4Cl9fX18KX19fXwpgYGAKCiMjIyAqKkZvbGxvdyB0aGUgbW9uZXkqKgoKSW4gdGhpcyBleGVyY2lzZSwgeW91J3JlIHdvcmtpbmcgd2l0aCBhbm90aGVyIHZlcnNpb24gb2YgdGhlIGBiYW5raW5nYCBEYXRhRnJhbWUgdGhhdCBjb250YWlucyBtaXNzaW5nIHZhbHVlcyBmb3IgYm90aCB0aGUgYGN1c3RfaWRgIGNvbHVtbiBhbmQgdGhlIGBhY2N0X2Ftb3VudGAgY29sdW1uLgoKWW91IHdhbnQgdG8gcHJvZHVjZSBhbmFseXNpcyBvbiBob3cgbWFueSB1bmlxdWUgY3VzdG9tZXJzIHRoZSBiYW5rIGhhcywgdGhlIGF2ZXJhZ2UgYW1vdW50IGhlbGQgYnkgY3VzdG9tZXJzIGFuZCBtb3JlLiBZb3Uga25vdyB0aGF0IHJvd3Mgd2l0aCBtaXNzaW5nIGBjdXN0X2lkYCBkb24ndCByZWFsbHkgaGVscCB5b3UsIGFuZCB0aGF0IG9uIGF2ZXJhZ2UgYGFjY3RfYW1vdW50YCBpcyB1c3VhbGx5IDUgdGltZXMgdGhlIGFtb3VudCBvZiBgaW52X2Ftb3VudGAuCgpJbiB0aGlzIGV4ZXJjaXNlLCB5b3Ugd2lsbCBkcm9wIHJvd3Mgb2YgYGJhbmtpbmdgIHdpdGggbWlzc2luZyBgY3VzdF9pZHNgLCBhbmQgaW1wdXRlIG1pc3NpbmcgdmFsdWVzIG9mIGBhY2N0X2Ftb3VudGAgd2l0aCBzb21lIGRvbWFpbiBrbm93bGVkZ2UuCgoqKkluc3RydWN0aW9ucyoqCgotIFVzZSBgLmRyb3BuYSgpYCB0byBkcm9wIG1pc3NpbmcgdmFsdWVzIG9mIHRoZSBgY3VzdF9pZGAgY29sdW1uIGluIGBiYW5raW5nYCBhbmQgc3RvcmUgdGhlIHJlc3VsdHMgaW4gYGJhbmtpbmdfZnVsbGlkYC4KLSBDb21wdXRlIHRoZSBlc3RpbWF0ZWQgYGFjY3RfYW1vdW50YCBvZiBgYmFua2luZ19mdWxsaWRgIGtub3dpbmcgdGhhdCBgYWNjdF9hbW91bnRgIGlzIHVzdWFsbHkgYGludl9hbW91bnQgKiA1YCBhbmQgYXNzaWduIHRoZSByZXN1bHRzIHRvIGBhY2N0X2ltcGAuCi0gSW1wdXRlIHRoZSBtaXNzaW5nIHZhbHVlcyBvZiBgYWNjdF9hbW91bnRgIGluIGBiYW5raW5nX2Z1bGxpZGAgd2l0aCB0aGUgbmV3bHkgY3JlYXRlZCBgYWNjdF9pbXBgIHVzaW5nIGAuZmlsbG5hKClgLgoKYGBge3B5dGhvbn0KIyBEcm9wIG1pc3NpbmcgdmFsdWVzIG9mIGN1c3RfaWQKYmFua2luZ19mdWxsaWQgPSBiYW5raW5nLl9fX18oc3Vic2V0ID0gWydfX19fJ10pCgojIENvbXB1dGUgZXN0aW1hdGVkIGFjY3RfYW1vdW50CmFjY3RfaW1wID0gX19fXwoKIyBJbXB1dGUgbWlzc2luZyBhY2N0X2Ftb3VudCB3aXRoIGNvcnJlc3BvbmRpbmcgYWNjdF9pbXAKYmFua2luZ19pbXB1dGVkID0gYmFua2luZ19mdWxsaWQuX19fXyh7J19fX18nOl9fX199KQoKIyBQcmludCBudW1iZXIgb2YgbWlzc2luZyB2YWx1ZXMKcHJpbnQoYmFua2luZ19pbXB1dGVkLmlzbmEoKS5zdW0oKSkKYGBgCgo=</div>
 
 
 
