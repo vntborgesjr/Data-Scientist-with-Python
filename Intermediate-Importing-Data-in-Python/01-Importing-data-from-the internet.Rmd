@@ -184,6 +184,15 @@ http, which itself stands for HyperText Transfer Protocol. Wikipedia provides a 
 
 To extract the html from the wikipedia home page, you import the necessary functions, specify the URL, package the GET request using the function Request, send the request and catch the response using the function urlopen. This returns an HTTPResponse object, which has an associated read method. You then apply this read method to the response, which returns the HTML as a string, which you store in the variable html. You remember to be polite and close the response!
 
+```{python}
+from urllib.request import urlopen, Request
+url = 'https://www.wikipedia.org/'
+request = Request(url)
+response = urlopen(request)
+html = response.read()
+response.close()
+```
+
 **5. GET requests using requests**
 
 Now we are going to do the same, however here we'll use the requests package, which provides a wonderful API for making requests. According to the requests package website. "Requests allows you to send organic, grass-fed HTTP/1 dot 1 requests, without the need for manual labor." and the following organizations claim to use requests internally: "Her Majesty's Government, Amazon, Google, Twilio, NPR, Obama for America, Twitter, Sony, and Federal U.S. Institutions that prefer to be unnamed."
