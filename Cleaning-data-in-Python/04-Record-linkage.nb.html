@@ -238,7 +238,24 @@ summary {
 
 <div id="TOC">
 <ul>
-<li><a href="#section">**</a></li>
+<li><a href="#comparing-strings"><strong>Comparing strings</strong></a>
+<ul>
+<li><a href="#minimum-edit-distance"><strong>Minimum edit distance</strong></a></li>
+<li><a href="#the-cutoff-point"><strong>The cutoff point</strong></a></li>
+<li><a href="#remapping-categories-ii"><strong>Remapping categories II</strong></a></li>
+</ul></li>
+<li><a href="#generating-pairs"><strong>Generating pairs</strong></a>
+<ul>
+<li><a href="#to-link-or-not-to-link"><strong>To link or not to link?</strong></a></li>
+<li><a href="#pairs-of-restaurants"><strong>Pairs of restaurants</strong></a></li>
+<li><a href="#similar-restaurants"><strong>Similar restaurants</strong></a></li>
+</ul></li>
+<li><a href="#linking-dataframes"><strong>Linking DataFrames</strong></a>
+<ul>
+<li><a href="#getting-the-right-index"><strong>Getting the right index</strong></a></li>
+<li><a href="#linking-them-together"><strong>Linking them together!</strong></a></li>
+</ul></li>
+<li><a href="#congratulations"><strong>Congratulations!</strong></a></li>
 </ul>
 </div>
 
@@ -251,12 +268,327 @@ import numpy as np</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<div id="section" class="section level2">
-<h2>**</h2>
+<div id="comparing-strings" class="section level2">
+<h2><strong>Comparing strings</strong></h2>
+<p><strong>1. Comparing strings</strong></p>
+<p>Awesome work on chapter 3! Welcome to the final chapter of this course,</p>
+<p><strong>2. In this chapter</strong></p>
+<p>where we’ll discover the world of record linkage. But before we get deep dive into record linkage, let’s sharpen our understanding of string similarity and minimum edit distance.</p>
+<p><strong>3. Minimum edit distance</strong></p>
+<p>Minimum edit distance is a systematic way to identify how close 2 strings are. For example, let’s take a look at the following two words: intention, and execution. The minimum edit distance between them is the least possible amount of steps, that could get us from the word intention to execution, with the available operations being</p>
+<p><strong>4. Minimum edit distance</strong></p>
+<p>inserting new characters, deleting them, substituting them, and transposing consecutive characters.</p>
+<p><strong>5. Minimum edit distance</strong></p>
+<p>To get from intention to execution,</p>
+<p><strong>6. Minimum edit distance</strong></p>
+<p>We first start off by deleting I from intention, and adding C between E and N. Our minimum edit distance so far is 2, since these are two operations.</p>
+<p><strong>7. Minimum edit distance</strong></p>
+<p>Then we substitute the first N with E, T with X, and N with U, leading us to execution! With the minimum edit distance being 5.</p>
+<p><strong>8. Minimum edit distance</strong></p>
+<p>The lower the edit distance, the closer two words are. For example, the two different typos of reading have a minimum edit distance of 1 between them and reading.</p>
+<p><strong>9. Minimum edit distance algorithms</strong></p>
+<p>There’s a variety of algorithms based on edit distance that differ on which operations they use, how much weight attributed to each operation, which type of strings they’re suited for and more, with a variety of packages to get each similarity.</p>
+<p><strong>10. Minimum edit distance algorithms</strong></p>
+<p>For this lesson, we’ll be comparing strings using Levenshtein distance since it’s the most general form of string matching by using the fuzzywuzzy package.</p>
+<p><strong>11. Simple string comparison</strong></p>
+<p>Fuzzywuzzy is a simple to use package to perform string comparison. We first import fuzz from fuzzywuzzy, which allow us to compare between single strings. Here we use fuzz’s WRatio function to compute the similarity between reading and its typo, inputting each string as an argument. For any comparison function using fuzzywuzzy, our output is a score from 0 to 100 with 0 being not similar at all, 100 being an exact match. Do not confuse this with the minimum edit distance score earlier, where a lower minimum edit distance means a closer match.</p>
+<p><strong>12. Partial strings and different orderings</strong></p>
+<p>The WRatio function is highly robust against partial string comparison with different orderings. For example here we compare the strings Houston Rockets and Rockets, and still receive a high similarity score. The same can be said for the strings Houston Rockets vs Los Angeles Lakers and Lakers vs Rockets, where the team names are only partial and they are differently ordered.</p>
+<p><strong>13. Comparison with arrays</strong></p>
+<p>We can also compare a string with an array of strings by using the extract function from the process module from fuzzy wuzzy. Extract takes in a string, an array of strings, and the number of possible matches to return ranked from highest to lowest. It returns a list of tuples with 3 elements, the first one being the matching string being returned, the second one being its similarity score, and the third one being its index in the array.</p>
+<p><strong>14. Collapsing categories with string similarity</strong></p>
+<p>In chapter 2, we learned that collapsing data into categories is an essential aspect of working with categorical and text data, and we saw how to manually replace categories in a column of a DataFrame. But what if we had so many inconsistent categories that a manual replacement is simply not feasible? We can easily do that with string similarity!</p>
+<p><strong>15. Collapsing categories with string matching</strong></p>
+<p>Say we have DataFrame named survey containing answers from respondents from the state of New York and California asking them how likely are you to move on a scale of 0 to 5. The state field was free text and contains hundreds of typos. Remapping them manually would take a huge amount of time. Instead, we’ll use string similarity. We also have a category DataFrame containing the correct categories for each state. Let’s collapse the incorrect categories with string matching!</p>
+<p><strong>16. Collapsing all of the state</strong></p>
+<p>We first create a for loop iterating over each correctly typed state in the categories DataFrame. For each state, we find its matches in the state column of the survey DataFrame, returning all possible matches by setting the limit argument of extract to the length of the survey DataFrame. Then we iterate over each potential match, isolating the ones only with a similarity score higher or equal than 80 with an if statement. Then for each of those returned strings, we replace it with the correct state using the loc method.</p>
+<p><strong>17. Record linkage</strong></p>
+<p>Record linkage attempts to join data sources that have similarly fuzzy duplicate values, so that we end up with a final DataFrame with no duplicates by using string similarity. We’ll cover record linkage in more detail in the next couple of lessons.</p>
+<p><strong>18. Let’s practice!</strong></p>
+<p>But for now, let’s clean some data using string similarity!</p>
+<div id="minimum-edit-distance" class="section level3">
+<h3><strong>Minimum edit distance</strong></h3>
+<p>In the video exercise, you saw how minimum edit distance is used to identify how similar two strings are. As a reminder, minimum edit distance is the minimum number of steps needed to reach from <strong><em>String A</em></strong> to <strong><em>String B</em></strong>, with the operations available being:</p>
+<ul>
+<li><p><strong>Insertion</strong> of a new character.</p></li>
+<li><p><strong>Deletion</strong> of an existing character.</p></li>
+<li><p><strong>Substitution</strong> of an existing character.</p></li>
+<li><p><strong>Transposition</strong> of two existing consecutive characters.</p>
+<pre><code>            *What is the minimum edit distance from* `&#39;sign&#39;` *to* `&#39;sing&#39;`, *and which operation(s) gets you there?*</code></pre></li>
+</ul>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>2 by substituting <code>&#39;g&#39;</code> with <code>&#39;n&#39;</code> and <code>&#39;n&#39;</code> with <code>&#39;g&#39;</code>.</p></li>
+<li><p>1 by transposing <code>&#39;g&#39;</code> with <code>&#39;n&#39;</code>.</p></li>
+<li><p>1 by substituting <code>&#39;g&#39;</code> with <code>&#39;n&#39;</code>.</p></li>
+<li><p>2 by deleting <code>&#39;g&#39;</code> and inserting a new <code>&#39;g&#39;</code> at the end.</p></li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="the-cutoff-point" class="section level3">
+<h3><strong>The cutoff point</strong></h3>
+<p>In this exercise, and throughout this chapter, you’ll be working with the <code>restaurants</code> DataFrame which has data on various restaurants. Your ultimate goal is to create a restaurant recommendation engine, but you need to first clean your data.</p>
+<p>This version of <code>restaurants</code> has been collected from many sources, where the <code>cuisine_type</code> column is riddled with typos, and should contain only <code>italian</code>, <code>american</code> and <code>asian</code> cuisine types. There are so many unique categories that remapping them manually isn’t scalable, and it’s best to use string similarity instead.</p>
+<p>Before doing so, you want to establish the cutoff point for the similarity score using the <code>fuzzywuzzy</code>’s <code>process.extract()</code> function by finding the similarity score of the most distant typo of each category.</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li></li>
+</ol>
+<ul>
+<li>Import <code>process</code> from <code>fuzzywuzzy</code>.</li>
+<li>Store the unique <code>cuisine_types</code> into <code>unique_types</code>.</li>
+<li>Calculate the similarity of <code>&#39;asian&#39;</code>, <code>&#39;american&#39;</code>, and <code>&#39;italian&#39;</code> to all possible <code>cuisine_types</code> using <code>process.extract()</code>, while returning all possible matches.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEltcG9ydCBwcm9jZXNzIGZyb20gZnV6enl3dXp6eVxuX19fX1xuXG4jIFN0b3JlIHRoZSB1bmlxdWUgdmFsdWVzIG9mIGN1aXNpbmVfdHlwZSBpbiB1bmlxdWVfdHlwZXNcbnVuaXF1ZV90eXBlcyA9IF9fX19cblxuIyBDYWxjdWxhdGUgc2ltaWxhcml0eSBvZiAnYXNpYW4nIHRvIGFsbCB2YWx1ZXMgb2YgdW5pcXVlX3R5cGVzXG5wcmludChwcm9jZXNzLl9fX18oJ19fX18nLCBfX19fLCBsaW1pdCA9IGxlbihfX19fKSkpXG5cbiMgQ2FsY3VsYXRlIHNpbWlsYXJpdHkgb2YgJ2FtZXJpY2FuJyB0byBhbGwgdmFsdWVzIG9mIHVuaXF1ZV90eXBlc1xucHJpbnQoX19fXygnX19fXycsIF9fX18sIF9fX18pKVxuXG4jIENhbGN1bGF0ZSBzaW1pbGFyaXR5IG9mICdpdGFsaWFuJyB0byBhbGwgdmFsdWVzIG9mIHVuaXF1ZV90eXBlc1xucHJpbnQoX19fXylcbmBgYCJ9 -->
+<pre class="python"><code># Import process from fuzzywuzzy
+____
+
+# Store the unique values of cuisine_type in unique_types
+unique_types = ____
+
+# Calculate similarity of &#39;asian&#39; to all values of unique_types
+print(process.____(&#39;____&#39;, ____, limit = len(____)))
+
+# Calculate similarity of &#39;american&#39; to all values of unique_types
+print(____(&#39;____&#39;, ____, ____))
+
+# Calculate similarity of &#39;italian&#39; to all values of unique_types
+print(____)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="remapping-categories-ii" class="section level3">
+<h3><strong>Remapping categories II</strong></h3>
+<p>In the last exercise, you determined that the distance cutoff point for remapping typos of <code>&#39;american&#39;</code>, <code>&#39;asian&#39;</code>, and <code>&#39;italian&#39;</code> cuisine types stored in the <code>cuisine_type</code> column should be 80.</p>
+<p>In this exercise, you’re going to put it all together by finding matches with similarity scores equal to or higher than 80 by using <code>fuzywuzzy.process</code>’s <code>extract()</code> function, for each correct cuisine type, and replacing these matches with it. Remember, when comparing a string with an array of strings using <code>process.extract()</code>, the output is a list of tuples where each is formatted like:</p>
+<p><code>(closest match, similarity score, index of match)</code></p>
+<p>The <code>restaurants</code> DataFrame is in your environment, and you have access to a categories list containing the correct cuisine types (<code>&#39;italian&#39;</code>, <code>&#39;asian&#39;</code>, and <code>&#39;american&#39;</code>).</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li></li>
+</ol>
+<ul>
+<li>Return all of the unique values in the <code>cuisine_type</code> column of <code>restaurants</code>.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIEluc3BlY3QgdGhlIHVuaXF1ZSB2YWx1ZXMgb2YgdGhlIGN1aXNpbmVfdHlwZSBjb2x1bW5cbnByaW50KF9fX18pXG5gYGAifQ== -->
+<pre class="python"><code># Inspect the unique values of the cuisine_type column
+print(____)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="generating-pairs" class="section level2">
+<h2><strong>Generating pairs</strong></h2>
+<p><strong>1. Generating pairs</strong></p>
+<p>Great work with lesson 1 - you now have a solid understanding how to calculate string similarity.</p>
+<p><strong>2. Motivation</strong></p>
+<p>At the end of the last video exercise, we saw how record linkage attempts to join data sources with fuzzy duplicate values. For example here are two DataFrames containing NBA games and their schedules. They’ve both been scraped from different sites and we would want to merge them together and have one DataFrame containing all unique games.</p>
+<p><strong>3. When joins won’t work</strong></p>
+<p>We see that there are duplicates values in both DataFrames with different naming marked here in red, and non duplicate values, marked here in green. Since there are games happening at the same time, no common unique identifier between the DataFrames, and the events are differently named, a regular join or merge will not work. This is where record linkage comes in.</p>
+<p><strong>4. Record linkage</strong></p>
+<p>Record linkage is the act of linking data from different sources regarding the same entity. Generally, we clean two or more DataFrames, generate pairs of potentially matching records, score these pairs according to string similarity and other similarity metrics, and link them. All of these steps can be achieved with the recordlinkage package, let’s find how!</p>
+<p><strong>5. Our DataFrames</strong></p>
+<p>Here we have two DataFrames, census_A, and census_B, containing data on individuals throughout the states. We want to merge them while avoiding duplication using record linkage, since they are collected manually and are prone to typos, there are no consistent IDs between them.</p>
+<p><strong>6. Generating pairs</strong></p>
+<p>We first want to generate pairs between both DataFrames. Ideally, we want to generate all possible pairs between our DataFrames.</p>
+<p><strong>7. Generating pairs</strong></p>
+<p>but what if we had big DataFrames and ended up having to generate millions if not billions of pairs? It wouldn’t prove scalable and could seriously hamper development time.</p>
+<p><strong>8. Blocking</strong></p>
+<p>This is where we apply what we call blocking, which creates pairs based on a matching column, which is in this case, the state column, reducing the number of possible pairs.</p>
+<p><strong>9. Generating pairs</strong></p>
+<p>To do this, we first start off by importing recordlinkage. We then use the recordlinkage dot Index function, to create an indexing object. This essentially is an object we can use to generate pairs from our DataFrames. To generate pairs blocked on state, we use the block method, inputting the state column as input. Once the indexer object has been initialized, we generate our pairs using the dot index method, which takes in the two dataframes.</p>
+<p><strong>10. Generating pairs</strong></p>
+<p>The resulting object, is a pandas multi index object containing pairs of row indices from both DataFrames, which is a fancy way to say it is an array containing possible pairs of indices that makes it much easier to subset DataFrames on.</p>
+<p><strong>11. Comparing the DataFrames</strong></p>
+<p>Since we’ve already generated our pairs, it’s time to find potential matches. We first start by creating a comparison object using the recordlinkage dot compare function. This is similar to the indexing object we created while generating pairs, but this one is responsible for assigning different comparison procedures for pairs. Let’s say there are columns for which we want exact matches between the pairs. To do that, we use the exact method. It takes in the column name in question for each DataFrame, which is in this case date_of_birth and state, and a label argument which lets us set the column name in the resulting DataFrame. Now in order to compute string similarities between pairs of rows for columns that have fuzzy values, we use the dot string method, which also takes in the column names in question, the similarity cutoff point in the threshold argument, which takes in a value between 0 and 1, which we here set to 0.85. Finally to compute the matches, we use the compute function, which takes in the possible pairs, and the two DataFrames in question. Note that you need to always have the same order of DataFrames when inserting them as arguments when generating pairs, comparing between columns, and computing comparisons.</p>
+<p><strong>12. Finding matching pairs</strong></p>
+<p>The output is a multi index DataFrame, where the first index is the row index from the first DataFrame, or census A, and the second index is a list of all row indices in census B. The columns are the columns being compared, with values being 1 for a match, and 0 for not a match.</p>
+<p><strong>13. Finding the only pairs we want</strong></p>
+<p>To find potential matches, we just filter for rows where the sum of row values is higher than a certain threshold. Which in this case higher or equal to 2. But we’ll dig deeper into these matches and see how to use them to link our census DataFrames in the next lesson.</p>
+<p><strong>14. Let’s practice!</strong> But for now, let’s generate pairs.</p>
+<div id="to-link-or-not-to-link" class="section level3">
+<h3><strong>To link or not to link?</strong></h3>
+<p>Similar to joins, record linkage is the act of linking data from different sources regarding the same entity. But unlike joins, record linkage does not require exact matches between different pairs of data, and instead can find close matches using string similarity. This is why record linkage is effective when there are no common unique keys between the data sources you can rely upon when linking data sources such as a unique identifier.</p>
+<p>In this exercise, you will classify each card whether it is a traditional join problem, or a record linkage one.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li><p>Classify each card into a problem that requires record linkage or regular joins.</p></li>
+<li><p>Record linkage:</p></li>
+<li><p>Record joins:</p></li>
+</ul>
+</div>
+<div id="pairs-of-restaurants" class="section level3">
+<h3><strong>Pairs of restaurants</strong></h3>
+<p>In the last lesson, you cleaned the <code>restaurants</code> dataset to make it ready for building a restaurants recommendation engine. You have a new DataFrame named <code>restaurants_new</code> with new restaurants to train your model on, that’s been scraped from a new data source.</p>
+<p>You’ve already cleaned the <code>cuisine_type</code> and <code>city</code> columns using the techniques learned throughout the course. However you saw duplicates with typos in restaurants names that require record linkage instead of joins with <code>restaurants</code>.</p>
+<p>In this exercise, you will perform the first step in record linkage and generate possible pairs of rows between <code>restaurants</code> and <code>restaurants_new</code>. Both DataFrames, <code>pandas</code> and <code>recordlinkage</code> are in your environment.</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li></li>
+</ol>
+<ul>
+<li>Instantiate an indexing object by using the <code>Index()</code> function from <code>recordlinkage</code>.</li>
+<li>Block your pairing on <code>cuisine_type</code> by using <code>indexer</code>‘s’ <code>.block()</code> method.</li>
+<li>Generate pairs by indexing <code>restaurants</code> and <code>restaurants_new</code> in that order.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBhbiBpbmRleGVyIGFuZCBvYmplY3QgYW5kIGZpbmQgcG9zc2libGUgcGFpcnNcbmluZGV4ZXIgPSBfX19fXG5cbiMgQmxvY2sgcGFpcmluZyBvbiBjdWlzaW5lX3R5cGVcbmluZGV4ZXIuX19fXyhfX19fKVxuXG4jIEdlbmVyYXRlIHBhaXJzXG5wYWlycyA9IGluZGV4ZXIuX19fXyhfX19fLCBfX19fKVxuYGBgIn0= -->
+<pre class="python"><code># Create an indexer and object and find possible pairs
+indexer = ____
+
+# Block pairing on cuisine_type
+indexer.____(____)
+
+# Generate pairs
+pairs = indexer.____(____, ____)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="similar-restaurants" class="section level3">
+<h3><strong>Similar restaurants</strong></h3>
+<p>In the last exercise, you generated pairs between <code>restaurants</code> and <code>restaurants_new</code> in an effort to cleanly merge both DataFrames using record linkage.</p>
+<p>When performing record linkage, there are different types of matching you can perform between different columns of your DataFrames, including exact matches, string similarities, and more.</p>
+<p>Now that your pairs have been generated and stored in <code>pairs</code>, you will find exact matches in the <code>city</code> and <code>cuisine_type</code> columns between each pair, and similar strings for each pair in the <code>rest_name</code> column. Both DataFrames, <code>pandas</code> and <code>recordlinkage</code> are in your environment.</p>
+<p><strong>Instructions</strong></p>
+<ol style="list-style-type: decimal">
+<li>Instantiate a comparison object using the <code>recordlinkage.Compare()</code> function.</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIENyZWF0ZSBhIGNvbXBhcmlzb24gb2JqZWN0XG5jb21wX2NsID0gX19fX1xuYGBgIn0= -->
+<pre class="python"><code># Create a comparison object
+comp_cl = ____</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="linking-dataframes" class="section level2">
+<h2><strong>Linking DataFrames</strong></h2>
+<p><strong>1. Linking DataFrames</strong></p>
+<p>Awesome work on the first 2 lessons! You’ve made it to the last lesson of this course!</p>
+<p><strong>2. Record linkage</strong></p>
+<p>At this point, you’ve generated your pairs, compared them, and scored them.</p>
+<p><strong>3. Record linkage</strong></p>
+<p>Now it’s time to link your data!</p>
+<p><strong>4. Our DataFrames</strong></p>
+<p>Remember our census DataFrames from the video of the previous lesson?</p>
+<p><strong>5. What we’ve already done</strong></p>
+<p>We’ve already generated pairs between them, compared four of their columns, two for exact matches and two for string similarity alongside a 0.85 threshold, and found potential matches.</p>
+<p><strong>6. What we’re doing now</strong></p>
+<p>Now it’s time to link both census DataFrames.</p>
+<p><strong>7. Our potential matches</strong></p>
+<p>Let’s look closely at our potential matches. It is a multi-index DataFrame, where we have two index columns, record id 1, and record id 2.</p>
+<p><strong>8. Our potential matches</strong></p>
+<p>The first index column, stores indices from census A.</p>
+<p><strong>9. Our potential matches</strong></p>
+<p>The second index column, stores all possible indices from census_B, for each row index of census_A.</p>
+<p><strong>10. Our potential matches</strong></p>
+<p>The columns of our potential matches are the columns we chose to link both DataFrames on, where the value is 1 for a match, and 0 otherwise.</p>
+<p><strong>11. Probable matches</strong></p>
+<p>The first step in linking DataFrames, is to isolate the potentially matching pairs to the ones we’re pretty sure of. We saw how to do this in the previous lesson, by subsetting the rows where the row sum is above a certain number of columns, in this case 3. The output is row indices between census A and census B that are most likely duplicates. Our next step is to extract the one of the index columns, and subsetting its associated DataFrame to filter for duplicates.</p>
+<p><strong>12. Probable matches</strong></p>
+<p>Here we choose the second index column, which represents row indices of census B. We want to extract those indices, and subset census_B on them to remove duplicates with census_A before appending them together.</p>
+<p><strong>13. Get the indices</strong></p>
+<p>We can access a DataFrame’s index using the index attribute. Since this is a multi index DataFrame, it returns a multi index object containing pairs of row indices from census_A and census_B respectively. We want to extract all census_B indices, so we chain it with the get_level_values method, which takes in which column index we want to extract its values. We can either input the index column’s name, or its order, which is in this case 1.</p>
+<p><strong>14. Linking DataFrames</strong></p>
+<p>To find the duplicates in census B, we simply subset on all indices of census_B, with the ones found through record linkage. You can choose to examine them further for similarity with their duplicates in census_A, but if you’re sure of your analysis, you can go ahead and find the non duplicates by repeating the exact same line of code, except by adding a tilde at the beginning of your subset. Now that you have your non duplicates, all you need is a simple append using the DataFrame append method of census A, and you have your linked Data!</p>
+<p><strong>15. Linking DataFrames</strong></p>
+<p>To recap, what we did was build on top of our previous work in generating pairs, comparing across columns and finding potential matches. We then isolated all possible matches, where there are matches across 3 columns or more, ensuring we tightened our search for duplicates across both DataFrames before we link them. Extracted the row indices of census_B where there are duplicates. Found rows of census_B where they are not duplicated with census_A by using the tilde symbol. And linked both DataFrames for full census results!</p>
+<p><strong>16. Let’s practice!</strong></p>
+<p>Now that you know how to link DataFrames, let’s put those skills to action!</p>
+<div id="getting-the-right-index" class="section level3">
+<h3><strong>Getting the right index</strong></h3>
+<p>Here’s a DataFrame named matches containing potential matches between two DataFrames, <code>users_1</code> and <code>users_2</code>. Each DataFrame’s row indices is stored in <code>uid_1</code> and <code>uid_2</code> respectively.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4gICAgICAgICAgICAgZmlyc3RfbmFtZSAgYWRkcmVzc18xICBhZGRyZXNzXzIgIG1hcnJpYWdlX3N0YXR1cyAgZGF0ZV9vZl9iaXJ0aFxudWlkXzEgdWlkXzIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbjAgICAgIDMgICAgICAgICAgICAgIDEgICAgICAgICAgMSAgICAgICAgICAxICAgICAgICAgICAgICAgIDEgICAgICAgICAgICAgIDBcbiAgICAgLi4uICAgICAgICAgICAgLi4uICAgICAgICAgLi4uICAgICAgICAuLi4gICAgICAgICAgICAgIC4uLiAgICAgICAgICAgIC4uLlxuICAgICAuLi4gICAgICAgICAgICAuLi4gICAgICAgICAuLi4gICAgICAgIC4uLiAgICAgICAgICAgICAgLi4uICAgICAgICAgICAgLi4uXG4xICAgICAzICAgICAgICAgICAgICAxICAgICAgICAgIDEgICAgICAgICAgMSAgICAgICAgICAgICAgICAxICAgICAgICAgICAgICAwXG4gICAgIC4uLiAgICAgICAgICAgIC4uLiAgICAgICAgIC4uLiAgICAgICAgLi4uICAgICAgICAgICAgICAuLi4gICAgICAgICAgICAuLi5cbiAgICAgLi4uICAgICAgICAgICAgLi4uICAgICAgICAgLi4uICAgICAgICAuLi4gICAgICAgICAgICAgIC4uLiAgICAgICAgICAgIC4uLlxuYGBgIn0= -->
+<pre class="python"><code>             first_name  address_1  address_2  marriage_status  date_of_birth
+uid_1 uid_2                                                                  
+0     3              1          1          1                1              0
+     ...            ...         ...        ...              ...            ...
+     ...            ...         ...        ...              ...            ...
+1     3              1          1          1                1              0
+     ...            ...         ...        ...              ...            ...
+     ...            ...         ...        ...              ...            ...</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>How do you extract all values of the <code>uid_1</code> index column?</p>
+<p><strong>Possible Answers</strong></p>
+<ol style="list-style-type: decimal">
+<li><p><code>matches.index.get_level_values(0)</code></p></li>
+<li><p><code>matches.index.get_level_values(1)</code></p></li>
+<li><p><code>matches.index.get_level_values(&#39;uid_1&#39;)</code></p></li>
+<li><p>Both 1 and 3 are correct.</p></li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="linking-them-together" class="section level3">
+<h3><strong>Linking them together!</strong></h3>
+<p>In the last lesson, you’ve finished the bulk of the work on your effort to link <code>restaurants</code> and <code>restaurants_new</code>. You’ve generated the different pairs of potentially matching rows, searched for exact matches between the <code>cuisine_type</code> and <code>city</code> columns, but compared for similar strings in the <code>rest_name</code> column. You stored the DataFrame containing the scores in <code>potential_matches</code>.</p>
+<p>Now it’s finally time to link both DataFrames. You will do so by first extracting all row indices of <code>restaurants_new</code> that are matching across the columns mentioned above from <code>potential_matches</code>. Then you will subset <code>restaurants_new</code> on these indices, then append the non-duplicate values to <code>restaurants</code>. All DataFrames are in your environment, alongside <code>pandas</code> imported as <code>pd</code>.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Isolate instances of <code>potential_matches</code> where the row sum is above or equal to 3 by using the <code>.sum()</code> method.</li>
+<li>Extract the second column index from <code>matches</code>, which represents row indices of matching record from <code>restaurants_new</code> by using the <code>.get_level_values()</code> method.</li>
+<li>Subset <code>restaurants_new</code> for rows that are not in <code>matching_indices</code>.</li>
+<li>Append <code>non_dup</code> to restaurants.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgcHl0aG9uXG4jIElzb2xhdGUgcG90ZW50aWFsIG1hdGNoZXMgd2l0aCByb3cgc3VtID49M1xubWF0Y2hlcyA9IF9fX19bX19fXy5fX18oX19fXykgPj0gX19fX11cblxuIyBHZXQgdmFsdWVzIG9mIHNlY29uZCBjb2x1bW4gaW5kZXggb2YgbWF0Y2hlc1xubWF0Y2hpbmdfaW5kaWNlcyA9IG1hdGNoZXMuX19fXy5fX19fKF9fX18pXG5cbiMgU3Vic2V0IHJlc3RhdXJhbnRzX25ldyBiYXNlZCBvbiBub24tZHVwbGljYXRlIHZhbHVlc1xubm9uX2R1cCA9IF9fX19bfnJlc3RhdXJhbnRzX25ldy5pbmRleC5fX19fKF9fX18pXVxuXG4jIEFwcGVuZCBub25fZHVwIHRvIHJlc3RhdXJhbnRzXG5mdWxsX3Jlc3RhdXJhbnRzID0gcmVzdGF1cmFudHMuX19fXyhfX19fKVxucHJpbnQoZnVsbF9yZXN0YXVyYW50cylcbmBgYCJ9 -->
+<pre class="python"><code># Isolate potential matches with row sum &gt;=3
+matches = ____[____.___(____) &gt;= ____]
+
+# Get values of second column index of matches
+matching_indices = matches.____.____(____)
+
+# Subset restaurants_new based on non-duplicate values
+non_dup = ____[~restaurants_new.index.____(____)]
+
+# Append non_dup to restaurants
+full_restaurants = restaurants.____(____)
+print(full_restaurants)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="congratulations" class="section level2">
+<h2><strong>Congratulations!</strong></h2>
+<p><strong>1. Congratulations!</strong></p>
+<p>Fantastic job! You have now finished the course!</p>
+<p><strong>2. What we’ve learned</strong></p>
+<p>In this course, you learned how to diagnose dirty data, identify the side effects of dirty data, and learned how to clean data.</p>
+<p><strong>3. What we’ve learned</strong></p>
+<p>In chapter 1, we learned about basic data cleaning problems such as fixing incorrect data types, making sure our data sticks within range, and dropping duplicates.</p>
+<p><strong>4. What we’ve learned</strong></p>
+<p>In chapter 2, we learned about common problems affecting categorical and text data.</p>
+<p><strong>5. What we’ve learned</strong></p>
+<p>In chapter 3, we learned about more advanced data problems, such as unifying differently formatted data, cross field validation and completeness.</p>
+<p><strong>6. What we’ve learned</strong></p>
+<p>Finally in chapter 4, we saw how to link datasets where joins don’t work, by learning about record linkage.</p>
+<p><strong>7. More to learn on DataCamp!</strong></p>
+<p>With that in mind, there is still so much more to learn on your way to become a data cleaning expert! So make sure to check out DataCamp’s content library along the way, whether that means courses,</p>
+<p><strong>8. More to learn!</strong></p>
+<p>tracks,</p>
+<p><strong>9. More to learn!</strong></p>
+<p>or projects!</p>
+<p><strong>10. Thank you!</strong></p>
+<p>Finally, don’t forget to apply what you learned in your daily data tasks! Thank you for taking this journey in cleaning data in Python, and see you next time!</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDQgLSBSZWNvcmQgbGlua2FnZSIKb3V0cHV0OiAKICBodG1sX25vdGVib29rOgogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IGZhbHNlCiAgICB0b2NfZGVwdGg6IDQKZWRpdG9yX29wdGlvbnM6IAogIGNodW5rX291dHB1dF90eXBlOiBpbmxpbmUKLS0tCgpgYGB7cHl0aG9uIHNldHVwfQppbXBvcnQgcGFuZGFzIGFzIHBkCmltcG9ydCBudW1weSBhcyBucApgYGAKCiMjICoq</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiMDQgLSBSZWNvcmQgbGlua2FnZSIKb3V0cHV0OiAKICBodG1sX25vdGVib29rOgogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IGZhbHNlCiAgICB0b2NfZGVwdGg6IDQKZWRpdG9yX29wdGlvbnM6IAogIGNodW5rX291dHB1dF90eXBlOiBpbmxpbmUKLS0tCgpgYGB7cHl0aG9uIHNldHVwfQppbXBvcnQgcGFuZGFzIGFzIHBkCmltcG9ydCBudW1weSBhcyBucApgYGAKCiMjICoqQ29tcGFyaW5nIHN0cmluZ3MqKgoKKioxLiBDb21wYXJpbmcgc3RyaW5ncyoqCgpBd2Vzb21lIHdvcmsgb24gY2hhcHRlciAzISBXZWxjb21lIHRvIHRoZSBmaW5hbCBjaGFwdGVyIG9mIHRoaXMgY291cnNlLAoKKioyLiBJbiB0aGlzIGNoYXB0ZXIqKgoKd2hlcmUgd2UnbGwgZGlzY292ZXIgdGhlIHdvcmxkIG9mIHJlY29yZCBsaW5rYWdlLiBCdXQgYmVmb3JlIHdlIGdldCBkZWVwIGRpdmUgaW50byByZWNvcmQgbGlua2FnZSwgbGV0J3Mgc2hhcnBlbiBvdXIgdW5kZXJzdGFuZGluZyBvZiBzdHJpbmcgc2ltaWxhcml0eSBhbmQgbWluaW11bSBlZGl0IGRpc3RhbmNlLgoKKiozLiBNaW5pbXVtIGVkaXQgZGlzdGFuY2UqKgoKTWluaW11bSBlZGl0IGRpc3RhbmNlIGlzIGEgc3lzdGVtYXRpYyB3YXkgdG8gaWRlbnRpZnkgaG93IGNsb3NlIDIgc3RyaW5ncyBhcmUuIEZvciBleGFtcGxlLCBsZXQncyB0YWtlIGEgbG9vayBhdCB0aGUgZm9sbG93aW5nIHR3byB3b3JkczogaW50ZW50aW9uLCBhbmQgZXhlY3V0aW9uLiBUaGUgbWluaW11bSBlZGl0IGRpc3RhbmNlIGJldHdlZW4gdGhlbSBpcyB0aGUgbGVhc3QgcG9zc2libGUgYW1vdW50IG9mIHN0ZXBzLCB0aGF0IGNvdWxkIGdldCB1cyBmcm9tIHRoZSB3b3JkIGludGVudGlvbiB0byBleGVjdXRpb24sIHdpdGggdGhlIGF2YWlsYWJsZSBvcGVyYXRpb25zIGJlaW5nCgoqKjQuIE1pbmltdW0gZWRpdCBkaXN0YW5jZSoqCgppbnNlcnRpbmcgbmV3IGNoYXJhY3RlcnMsIGRlbGV0aW5nIHRoZW0sIHN1YnN0aXR1dGluZyB0aGVtLCBhbmQgdHJhbnNwb3NpbmcgY29uc2VjdXRpdmUgY2hhcmFjdGVycy4KCioqNS4gTWluaW11bSBlZGl0IGRpc3RhbmNlKioKClRvIGdldCBmcm9tIGludGVudGlvbiB0byBleGVjdXRpb24sCgoqKjYuIE1pbmltdW0gZWRpdCBkaXN0YW5jZSoqCgpXZSBmaXJzdCBzdGFydCBvZmYgYnkgZGVsZXRpbmcgSSBmcm9tIGludGVudGlvbiwgYW5kIGFkZGluZyBDIGJldHdlZW4gRSBhbmQgTi4gT3VyIG1pbmltdW0gZWRpdCBkaXN0YW5jZSBzbyBmYXIgaXMgMiwgc2luY2UgdGhlc2UgYXJlIHR3byBvcGVyYXRpb25zLgoKKio3LiBNaW5pbXVtIGVkaXQgZGlzdGFuY2UqKgoKVGhlbiB3ZSBzdWJzdGl0dXRlIHRoZSBmaXJzdCBOIHdpdGggRSwgVCB3aXRoIFgsIGFuZCBOIHdpdGggVSwgbGVhZGluZyB1cyB0byBleGVjdXRpb24hIFdpdGggdGhlIG1pbmltdW0gZWRpdCBkaXN0YW5jZSBiZWluZyA1LgoKKio4LiBNaW5pbXVtIGVkaXQgZGlzdGFuY2UqKgoKVGhlIGxvd2VyIHRoZSBlZGl0IGRpc3RhbmNlLCB0aGUgY2xvc2VyIHR3byB3b3JkcyBhcmUuIEZvciBleGFtcGxlLCB0aGUgdHdvIGRpZmZlcmVudCB0eXBvcyBvZiByZWFkaW5nIGhhdmUgYSBtaW5pbXVtIGVkaXQgZGlzdGFuY2Ugb2YgMSBiZXR3ZWVuIHRoZW0gYW5kIHJlYWRpbmcuCgoqKjkuIE1pbmltdW0gZWRpdCBkaXN0YW5jZSBhbGdvcml0aG1zKioKClRoZXJlJ3MgYSB2YXJpZXR5IG9mIGFsZ29yaXRobXMgYmFzZWQgb24gZWRpdCBkaXN0YW5jZSB0aGF0IGRpZmZlciBvbiB3aGljaCBvcGVyYXRpb25zIHRoZXkgdXNlLCBob3cgbXVjaCB3ZWlnaHQgYXR0cmlidXRlZCB0byBlYWNoIG9wZXJhdGlvbiwgd2hpY2ggdHlwZSBvZiBzdHJpbmdzIHRoZXkncmUgc3VpdGVkIGZvciBhbmQgbW9yZSwgd2l0aCBhIHZhcmlldHkgb2YgcGFja2FnZXMgdG8gZ2V0IGVhY2ggc2ltaWxhcml0eS4KCioqMTAuIE1pbmltdW0gZWRpdCBkaXN0YW5jZSBhbGdvcml0aG1zKioKCkZvciB0aGlzIGxlc3Nvbiwgd2UnbGwgYmUgY29tcGFyaW5nIHN0cmluZ3MgdXNpbmcgTGV2ZW5zaHRlaW4gZGlzdGFuY2Ugc2luY2UgaXQncyB0aGUgbW9zdCBnZW5lcmFsIGZvcm0gb2Ygc3RyaW5nIG1hdGNoaW5nIGJ5IHVzaW5nIHRoZSBmdXp6eXd1enp5IHBhY2thZ2UuCgoqKjExLiBTaW1wbGUgc3RyaW5nIGNvbXBhcmlzb24qKgoKRnV6enl3dXp6eSBpcyBhIHNpbXBsZSB0byB1c2UgcGFja2FnZSB0byBwZXJmb3JtIHN0cmluZyBjb21wYXJpc29uLiBXZSBmaXJzdCBpbXBvcnQgZnV6eiBmcm9tIGZ1enp5d3V6enksIHdoaWNoIGFsbG93IHVzIHRvIGNvbXBhcmUgYmV0d2VlbiBzaW5nbGUgc3RyaW5ncy4gSGVyZSB3ZSB1c2UgZnV6eidzIFdSYXRpbyBmdW5jdGlvbiB0byBjb21wdXRlIHRoZSBzaW1pbGFyaXR5IGJldHdlZW4gcmVhZGluZyBhbmQgaXRzIHR5cG8sIGlucHV0dGluZyBlYWNoIHN0cmluZyBhcyBhbiBhcmd1bWVudC4gRm9yIGFueSBjb21wYXJpc29uIGZ1bmN0aW9uIHVzaW5nIGZ1enp5d3V6enksIG91ciBvdXRwdXQgaXMgYSBzY29yZSBmcm9tIDAgdG8gMTAwIHdpdGggMCBiZWluZyBub3Qgc2ltaWxhciBhdCBhbGwsIDEwMCBiZWluZyBhbiBleGFjdCBtYXRjaC4gRG8gbm90IGNvbmZ1c2UgdGhpcyB3aXRoIHRoZSBtaW5pbXVtIGVkaXQgZGlzdGFuY2Ugc2NvcmUgZWFybGllciwgd2hlcmUgYSBsb3dlciBtaW5pbXVtIGVkaXQgZGlzdGFuY2UgbWVhbnMgYSBjbG9zZXIgbWF0Y2guCgoqKjEyLiBQYXJ0aWFsIHN0cmluZ3MgYW5kIGRpZmZlcmVudCBvcmRlcmluZ3MqKgoKVGhlIFdSYXRpbyBmdW5jdGlvbiBpcyBoaWdobHkgcm9idXN0IGFnYWluc3QgcGFydGlhbCBzdHJpbmcgY29tcGFyaXNvbiB3aXRoIGRpZmZlcmVudCBvcmRlcmluZ3MuIEZvciBleGFtcGxlIGhlcmUgd2UgY29tcGFyZSB0aGUgc3RyaW5ncyBIb3VzdG9uIFJvY2tldHMgYW5kIFJvY2tldHMsIGFuZCBzdGlsbCByZWNlaXZlIGEgaGlnaCBzaW1pbGFyaXR5IHNjb3JlLiBUaGUgc2FtZSBjYW4gYmUgc2FpZCBmb3IgdGhlIHN0cmluZ3MgSG91c3RvbiBSb2NrZXRzIHZzIExvcyBBbmdlbGVzIExha2VycyBhbmQgTGFrZXJzIHZzIFJvY2tldHMsIHdoZXJlIHRoZSB0ZWFtIG5hbWVzIGFyZSBvbmx5IHBhcnRpYWwgYW5kIHRoZXkgYXJlIGRpZmZlcmVudGx5IG9yZGVyZWQuCgoqKjEzLiBDb21wYXJpc29uIHdpdGggYXJyYXlzKioKCldlIGNhbiBhbHNvIGNvbXBhcmUgYSBzdHJpbmcgd2l0aCBhbiBhcnJheSBvZiBzdHJpbmdzIGJ5IHVzaW5nIHRoZSBleHRyYWN0IGZ1bmN0aW9uIGZyb20gdGhlIHByb2Nlc3MgbW9kdWxlIGZyb20gZnV6enkgd3V6enkuIEV4dHJhY3QgdGFrZXMgaW4gYSBzdHJpbmcsIGFuIGFycmF5IG9mIHN0cmluZ3MsIGFuZCB0aGUgbnVtYmVyIG9mIHBvc3NpYmxlIG1hdGNoZXMgdG8gcmV0dXJuIHJhbmtlZCBmcm9tIGhpZ2hlc3QgdG8gbG93ZXN0LiBJdCByZXR1cm5zIGEgbGlzdCBvZiB0dXBsZXMgd2l0aCAzIGVsZW1lbnRzLCB0aGUgZmlyc3Qgb25lIGJlaW5nIHRoZSBtYXRjaGluZyBzdHJpbmcgYmVpbmcgcmV0dXJuZWQsIHRoZSBzZWNvbmQgb25lIGJlaW5nIGl0cyBzaW1pbGFyaXR5IHNjb3JlLCBhbmQgdGhlIHRoaXJkIG9uZSBiZWluZyBpdHMgaW5kZXggaW4gdGhlIGFycmF5LgoKKioxNC4gQ29sbGFwc2luZyBjYXRlZ29yaWVzIHdpdGggc3RyaW5nIHNpbWlsYXJpdHkqKgoKSW4gY2hhcHRlciAyLCB3ZSBsZWFybmVkIHRoYXQgY29sbGFwc2luZyBkYXRhIGludG8gY2F0ZWdvcmllcyBpcyBhbiBlc3NlbnRpYWwgYXNwZWN0IG9mIHdvcmtpbmcgd2l0aCBjYXRlZ29yaWNhbCBhbmQgdGV4dCBkYXRhLCBhbmQgd2Ugc2F3IGhvdyB0byBtYW51YWxseSByZXBsYWNlIGNhdGVnb3JpZXMgaW4gYSBjb2x1bW4gb2YgYSBEYXRhRnJhbWUuIEJ1dCB3aGF0IGlmIHdlIGhhZCBzbyBtYW55IGluY29uc2lzdGVudCBjYXRlZ29yaWVzIHRoYXQgYSBtYW51YWwgcmVwbGFjZW1lbnQgaXMgc2ltcGx5IG5vdCBmZWFzaWJsZT8gV2UgY2FuIGVhc2lseSBkbyB0aGF0IHdpdGggc3RyaW5nIHNpbWlsYXJpdHkhCgoqKjE1LiBDb2xsYXBzaW5nIGNhdGVnb3JpZXMgd2l0aCBzdHJpbmcgbWF0Y2hpbmcqKgoKU2F5IHdlIGhhdmUgRGF0YUZyYW1lIG5hbWVkIHN1cnZleSBjb250YWluaW5nIGFuc3dlcnMgZnJvbSByZXNwb25kZW50cyBmcm9tIHRoZSBzdGF0ZSBvZiBOZXcgWW9yayBhbmQgQ2FsaWZvcm5pYSBhc2tpbmcgdGhlbSBob3cgbGlrZWx5IGFyZSB5b3UgdG8gbW92ZSBvbiBhIHNjYWxlIG9mIDAgdG8gNS4gVGhlIHN0YXRlIGZpZWxkIHdhcyBmcmVlIHRleHQgYW5kIGNvbnRhaW5zIGh1bmRyZWRzIG9mIHR5cG9zLiBSZW1hcHBpbmcgdGhlbSBtYW51YWxseSB3b3VsZCB0YWtlIGEgaHVnZSBhbW91bnQgb2YgdGltZS4gSW5zdGVhZCwgd2UnbGwgdXNlIHN0cmluZyBzaW1pbGFyaXR5LiBXZSBhbHNvIGhhdmUgYSBjYXRlZ29yeSBEYXRhRnJhbWUgY29udGFpbmluZyB0aGUgY29ycmVjdCBjYXRlZ29yaWVzIGZvciBlYWNoIHN0YXRlLiBMZXQncyBjb2xsYXBzZSB0aGUgaW5jb3JyZWN0IGNhdGVnb3JpZXMgd2l0aCBzdHJpbmcgbWF0Y2hpbmchCgoqKjE2LiBDb2xsYXBzaW5nIGFsbCBvZiB0aGUgc3RhdGUqKgoKV2UgZmlyc3QgY3JlYXRlIGEgZm9yIGxvb3AgaXRlcmF0aW5nIG92ZXIgZWFjaCBjb3JyZWN0bHkgdHlwZWQgc3RhdGUgaW4gdGhlIGNhdGVnb3JpZXMgRGF0YUZyYW1lLiBGb3IgZWFjaCBzdGF0ZSwgd2UgZmluZCBpdHMgbWF0Y2hlcyBpbiB0aGUgc3RhdGUgY29sdW1uIG9mIHRoZSBzdXJ2ZXkgRGF0YUZyYW1lLCByZXR1cm5pbmcgYWxsIHBvc3NpYmxlIG1hdGNoZXMgYnkgc2V0dGluZyB0aGUgbGltaXQgYXJndW1lbnQgb2YgZXh0cmFjdCB0byB0aGUgbGVuZ3RoIG9mIHRoZSBzdXJ2ZXkgRGF0YUZyYW1lLiBUaGVuIHdlIGl0ZXJhdGUgb3ZlciBlYWNoIHBvdGVudGlhbCBtYXRjaCwgaXNvbGF0aW5nIHRoZSBvbmVzIG9ubHkgd2l0aCBhIHNpbWlsYXJpdHkgc2NvcmUgaGlnaGVyIG9yIGVxdWFsIHRoYW4gODAgd2l0aCBhbiBpZiBzdGF0ZW1lbnQuIFRoZW4gZm9yIGVhY2ggb2YgdGhvc2UgcmV0dXJuZWQgc3RyaW5ncywgd2UgcmVwbGFjZSBpdCB3aXRoIHRoZSBjb3JyZWN0IHN0YXRlIHVzaW5nIHRoZSBsb2MgbWV0aG9kLgoKKioxNy4gUmVjb3JkIGxpbmthZ2UqKgoKUmVjb3JkIGxpbmthZ2UgYXR0ZW1wdHMgdG8gam9pbiBkYXRhIHNvdXJjZXMgdGhhdCBoYXZlIHNpbWlsYXJseSBmdXp6eSBkdXBsaWNhdGUgdmFsdWVzLCBzbyB0aGF0IHdlIGVuZCB1cCB3aXRoIGEgZmluYWwgRGF0YUZyYW1lIHdpdGggbm8gZHVwbGljYXRlcyBieSB1c2luZyBzdHJpbmcgc2ltaWxhcml0eS4gV2UnbGwgY292ZXIgcmVjb3JkIGxpbmthZ2UgaW4gbW9yZSBkZXRhaWwgaW4gdGhlIG5leHQgY291cGxlIG9mIGxlc3NvbnMuCgoqKjE4LiBMZXQncyBwcmFjdGljZSEqKgoKQnV0IGZvciBub3csIGxldCdzIGNsZWFuIHNvbWUgZGF0YSB1c2luZyBzdHJpbmcgc2ltaWxhcml0eSEKCiMjIyAqKk1pbmltdW0gZWRpdCBkaXN0YW5jZSoqCgpJbiB0aGUgdmlkZW8gZXhlcmNpc2UsIHlvdSBzYXcgaG93IG1pbmltdW0gZWRpdCBkaXN0YW5jZSBpcyB1c2VkIHRvIGlkZW50aWZ5IGhvdyBzaW1pbGFyIHR3byBzdHJpbmdzIGFyZS4gQXMgYSByZW1pbmRlciwgbWluaW11bSBlZGl0IGRpc3RhbmNlIGlzIHRoZSBtaW5pbXVtIG51bWJlciBvZiBzdGVwcyBuZWVkZWQgdG8gcmVhY2ggZnJvbSAqKl9TdHJpbmcgQV8qKiB0byAqKl9TdHJpbmcgQl8qKiwgd2l0aCB0aGUgb3BlcmF0aW9ucyBhdmFpbGFibGUgYmVpbmc6CgogIC0gKipJbnNlcnRpb24qKiBvZiBhIG5ldyBjaGFyYWN0ZXIuCiAgLSAqKkRlbGV0aW9uKiogb2YgYW4gZXhpc3RpbmcgY2hhcmFjdGVyLgogIC0gKipTdWJzdGl0dXRpb24qKiBvZiBhbiBleGlzdGluZyBjaGFyYWN0ZXIuCiAgLSAqKlRyYW5zcG9zaXRpb24qKiBvZiB0d28gZXhpc3RpbmcgY29uc2VjdXRpdmUgY2hhcmFjdGVycy4KCiAgICAgICAgICAgICAgICAgICAgKldoYXQgaXMgdGhlIG1pbmltdW0gZWRpdCBkaXN0YW5jZSBmcm9tKiBgJ3NpZ24nYCAqdG8qIGAnc2luZydgLCAqYW5kIHdoaWNoIG9wZXJhdGlvbihzKSBnZXRzIHlvdSB0aGVyZT8qCgoqKlBvc3NpYmxlIEFuc3dlcnMqKgoKMS4gMiBieSBzdWJzdGl0dXRpbmcgYCdnJ2Agd2l0aCBgJ24nYCBhbmQgYCduJ2Agd2l0aCBgJ2cnYC4KCjIuIDEgYnkgdHJhbnNwb3NpbmcgYCdnJ2Agd2l0aCBgJ24nYC4KCjMuIDEgYnkgc3Vic3RpdHV0aW5nIGAnZydgIHdpdGggYCduJ2AuCgo0LiAyIGJ5IGRlbGV0aW5nIGAnZydgIGFuZCBpbnNlcnRpbmcgYSBuZXcgYCdnJ2AgYXQgdGhlIGVuZC4KCkFuc3dlcjoKCiMjIyAqKlRoZSBjdXRvZmYgcG9pbnQqKgoKSW4gdGhpcyBleGVyY2lzZSwgYW5kIHRocm91Z2hvdXQgdGhpcyBjaGFwdGVyLCB5b3UnbGwgYmUgd29ya2luZyB3aXRoIHRoZSBgcmVzdGF1cmFudHNgIERhdGFGcmFtZSB3aGljaCBoYXMgZGF0YSBvbiB2YXJpb3VzIHJlc3RhdXJhbnRzLiBZb3VyIHVsdGltYXRlIGdvYWwgaXMgdG8gY3JlYXRlIGEgcmVzdGF1cmFudCByZWNvbW1lbmRhdGlvbiBlbmdpbmUsIGJ1dCB5b3UgbmVlZCB0byBmaXJzdCBjbGVhbiB5b3VyIGRhdGEuCgpUaGlzIHZlcnNpb24gb2YgYHJlc3RhdXJhbnRzYCBoYXMgYmVlbiBjb2xsZWN0ZWQgZnJvbSBtYW55IHNvdXJjZXMsIHdoZXJlIHRoZSBgY3Vpc2luZV90eXBlYCBjb2x1bW4gaXMgcmlkZGxlZCB3aXRoIHR5cG9zLCBhbmQgc2hvdWxkIGNvbnRhaW4gb25seSBgaXRhbGlhbmAsIGBhbWVyaWNhbmAgYW5kIGBhc2lhbmAgY3Vpc2luZSB0eXBlcy4gVGhlcmUgYXJlIHNvIG1hbnkgdW5pcXVlIGNhdGVnb3JpZXMgdGhhdCByZW1hcHBpbmcgdGhlbSBtYW51YWxseSBpc24ndCBzY2FsYWJsZSwgYW5kIGl0J3MgYmVzdCB0byB1c2Ugc3RyaW5nIHNpbWlsYXJpdHkgaW5zdGVhZC4KCkJlZm9yZSBkb2luZyBzbywgeW91IHdhbnQgdG8gZXN0YWJsaXNoIHRoZSBjdXRvZmYgcG9pbnQgZm9yIHRoZSBzaW1pbGFyaXR5IHNjb3JlIHVzaW5nIHRoZSBgZnV6enl3dXp6eWAncyBgcHJvY2Vzcy5leHRyYWN0KClgIGZ1bmN0aW9uIGJ5IGZpbmRpbmcgdGhlIHNpbWlsYXJpdHkgc2NvcmUgb2YgdGhlIG1vc3QgZGlzdGFudCB0eXBvIG9mIGVhY2ggY2F0ZWdvcnkuCgoqKkluc3RydWN0aW9ucyoqCgoxLiAKLSBJbXBvcnQgYHByb2Nlc3NgIGZyb20gYGZ1enp5d3V6enlgLgotIFN0b3JlIHRoZSB1bmlxdWUgYGN1aXNpbmVfdHlwZXNgIGludG8gYHVuaXF1ZV90eXBlc2AuCi0gQ2FsY3VsYXRlIHRoZSBzaW1pbGFyaXR5IG9mIGAnYXNpYW4nYCwgYCdhbWVyaWNhbidgLCBhbmQgYCdpdGFsaWFuJ2AgdG8gYWxsIHBvc3NpYmxlIGBjdWlzaW5lX3R5cGVzYCB1c2luZyBgcHJvY2Vzcy5leHRyYWN0KClgLCB3aGlsZSByZXR1cm5pbmcgYWxsIHBvc3NpYmxlIG1hdGNoZXMuCgpgYGB7cHl0aG9ufQojIEltcG9ydCBwcm9jZXNzIGZyb20gZnV6enl3dXp6eQpfX19fCgojIFN0b3JlIHRoZSB1bmlxdWUgdmFsdWVzIG9mIGN1aXNpbmVfdHlwZSBpbiB1bmlxdWVfdHlwZXMKdW5pcXVlX3R5cGVzID0gX19fXwoKIyBDYWxjdWxhdGUgc2ltaWxhcml0eSBvZiAnYXNpYW4nIHRvIGFsbCB2YWx1ZXMgb2YgdW5pcXVlX3R5cGVzCnByaW50KHByb2Nlc3MuX19fXygnX19fXycsIF9fX18sIGxpbWl0ID0gbGVuKF9fX18pKSkKCiMgQ2FsY3VsYXRlIHNpbWlsYXJpdHkgb2YgJ2FtZXJpY2FuJyB0byBhbGwgdmFsdWVzIG9mIHVuaXF1ZV90eXBlcwpwcmludChfX19fKCdfX19fJywgX19fXywgX19fXykpCgojIENhbGN1bGF0ZSBzaW1pbGFyaXR5IG9mICdpdGFsaWFuJyB0byBhbGwgdmFsdWVzIG9mIHVuaXF1ZV90eXBlcwpwcmludChfX19fKQpgYGAKCiMjIyAqKlJlbWFwcGluZyBjYXRlZ29yaWVzIElJKioKCkluIHRoZSBsYXN0IGV4ZXJjaXNlLCB5b3UgZGV0ZXJtaW5lZCB0aGF0IHRoZSBkaXN0YW5jZSBjdXRvZmYgcG9pbnQgZm9yIHJlbWFwcGluZyB0eXBvcyBvZiBgJ2FtZXJpY2FuJ2AsIGAnYXNpYW4nYCwgYW5kIGAnaXRhbGlhbidgIGN1aXNpbmUgdHlwZXMgc3RvcmVkIGluIHRoZSBgY3Vpc2luZV90eXBlYCBjb2x1bW4gc2hvdWxkIGJlIDgwLgoKSW4gdGhpcyBleGVyY2lzZSwgeW91J3JlIGdvaW5nIHRvIHB1dCBpdCBhbGwgdG9nZXRoZXIgYnkgZmluZGluZyBtYXRjaGVzIHdpdGggc2ltaWxhcml0eSBzY29yZXMgZXF1YWwgdG8gb3IgaGlnaGVyIHRoYW4gODAgYnkgdXNpbmcgYGZ1enl3dXp6eS5wcm9jZXNzYCdzIGBleHRyYWN0KClgIGZ1bmN0aW9uLCBmb3IgZWFjaCBjb3JyZWN0IGN1aXNpbmUgdHlwZSwgYW5kIHJlcGxhY2luZyB0aGVzZSBtYXRjaGVzIHdpdGggaXQuIFJlbWVtYmVyLCB3aGVuIGNvbXBhcmluZyBhIHN0cmluZyB3aXRoIGFuIGFycmF5IG9mIHN0cmluZ3MgdXNpbmcgYHByb2Nlc3MuZXh0cmFjdCgpYCwgdGhlIG91dHB1dCBpcyBhIGxpc3Qgb2YgdHVwbGVzIHdoZXJlIGVhY2ggaXMgZm9ybWF0dGVkIGxpa2U6CgpgKGNsb3Nlc3QgbWF0Y2gsIHNpbWlsYXJpdHkgc2NvcmUsIGluZGV4IG9mIG1hdGNoKWAKClRoZSBgcmVzdGF1cmFudHNgIERhdGFGcmFtZSBpcyBpbiB5b3VyIGVudmlyb25tZW50LCBhbmQgeW91IGhhdmUgYWNjZXNzIHRvIGEgY2F0ZWdvcmllcyBsaXN0IGNvbnRhaW5pbmcgdGhlIGNvcnJlY3QgY3Vpc2luZSB0eXBlcyAoYCdpdGFsaWFuJ2AsIGAnYXNpYW4nYCwgYW5kIGAnYW1lcmljYW4nYCkuCgoqKkluc3RydWN0aW9ucyoqCgoxLgotIFJldHVybiBhbGwgb2YgdGhlIHVuaXF1ZSB2YWx1ZXMgaW4gdGhlIGBjdWlzaW5lX3R5cGVgIGNvbHVtbiBvZiBgcmVzdGF1cmFudHNgLgoKYGBge3B5dGhvbn0KIyBJbnNwZWN0IHRoZSB1bmlxdWUgdmFsdWVzIG9mIHRoZSBjdWlzaW5lX3R5cGUgY29sdW1uCnByaW50KF9fX18pCmBgYAoKIyMgKipHZW5lcmF0aW5nIHBhaXJzKioKCioqMS4gR2VuZXJhdGluZyBwYWlycyoqCgpHcmVhdCB3b3JrIHdpdGggbGVzc29uIDEgLSB5b3Ugbm93IGhhdmUgYSBzb2xpZCB1bmRlcnN0YW5kaW5nIGhvdyB0byBjYWxjdWxhdGUgc3RyaW5nIHNpbWlsYXJpdHkuCgoqKjIuIE1vdGl2YXRpb24qKgoKQXQgdGhlIGVuZCBvZiB0aGUgbGFzdCB2aWRlbyBleGVyY2lzZSwgd2Ugc2F3IGhvdyByZWNvcmQgbGlua2FnZSBhdHRlbXB0cyB0byBqb2luIGRhdGEgc291cmNlcyB3aXRoIGZ1enp5IGR1cGxpY2F0ZSB2YWx1ZXMuIEZvciBleGFtcGxlIGhlcmUgYXJlIHR3byBEYXRhRnJhbWVzIGNvbnRhaW5pbmcgTkJBIGdhbWVzIGFuZCB0aGVpciBzY2hlZHVsZXMuIFRoZXkndmUgYm90aCBiZWVuIHNjcmFwZWQgZnJvbSBkaWZmZXJlbnQgc2l0ZXMgYW5kIHdlIHdvdWxkIHdhbnQgdG8gbWVyZ2UgdGhlbSB0b2dldGhlciBhbmQgaGF2ZSBvbmUgRGF0YUZyYW1lIGNvbnRhaW5pbmcgYWxsIHVuaXF1ZSBnYW1lcy4KCioqMy4gV2hlbiBqb2lucyB3b24ndCB3b3JrKioKCldlIHNlZSB0aGF0IHRoZXJlIGFyZSBkdXBsaWNhdGVzIHZhbHVlcyBpbiBib3RoIERhdGFGcmFtZXMgd2l0aCBkaWZmZXJlbnQgbmFtaW5nIG1hcmtlZCBoZXJlIGluIHJlZCwgYW5kIG5vbiBkdXBsaWNhdGUgdmFsdWVzLCBtYXJrZWQgaGVyZSBpbiBncmVlbi4gU2luY2UgdGhlcmUgYXJlIGdhbWVzIGhhcHBlbmluZyBhdCB0aGUgc2FtZSB0aW1lLCBubyBjb21tb24gdW5pcXVlIGlkZW50aWZpZXIgYmV0d2VlbiB0aGUgRGF0YUZyYW1lcywgYW5kIHRoZSBldmVudHMgYXJlIGRpZmZlcmVudGx5IG5hbWVkLCBhIHJlZ3VsYXIgam9pbiBvciBtZXJnZSB3aWxsIG5vdCB3b3JrLiBUaGlzIGlzIHdoZXJlIHJlY29yZCBsaW5rYWdlIGNvbWVzIGluLgoKKio0LiBSZWNvcmQgbGlua2FnZSoqCgpSZWNvcmQgbGlua2FnZSBpcyB0aGUgYWN0IG9mIGxpbmtpbmcgZGF0YSBmcm9tIGRpZmZlcmVudCBzb3VyY2VzIHJlZ2FyZGluZyB0aGUgc2FtZSBlbnRpdHkuIEdlbmVyYWxseSwgd2UgY2xlYW4gdHdvIG9yIG1vcmUgRGF0YUZyYW1lcywgZ2VuZXJhdGUgcGFpcnMgb2YgcG90ZW50aWFsbHkgbWF0Y2hpbmcgcmVjb3Jkcywgc2NvcmUgdGhlc2UgcGFpcnMgYWNjb3JkaW5nIHRvIHN0cmluZyBzaW1pbGFyaXR5IGFuZCBvdGhlciBzaW1pbGFyaXR5IG1ldHJpY3MsIGFuZCBsaW5rIHRoZW0uIEFsbCBvZiB0aGVzZSBzdGVwcyBjYW4gYmUgYWNoaWV2ZWQgd2l0aCB0aGUgcmVjb3JkbGlua2FnZSBwYWNrYWdlLCBsZXQncyBmaW5kIGhvdyEKCioqNS4gT3VyIERhdGFGcmFtZXMqKgoKSGVyZSB3ZSBoYXZlIHR3byBEYXRhRnJhbWVzLCBjZW5zdXNfQSwgYW5kIGNlbnN1c19CLCBjb250YWluaW5nIGRhdGEgb24gaW5kaXZpZHVhbHMgdGhyb3VnaG91dCB0aGUgc3RhdGVzLiBXZSB3YW50IHRvIG1lcmdlIHRoZW0gd2hpbGUgYXZvaWRpbmcgZHVwbGljYXRpb24gdXNpbmcgcmVjb3JkIGxpbmthZ2UsIHNpbmNlIHRoZXkgYXJlIGNvbGxlY3RlZCBtYW51YWxseSBhbmQgYXJlIHByb25lIHRvIHR5cG9zLCB0aGVyZSBhcmUgbm8gY29uc2lzdGVudCBJRHMgYmV0d2VlbiB0aGVtLgoKKio2LiBHZW5lcmF0aW5nIHBhaXJzKioKCldlIGZpcnN0IHdhbnQgdG8gZ2VuZXJhdGUgcGFpcnMgYmV0d2VlbiBib3RoIERhdGFGcmFtZXMuIElkZWFsbHksIHdlIHdhbnQgdG8gZ2VuZXJhdGUgYWxsIHBvc3NpYmxlIHBhaXJzIGJldHdlZW4gb3VyIERhdGFGcmFtZXMuCgoqKjcuIEdlbmVyYXRpbmcgcGFpcnMqKgoKYnV0IHdoYXQgaWYgd2UgaGFkIGJpZyBEYXRhRnJhbWVzIGFuZCBlbmRlZCB1cCBoYXZpbmcgdG8gZ2VuZXJhdGUgbWlsbGlvbnMgaWYgbm90IGJpbGxpb25zIG9mIHBhaXJzPyBJdCB3b3VsZG4ndCBwcm92ZSBzY2FsYWJsZSBhbmQgY291bGQgc2VyaW91c2x5IGhhbXBlciBkZXZlbG9wbWVudCB0aW1lLgoKKio4LiBCbG9ja2luZyoqCgpUaGlzIGlzIHdoZXJlIHdlIGFwcGx5IHdoYXQgd2UgY2FsbCBibG9ja2luZywgd2hpY2ggY3JlYXRlcyBwYWlycyBiYXNlZCBvbiBhIG1hdGNoaW5nIGNvbHVtbiwgd2hpY2ggaXMgaW4gdGhpcyBjYXNlLCB0aGUgc3RhdGUgY29sdW1uLCByZWR1Y2luZyB0aGUgbnVtYmVyIG9mIHBvc3NpYmxlIHBhaXJzLgoKKio5LiBHZW5lcmF0aW5nIHBhaXJzKioKClRvIGRvIHRoaXMsIHdlIGZpcnN0IHN0YXJ0IG9mZiBieSBpbXBvcnRpbmcgcmVjb3JkbGlua2FnZS4gV2UgdGhlbiB1c2UgdGhlIHJlY29yZGxpbmthZ2UgZG90IEluZGV4IGZ1bmN0aW9uLCB0byBjcmVhdGUgYW4gaW5kZXhpbmcgb2JqZWN0LiBUaGlzIGVzc2VudGlhbGx5IGlzIGFuIG9iamVjdCB3ZSBjYW4gdXNlIHRvIGdlbmVyYXRlIHBhaXJzIGZyb20gb3VyIERhdGFGcmFtZXMuIFRvIGdlbmVyYXRlIHBhaXJzIGJsb2NrZWQgb24gc3RhdGUsIHdlIHVzZSB0aGUgYmxvY2sgbWV0aG9kLCBpbnB1dHRpbmcgdGhlIHN0YXRlIGNvbHVtbiBhcyBpbnB1dC4gT25jZSB0aGUgaW5kZXhlciBvYmplY3QgaGFzIGJlZW4gaW5pdGlhbGl6ZWQsIHdlIGdlbmVyYXRlIG91ciBwYWlycyB1c2luZyB0aGUgZG90IGluZGV4IG1ldGhvZCwgd2hpY2ggdGFrZXMgaW4gdGhlIHR3byBkYXRhZnJhbWVzLgoKKioxMC4gR2VuZXJhdGluZyBwYWlycyoqCgpUaGUgcmVzdWx0aW5nIG9iamVjdCwgaXMgYSBwYW5kYXMgbXVsdGkgaW5kZXggb2JqZWN0IGNvbnRhaW5pbmcgcGFpcnMgb2Ygcm93IGluZGljZXMgZnJvbSBib3RoIERhdGFGcmFtZXMsIHdoaWNoIGlzIGEgZmFuY3kgd2F5IHRvIHNheSBpdCBpcyBhbiBhcnJheSBjb250YWluaW5nIHBvc3NpYmxlIHBhaXJzIG9mIGluZGljZXMgdGhhdCBtYWtlcyBpdCBtdWNoIGVhc2llciB0byBzdWJzZXQgRGF0YUZyYW1lcyBvbi4KCioqMTEuIENvbXBhcmluZyB0aGUgRGF0YUZyYW1lcyoqCgpTaW5jZSB3ZSd2ZSBhbHJlYWR5IGdlbmVyYXRlZCBvdXIgcGFpcnMsIGl0J3MgdGltZSB0byBmaW5kIHBvdGVudGlhbCBtYXRjaGVzLiBXZSBmaXJzdCBzdGFydCBieSBjcmVhdGluZyBhIGNvbXBhcmlzb24gb2JqZWN0IHVzaW5nIHRoZSByZWNvcmRsaW5rYWdlIGRvdCBjb21wYXJlIGZ1bmN0aW9uLiBUaGlzIGlzIHNpbWlsYXIgdG8gdGhlIGluZGV4aW5nIG9iamVjdCB3ZSBjcmVhdGVkIHdoaWxlIGdlbmVyYXRpbmcgcGFpcnMsIGJ1dCB0aGlzIG9uZSBpcyByZXNwb25zaWJsZSBmb3IgYXNzaWduaW5nIGRpZmZlcmVudCBjb21wYXJpc29uIHByb2NlZHVyZXMgZm9yIHBhaXJzLiBMZXQncyBzYXkgdGhlcmUgYXJlIGNvbHVtbnMgZm9yIHdoaWNoIHdlIHdhbnQgZXhhY3QgbWF0Y2hlcyBiZXR3ZWVuIHRoZSBwYWlycy4gVG8gZG8gdGhhdCwgd2UgdXNlIHRoZSBleGFjdCBtZXRob2QuIEl0IHRha2VzIGluIHRoZSBjb2x1bW4gbmFtZSBpbiBxdWVzdGlvbiBmb3IgZWFjaCBEYXRhRnJhbWUsIHdoaWNoIGlzIGluIHRoaXMgY2FzZSBkYXRlX29mX2JpcnRoIGFuZCBzdGF0ZSwgYW5kIGEgbGFiZWwgYXJndW1lbnQgd2hpY2ggbGV0cyB1cyBzZXQgdGhlIGNvbHVtbiBuYW1lIGluIHRoZSByZXN1bHRpbmcgRGF0YUZyYW1lLiBOb3cgaW4gb3JkZXIgdG8gY29tcHV0ZSBzdHJpbmcgc2ltaWxhcml0aWVzIGJldHdlZW4gcGFpcnMgb2Ygcm93cyBmb3IgY29sdW1ucyB0aGF0IGhhdmUgZnV6enkgdmFsdWVzLCB3ZSB1c2UgdGhlIGRvdCBzdHJpbmcgbWV0aG9kLCB3aGljaCBhbHNvIHRha2VzIGluIHRoZSBjb2x1bW4gbmFtZXMgaW4gcXVlc3Rpb24sIHRoZSBzaW1pbGFyaXR5IGN1dG9mZiBwb2ludCBpbiB0aGUgdGhyZXNob2xkIGFyZ3VtZW50LCB3aGljaCB0YWtlcyBpbiBhIHZhbHVlIGJldHdlZW4gMCBhbmQgMSwgd2hpY2ggd2UgaGVyZSBzZXQgdG8gMC44NS4gRmluYWxseSB0byBjb21wdXRlIHRoZSBtYXRjaGVzLCB3ZSB1c2UgdGhlIGNvbXB1dGUgZnVuY3Rpb24sIHdoaWNoIHRha2VzIGluIHRoZSBwb3NzaWJsZSBwYWlycywgYW5kIHRoZSB0d28gRGF0YUZyYW1lcyBpbiBxdWVzdGlvbi4gTm90ZSB0aGF0IHlvdSBuZWVkIHRvIGFsd2F5cyBoYXZlIHRoZSBzYW1lIG9yZGVyIG9mIERhdGFGcmFtZXMgd2hlbiBpbnNlcnRpbmcgdGhlbSBhcyBhcmd1bWVudHMgd2hlbiBnZW5lcmF0aW5nIHBhaXJzLCBjb21wYXJpbmcgYmV0d2VlbiBjb2x1bW5zLCBhbmQgY29tcHV0aW5nIGNvbXBhcmlzb25zLgoKKioxMi4gRmluZGluZyBtYXRjaGluZyBwYWlycyoqCgpUaGUgb3V0cHV0IGlzIGEgbXVsdGkgaW5kZXggRGF0YUZyYW1lLCB3aGVyZSB0aGUgZmlyc3QgaW5kZXggaXMgdGhlIHJvdyBpbmRleCBmcm9tIHRoZSBmaXJzdCBEYXRhRnJhbWUsIG9yIGNlbnN1cyBBLCBhbmQgdGhlIHNlY29uZCBpbmRleCBpcyBhIGxpc3Qgb2YgYWxsIHJvdyBpbmRpY2VzIGluIGNlbnN1cyBCLiBUaGUgY29sdW1ucyBhcmUgdGhlIGNvbHVtbnMgYmVpbmcgY29tcGFyZWQsIHdpdGggdmFsdWVzIGJlaW5nIDEgZm9yIGEgbWF0Y2gsIGFuZCAwIGZvciBub3QgYSBtYXRjaC4KCioqMTMuIEZpbmRpbmcgdGhlIG9ubHkgcGFpcnMgd2Ugd2FudCoqCgpUbyBmaW5kIHBvdGVudGlhbCBtYXRjaGVzLCB3ZSBqdXN0IGZpbHRlciBmb3Igcm93cyB3aGVyZSB0aGUgc3VtIG9mIHJvdyB2YWx1ZXMgaXMgaGlnaGVyIHRoYW4gYSBjZXJ0YWluIHRocmVzaG9sZC4gV2hpY2ggaW4gdGhpcyBjYXNlIGhpZ2hlciBvciBlcXVhbCB0byAyLiBCdXQgd2UnbGwgZGlnIGRlZXBlciBpbnRvIHRoZXNlIG1hdGNoZXMgYW5kIHNlZSBob3cgdG8gdXNlIHRoZW0gdG8gbGluayBvdXIgY2Vuc3VzIERhdGFGcmFtZXMgaW4gdGhlIG5leHQgbGVzc29uLgoKKioxNC4gTGV0J3MgcHJhY3RpY2UhKioKQnV0IGZvciBub3csIGxldCdzIGdlbmVyYXRlIHBhaXJzLgoKIyMjICoqVG8gbGluayBvciBub3QgdG8gbGluaz8qKgoKU2ltaWxhciB0byBqb2lucywgcmVjb3JkIGxpbmthZ2UgaXMgdGhlIGFjdCBvZiBsaW5raW5nIGRhdGEgZnJvbSBkaWZmZXJlbnQgc291cmNlcyByZWdhcmRpbmcgdGhlIHNhbWUgZW50aXR5LiBCdXQgdW5saWtlIGpvaW5zLCByZWNvcmQgbGlua2FnZSBkb2VzIG5vdCByZXF1aXJlIGV4YWN0IG1hdGNoZXMgYmV0d2VlbiBkaWZmZXJlbnQgcGFpcnMgb2YgZGF0YSwgYW5kIGluc3RlYWQgY2FuIGZpbmQgY2xvc2UgbWF0Y2hlcyB1c2luZyBzdHJpbmcgc2ltaWxhcml0eS4gVGhpcyBpcyB3aHkgcmVjb3JkIGxpbmthZ2UgaXMgZWZmZWN0aXZlIHdoZW4gdGhlcmUgYXJlIG5vIGNvbW1vbiB1bmlxdWUga2V5cyBiZXR3ZWVuIHRoZSBkYXRhIHNvdXJjZXMgeW91IGNhbiByZWx5IHVwb24gd2hlbiBsaW5raW5nIGRhdGEgc291cmNlcyBzdWNoIGFzIGEgdW5pcXVlIGlkZW50aWZpZXIuCgpJbiB0aGlzIGV4ZXJjaXNlLCB5b3Ugd2lsbCBjbGFzc2lmeSBlYWNoIGNhcmQgd2hldGhlciBpdCBpcyBhIHRyYWRpdGlvbmFsIGpvaW4gcHJvYmxlbSwgb3IgYSByZWNvcmQgbGlua2FnZSBvbmUuCgoqKkluc3RydWN0aW9ucyoqCgotIENsYXNzaWZ5IGVhY2ggY2FyZCBpbnRvIGEgcHJvYmxlbSB0aGF0IHJlcXVpcmVzIHJlY29yZCBsaW5rYWdlIG9yIHJlZ3VsYXIgam9pbnMuCgotIFJlY29yZCBsaW5rYWdlOgoKLSBSZWNvcmQgam9pbnM6CgojIyMgKipQYWlycyBvZiByZXN0YXVyYW50cyoqCgpJbiB0aGUgbGFzdCBsZXNzb24sIHlvdSBjbGVhbmVkIHRoZSBgcmVzdGF1cmFudHNgIGRhdGFzZXQgdG8gbWFrZSBpdCByZWFkeSBmb3IgYnVpbGRpbmcgYSByZXN0YXVyYW50cyByZWNvbW1lbmRhdGlvbiBlbmdpbmUuIFlvdSBoYXZlIGEgbmV3IERhdGFGcmFtZSBuYW1lZCBgcmVzdGF1cmFudHNfbmV3YCB3aXRoIG5ldyByZXN0YXVyYW50cyB0byB0cmFpbiB5b3VyIG1vZGVsIG9uLCB0aGF0J3MgYmVlbiBzY3JhcGVkIGZyb20gYSBuZXcgZGF0YSBzb3VyY2UuCgpZb3UndmUgYWxyZWFkeSBjbGVhbmVkIHRoZSBgY3Vpc2luZV90eXBlYCBhbmQgYGNpdHlgIGNvbHVtbnMgdXNpbmcgdGhlIHRlY2huaXF1ZXMgbGVhcm5lZCB0aHJvdWdob3V0IHRoZSBjb3Vyc2UuIEhvd2V2ZXIgeW91IHNhdyBkdXBsaWNhdGVzIHdpdGggdHlwb3MgaW4gcmVzdGF1cmFudHMgbmFtZXMgdGhhdCByZXF1aXJlIHJlY29yZCBsaW5rYWdlIGluc3RlYWQgb2Ygam9pbnMgd2l0aCBgcmVzdGF1cmFudHNgLgoKSW4gdGhpcyBleGVyY2lzZSwgeW91IHdpbGwgcGVyZm9ybSB0aGUgZmlyc3Qgc3RlcCBpbiByZWNvcmQgbGlua2FnZSBhbmQgZ2VuZXJhdGUgcG9zc2libGUgcGFpcnMgb2Ygcm93cyBiZXR3ZWVuIGByZXN0YXVyYW50c2AgYW5kIGByZXN0YXVyYW50c19uZXdgLiBCb3RoIERhdGFGcmFtZXMsIGBwYW5kYXNgIGFuZCBgcmVjb3JkbGlua2FnZWAgYXJlIGluIHlvdXIgZW52aXJvbm1lbnQuCgoqKkluc3RydWN0aW9ucyoqCgoxLgotIEluc3RhbnRpYXRlIGFuIGluZGV4aW5nIG9iamVjdCBieSB1c2luZyB0aGUgYEluZGV4KClgIGZ1bmN0aW9uIGZyb20gYHJlY29yZGxpbmthZ2VgLgotIEJsb2NrIHlvdXIgcGFpcmluZyBvbiBgY3Vpc2luZV90eXBlYCBieSB1c2luZyBgaW5kZXhlcmAncycgYC5ibG9jaygpYCBtZXRob2QuCi0gR2VuZXJhdGUgcGFpcnMgYnkgaW5kZXhpbmcgYHJlc3RhdXJhbnRzYCBhbmQgYHJlc3RhdXJhbnRzX25ld2AgaW4gdGhhdCBvcmRlci4KCmBgYHtweXRob259CiMgQ3JlYXRlIGFuIGluZGV4ZXIgYW5kIG9iamVjdCBhbmQgZmluZCBwb3NzaWJsZSBwYWlycwppbmRleGVyID0gX19fXwoKIyBCbG9jayBwYWlyaW5nIG9uIGN1aXNpbmVfdHlwZQppbmRleGVyLl9fX18oX19fXykKCiMgR2VuZXJhdGUgcGFpcnMKcGFpcnMgPSBpbmRleGVyLl9fX18oX19fXywgX19fXykKYGBgCgojIyMgKipTaW1pbGFyIHJlc3RhdXJhbnRzKioKCkluIHRoZSBsYXN0IGV4ZXJjaXNlLCB5b3UgZ2VuZXJhdGVkIHBhaXJzIGJldHdlZW4gYHJlc3RhdXJhbnRzYCBhbmQgYHJlc3RhdXJhbnRzX25ld2AgaW4gYW4gZWZmb3J0IHRvIGNsZWFubHkgbWVyZ2UgYm90aCBEYXRhRnJhbWVzIHVzaW5nIHJlY29yZCBsaW5rYWdlLgoKV2hlbiBwZXJmb3JtaW5nIHJlY29yZCBsaW5rYWdlLCB0aGVyZSBhcmUgZGlmZmVyZW50IHR5cGVzIG9mIG1hdGNoaW5nIHlvdSBjYW4gcGVyZm9ybSBiZXR3ZWVuIGRpZmZlcmVudCBjb2x1bW5zIG9mIHlvdXIgRGF0YUZyYW1lcywgaW5jbHVkaW5nIGV4YWN0IG1hdGNoZXMsIHN0cmluZyBzaW1pbGFyaXRpZXMsIGFuZCBtb3JlLgoKTm93IHRoYXQgeW91ciBwYWlycyBoYXZlIGJlZW4gZ2VuZXJhdGVkIGFuZCBzdG9yZWQgaW4gYHBhaXJzYCwgeW91IHdpbGwgZmluZCBleGFjdCBtYXRjaGVzIGluIHRoZSBgY2l0eWAgYW5kIGBjdWlzaW5lX3R5cGVgIGNvbHVtbnMgYmV0d2VlbiBlYWNoIHBhaXIsIGFuZCBzaW1pbGFyIHN0cmluZ3MgZm9yIGVhY2ggcGFpciBpbiB0aGUgYHJlc3RfbmFtZWAgY29sdW1uLiBCb3RoIERhdGFGcmFtZXMsIGBwYW5kYXNgIGFuZCBgcmVjb3JkbGlua2FnZWAgYXJlIGluIHlvdXIgZW52aXJvbm1lbnQuCgoqKkluc3RydWN0aW9ucyoqCgoxLiBJbnN0YW50aWF0ZSBhIGNvbXBhcmlzb24gb2JqZWN0IHVzaW5nIHRoZSBgcmVjb3JkbGlua2FnZS5Db21wYXJlKClgIGZ1bmN0aW9uLgoKYGBge3B5dGhvbn0KIyBDcmVhdGUgYSBjb21wYXJpc29uIG9iamVjdApjb21wX2NsID0gX19fXwpgYGAKCiMjICoqTGlua2luZyBEYXRhRnJhbWVzKioKCioqMS4gTGlua2luZyBEYXRhRnJhbWVzKioKCkF3ZXNvbWUgd29yayBvbiB0aGUgZmlyc3QgMiBsZXNzb25zISBZb3UndmUgbWFkZSBpdCB0byB0aGUgbGFzdCBsZXNzb24gb2YgdGhpcyBjb3Vyc2UhCgoqKjIuIFJlY29yZCBsaW5rYWdlKioKCkF0IHRoaXMgcG9pbnQsIHlvdSd2ZSBnZW5lcmF0ZWQgeW91ciBwYWlycywgY29tcGFyZWQgdGhlbSwgYW5kIHNjb3JlZCB0aGVtLgoKKiozLiBSZWNvcmQgbGlua2FnZSoqCgpOb3cgaXQncyB0aW1lIHRvIGxpbmsgeW91ciBkYXRhIQoKKio0LiBPdXIgRGF0YUZyYW1lcyoqCgpSZW1lbWJlciBvdXIgY2Vuc3VzIERhdGFGcmFtZXMgZnJvbSB0aGUgdmlkZW8gb2YgdGhlIHByZXZpb3VzIGxlc3Nvbj8KCioqNS4gV2hhdCB3ZSd2ZSBhbHJlYWR5IGRvbmUqKgoKV2UndmUgYWxyZWFkeSBnZW5lcmF0ZWQgcGFpcnMgYmV0d2VlbiB0aGVtLCBjb21wYXJlZCBmb3VyIG9mIHRoZWlyIGNvbHVtbnMsIHR3byBmb3IgZXhhY3QgbWF0Y2hlcyBhbmQgdHdvIGZvciBzdHJpbmcgc2ltaWxhcml0eSBhbG9uZ3NpZGUgYSAwLjg1IHRocmVzaG9sZCwgYW5kIGZvdW5kIHBvdGVudGlhbCBtYXRjaGVzLgoKKio2LiBXaGF0IHdlJ3JlIGRvaW5nIG5vdyoqCgpOb3cgaXQncyB0aW1lIHRvIGxpbmsgYm90aCBjZW5zdXMgRGF0YUZyYW1lcy4KCioqNy4gT3VyIHBvdGVudGlhbCBtYXRjaGVzKioKCkxldCdzIGxvb2sgY2xvc2VseSBhdCBvdXIgcG90ZW50aWFsIG1hdGNoZXMuIEl0IGlzIGEgbXVsdGktaW5kZXggRGF0YUZyYW1lLCB3aGVyZSB3ZSBoYXZlIHR3byBpbmRleCBjb2x1bW5zLCByZWNvcmQgaWQgMSwgYW5kIHJlY29yZCBpZCAyLgoKKio4LiBPdXIgcG90ZW50aWFsIG1hdGNoZXMqKgoKVGhlIGZpcnN0IGluZGV4IGNvbHVtbiwgc3RvcmVzIGluZGljZXMgZnJvbSBjZW5zdXMgQS4KCioqOS4gT3VyIHBvdGVudGlhbCBtYXRjaGVzKioKClRoZSBzZWNvbmQgaW5kZXggY29sdW1uLCBzdG9yZXMgYWxsIHBvc3NpYmxlIGluZGljZXMgZnJvbSBjZW5zdXNfQiwgZm9yIGVhY2ggcm93IGluZGV4IG9mIGNlbnN1c19BLgoKKioxMC4gT3VyIHBvdGVudGlhbCBtYXRjaGVzKioKClRoZSBjb2x1bW5zIG9mIG91ciBwb3RlbnRpYWwgbWF0Y2hlcyBhcmUgdGhlIGNvbHVtbnMgd2UgY2hvc2UgdG8gbGluayBib3RoIERhdGFGcmFtZXMgb24sIHdoZXJlIHRoZSB2YWx1ZSBpcyAxIGZvciBhIG1hdGNoLCBhbmQgMCBvdGhlcndpc2UuCgoqKjExLiBQcm9iYWJsZSBtYXRjaGVzKioKClRoZSBmaXJzdCBzdGVwIGluIGxpbmtpbmcgRGF0YUZyYW1lcywgaXMgdG8gaXNvbGF0ZSB0aGUgcG90ZW50aWFsbHkgbWF0Y2hpbmcgcGFpcnMgdG8gdGhlIG9uZXMgd2UncmUgcHJldHR5IHN1cmUgb2YuIFdlIHNhdyBob3cgdG8gZG8gdGhpcyBpbiB0aGUgcHJldmlvdXMgbGVzc29uLCBieSBzdWJzZXR0aW5nIHRoZSByb3dzIHdoZXJlIHRoZSByb3cgc3VtIGlzIGFib3ZlIGEgY2VydGFpbiBudW1iZXIgb2YgY29sdW1ucywgaW4gdGhpcyBjYXNlIDMuIFRoZSBvdXRwdXQgaXMgcm93IGluZGljZXMgYmV0d2VlbiBjZW5zdXMgQSBhbmQgY2Vuc3VzIEIgdGhhdCBhcmUgbW9zdCBsaWtlbHkgZHVwbGljYXRlcy4gT3VyIG5leHQgc3RlcCBpcyB0byBleHRyYWN0IHRoZSBvbmUgb2YgdGhlIGluZGV4IGNvbHVtbnMsIGFuZCBzdWJzZXR0aW5nIGl0cyBhc3NvY2lhdGVkIERhdGFGcmFtZSB0byBmaWx0ZXIgZm9yIGR1cGxpY2F0ZXMuCgoqKjEyLiBQcm9iYWJsZSBtYXRjaGVzKioKCkhlcmUgd2UgY2hvb3NlIHRoZSBzZWNvbmQgaW5kZXggY29sdW1uLCB3aGljaCByZXByZXNlbnRzIHJvdyBpbmRpY2VzIG9mIGNlbnN1cyBCLiBXZSB3YW50IHRvIGV4dHJhY3QgdGhvc2UgaW5kaWNlcywgYW5kIHN1YnNldCBjZW5zdXNfQiBvbiB0aGVtIHRvIHJlbW92ZSBkdXBsaWNhdGVzIHdpdGggY2Vuc3VzX0EgYmVmb3JlIGFwcGVuZGluZyB0aGVtIHRvZ2V0aGVyLgoKKioxMy4gR2V0IHRoZSBpbmRpY2VzKioKCldlIGNhbiBhY2Nlc3MgYSBEYXRhRnJhbWUncyBpbmRleCB1c2luZyB0aGUgaW5kZXggYXR0cmlidXRlLiBTaW5jZSB0aGlzIGlzIGEgbXVsdGkgaW5kZXggRGF0YUZyYW1lLCBpdCByZXR1cm5zIGEgbXVsdGkgaW5kZXggb2JqZWN0IGNvbnRhaW5pbmcgcGFpcnMgb2Ygcm93IGluZGljZXMgZnJvbSBjZW5zdXNfQSBhbmQgY2Vuc3VzX0IgcmVzcGVjdGl2ZWx5LiBXZSB3YW50IHRvIGV4dHJhY3QgYWxsIGNlbnN1c19CIGluZGljZXMsIHNvIHdlIGNoYWluIGl0IHdpdGggdGhlIGdldF9sZXZlbF92YWx1ZXMgbWV0aG9kLCB3aGljaCB0YWtlcyBpbiB3aGljaCBjb2x1bW4gaW5kZXggd2Ugd2FudCB0byBleHRyYWN0IGl0cyB2YWx1ZXMuIFdlIGNhbiBlaXRoZXIgaW5wdXQgdGhlIGluZGV4IGNvbHVtbidzIG5hbWUsIG9yIGl0cyBvcmRlciwgd2hpY2ggaXMgaW4gdGhpcyBjYXNlIDEuCgoqKjE0LiBMaW5raW5nIERhdGFGcmFtZXMqKgoKVG8gZmluZCB0aGUgZHVwbGljYXRlcyBpbiBjZW5zdXMgQiwgd2Ugc2ltcGx5IHN1YnNldCBvbiBhbGwgaW5kaWNlcyBvZiBjZW5zdXNfQiwgd2l0aCB0aGUgb25lcyBmb3VuZCB0aHJvdWdoIHJlY29yZCBsaW5rYWdlLiBZb3UgY2FuIGNob29zZSB0byBleGFtaW5lIHRoZW0gZnVydGhlciBmb3Igc2ltaWxhcml0eSB3aXRoIHRoZWlyIGR1cGxpY2F0ZXMgaW4gY2Vuc3VzX0EsIGJ1dCBpZiB5b3UncmUgc3VyZSBvZiB5b3VyIGFuYWx5c2lzLCB5b3UgY2FuIGdvIGFoZWFkIGFuZCBmaW5kIHRoZSBub24gZHVwbGljYXRlcyBieSByZXBlYXRpbmcgdGhlIGV4YWN0IHNhbWUgbGluZSBvZiBjb2RlLCBleGNlcHQgYnkgYWRkaW5nIGEgdGlsZGUgYXQgdGhlIGJlZ2lubmluZyBvZiB5b3VyIHN1YnNldC4gTm93IHRoYXQgeW91IGhhdmUgeW91ciBub24gZHVwbGljYXRlcywgYWxsIHlvdSBuZWVkIGlzIGEgc2ltcGxlIGFwcGVuZCB1c2luZyB0aGUgRGF0YUZyYW1lIGFwcGVuZCBtZXRob2Qgb2YgY2Vuc3VzIEEsIGFuZCB5b3UgaGF2ZSB5b3VyIGxpbmtlZCBEYXRhIQoKKioxNS4gTGlua2luZyBEYXRhRnJhbWVzKioKClRvIHJlY2FwLCB3aGF0IHdlIGRpZCB3YXMgYnVpbGQgb24gdG9wIG9mIG91ciBwcmV2aW91cyB3b3JrIGluIGdlbmVyYXRpbmcgcGFpcnMsIGNvbXBhcmluZyBhY3Jvc3MgY29sdW1ucyBhbmQgZmluZGluZyBwb3RlbnRpYWwgbWF0Y2hlcy4gV2UgdGhlbiBpc29sYXRlZCBhbGwgcG9zc2libGUgbWF0Y2hlcywgd2hlcmUgdGhlcmUgYXJlIG1hdGNoZXMgYWNyb3NzIDMgY29sdW1ucyBvciBtb3JlLCBlbnN1cmluZyB3ZSB0aWdodGVuZWQgb3VyIHNlYXJjaCBmb3IgZHVwbGljYXRlcyBhY3Jvc3MgYm90aCBEYXRhRnJhbWVzIGJlZm9yZSB3ZSBsaW5rIHRoZW0uIEV4dHJhY3RlZCB0aGUgcm93IGluZGljZXMgb2YgY2Vuc3VzX0Igd2hlcmUgdGhlcmUgYXJlIGR1cGxpY2F0ZXMuIEZvdW5kIHJvd3Mgb2YgY2Vuc3VzX0Igd2hlcmUgdGhleSBhcmUgbm90IGR1cGxpY2F0ZWQgd2l0aCBjZW5zdXNfQSBieSB1c2luZyB0aGUgdGlsZGUgc3ltYm9sLiBBbmQgbGlua2VkIGJvdGggRGF0YUZyYW1lcyBmb3IgZnVsbCBjZW5zdXMgcmVzdWx0cyEKCioqMTYuIExldCdzIHByYWN0aWNlISoqCgpOb3cgdGhhdCB5b3Uga25vdyBob3cgdG8gbGluayBEYXRhRnJhbWVzLCBsZXQncyBwdXQgdGhvc2Ugc2tpbGxzIHRvIGFjdGlvbiEKCiMjIyAqKkdldHRpbmcgdGhlIHJpZ2h0IGluZGV4KioKCkhlcmUncyBhIERhdGFGcmFtZSBuYW1lZCBtYXRjaGVzIGNvbnRhaW5pbmcgcG90ZW50aWFsIG1hdGNoZXMgYmV0d2VlbiB0d28gRGF0YUZyYW1lcywgYHVzZXJzXzFgIGFuZCBgdXNlcnNfMmAuIEVhY2ggRGF0YUZyYW1lJ3Mgcm93IGluZGljZXMgaXMgc3RvcmVkIGluIGB1aWRfMWAgYW5kIGB1aWRfMmAgcmVzcGVjdGl2ZWx5LgoKYGBge3B5dGhvbiwgZXZhbCA9IEZhbHNlfQogICAgICAgICAgICAgZmlyc3RfbmFtZSAgYWRkcmVzc18xICBhZGRyZXNzXzIgIG1hcnJpYWdlX3N0YXR1cyAgZGF0ZV9vZl9iaXJ0aAp1aWRfMSB1aWRfMiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAowICAgICAzICAgICAgICAgICAgICAxICAgICAgICAgIDEgICAgICAgICAgMSAgICAgICAgICAgICAgICAxICAgICAgICAgICAgICAwCiAgICAgLi4uICAgICAgICAgICAgLi4uICAgICAgICAgLi4uICAgICAgICAuLi4gICAgICAgICAgICAgIC4uLiAgICAgICAgICAgIC4uLgogICAgIC4uLiAgICAgICAgICAgIC4uLiAgICAgICAgIC4uLiAgICAgICAgLi4uICAgICAgICAgICAgICAuLi4gICAgICAgICAgICAuLi4KMSAgICAgMyAgICAgICAgICAgICAgMSAgICAgICAgICAxICAgICAgICAgIDEgICAgICAgICAgICAgICAgMSAgICAgICAgICAgICAgMAogICAgIC4uLiAgICAgICAgICAgIC4uLiAgICAgICAgIC4uLiAgICAgICAgLi4uICAgICAgICAgICAgICAuLi4gICAgICAgICAgICAuLi4KICAgICAuLi4gICAgICAgICAgICAuLi4gICAgICAgICAuLi4gICAgICAgIC4uLiAgICAgICAgICAgICAgLi4uICAgICAgICAgICAgLi4uCmBgYAoKSG93IGRvIHlvdSBleHRyYWN0IGFsbCB2YWx1ZXMgb2YgdGhlIGB1aWRfMWAgaW5kZXggY29sdW1uPwoKKipQb3NzaWJsZSBBbnN3ZXJzKioKCjEuIGBtYXRjaGVzLmluZGV4LmdldF9sZXZlbF92YWx1ZXMoMClgCgoyLiBgbWF0Y2hlcy5pbmRleC5nZXRfbGV2ZWxfdmFsdWVzKDEpYAoKMy4gYG1hdGNoZXMuaW5kZXguZ2V0X2xldmVsX3ZhbHVlcygndWlkXzEnKWAKCjQuIEJvdGggMSBhbmQgMyBhcmUgY29ycmVjdC4KCkFuc3dlcjoKCiMjIyAqKkxpbmtpbmcgdGhlbSB0b2dldGhlciEqKgoKSW4gdGhlIGxhc3QgbGVzc29uLCB5b3UndmUgZmluaXNoZWQgdGhlIGJ1bGsgb2YgdGhlIHdvcmsgb24geW91ciBlZmZvcnQgdG8gbGluayBgcmVzdGF1cmFudHNgIGFuZCBgcmVzdGF1cmFudHNfbmV3YC4gWW91J3ZlIGdlbmVyYXRlZCB0aGUgZGlmZmVyZW50IHBhaXJzIG9mIHBvdGVudGlhbGx5IG1hdGNoaW5nIHJvd3MsIHNlYXJjaGVkIGZvciBleGFjdCBtYXRjaGVzIGJldHdlZW4gdGhlIGBjdWlzaW5lX3R5cGVgIGFuZCBgY2l0eWAgY29sdW1ucywgYnV0IGNvbXBhcmVkIGZvciBzaW1pbGFyIHN0cmluZ3MgaW4gdGhlIGByZXN0X25hbWVgIGNvbHVtbi4gWW91IHN0b3JlZCB0aGUgRGF0YUZyYW1lIGNvbnRhaW5pbmcgdGhlIHNjb3JlcyBpbiBgcG90ZW50aWFsX21hdGNoZXNgLgoKTm93IGl0J3MgZmluYWxseSB0aW1lIHRvIGxpbmsgYm90aCBEYXRhRnJhbWVzLiBZb3Ugd2lsbCBkbyBzbyBieSBmaXJzdCBleHRyYWN0aW5nIGFsbCByb3cgaW5kaWNlcyBvZiBgcmVzdGF1cmFudHNfbmV3YCB0aGF0IGFyZSBtYXRjaGluZyBhY3Jvc3MgdGhlIGNvbHVtbnMgbWVudGlvbmVkIGFib3ZlIGZyb20gYHBvdGVudGlhbF9tYXRjaGVzYC4gVGhlbiB5b3Ugd2lsbCBzdWJzZXQgYHJlc3RhdXJhbnRzX25ld2Agb24gdGhlc2UgaW5kaWNlcywgdGhlbiBhcHBlbmQgdGhlIG5vbi1kdXBsaWNhdGUgdmFsdWVzIHRvIGByZXN0YXVyYW50c2AuIEFsbCBEYXRhRnJhbWVzIGFyZSBpbiB5b3VyIGVudmlyb25tZW50LCBhbG9uZ3NpZGUgYHBhbmRhc2AgaW1wb3J0ZWQgYXMgYHBkYC4KCioqSW5zdHJ1Y3Rpb25zKioKCi0gSXNvbGF0ZSBpbnN0YW5jZXMgb2YgYHBvdGVudGlhbF9tYXRjaGVzYCB3aGVyZSB0aGUgcm93IHN1bSBpcyBhYm92ZSBvciBlcXVhbCB0byAzIGJ5IHVzaW5nIHRoZSBgLnN1bSgpYCBtZXRob2QuCi0gRXh0cmFjdCB0aGUgc2Vjb25kIGNvbHVtbiBpbmRleCBmcm9tIGBtYXRjaGVzYCwgd2hpY2ggcmVwcmVzZW50cyByb3cgaW5kaWNlcyBvZiBtYXRjaGluZyByZWNvcmQgZnJvbSBgcmVzdGF1cmFudHNfbmV3YCBieSB1c2luZyB0aGUgYC5nZXRfbGV2ZWxfdmFsdWVzKClgIG1ldGhvZC4KLSBTdWJzZXQgYHJlc3RhdXJhbnRzX25ld2AgZm9yIHJvd3MgdGhhdCBhcmUgbm90IGluIGBtYXRjaGluZ19pbmRpY2VzYC4KLSBBcHBlbmQgYG5vbl9kdXBgIHRvIHJlc3RhdXJhbnRzLgoKYGBge3B5dGhvbn0KIyBJc29sYXRlIHBvdGVudGlhbCBtYXRjaGVzIHdpdGggcm93IHN1bSA+PTMKbWF0Y2hlcyA9IF9fX19bX19fXy5fX18oX19fXykgPj0gX19fX10KCiMgR2V0IHZhbHVlcyBvZiBzZWNvbmQgY29sdW1uIGluZGV4IG9mIG1hdGNoZXMKbWF0Y2hpbmdfaW5kaWNlcyA9IG1hdGNoZXMuX19fXy5fX19fKF9fX18pCgojIFN1YnNldCByZXN0YXVyYW50c19uZXcgYmFzZWQgb24gbm9uLWR1cGxpY2F0ZSB2YWx1ZXMKbm9uX2R1cCA9IF9fX19bfnJlc3RhdXJhbnRzX25ldy5pbmRleC5fX19fKF9fX18pXQoKIyBBcHBlbmQgbm9uX2R1cCB0byByZXN0YXVyYW50cwpmdWxsX3Jlc3RhdXJhbnRzID0gcmVzdGF1cmFudHMuX19fXyhfX19fKQpwcmludChmdWxsX3Jlc3RhdXJhbnRzKQpgYGAKCiMjICoqQ29uZ3JhdHVsYXRpb25zISoqCgoqKjEuIENvbmdyYXR1bGF0aW9ucyEqKgoKRmFudGFzdGljIGpvYiEgWW91IGhhdmUgbm93IGZpbmlzaGVkIHRoZSBjb3Vyc2UhCgoqKjIuIFdoYXQgd2UndmUgbGVhcm5lZCoqCgpJbiB0aGlzIGNvdXJzZSwgeW91IGxlYXJuZWQgaG93IHRvIGRpYWdub3NlIGRpcnR5IGRhdGEsIGlkZW50aWZ5IHRoZSBzaWRlIGVmZmVjdHMgb2YgZGlydHkgZGF0YSwgYW5kIGxlYXJuZWQgaG93IHRvIGNsZWFuIGRhdGEuCgoqKjMuIFdoYXQgd2UndmUgbGVhcm5lZCoqCgpJbiBjaGFwdGVyIDEsIHdlIGxlYXJuZWQgYWJvdXQgYmFzaWMgZGF0YSBjbGVhbmluZyBwcm9ibGVtcyBzdWNoIGFzIGZpeGluZyBpbmNvcnJlY3QgZGF0YSB0eXBlcywgbWFraW5nIHN1cmUgb3VyIGRhdGEgc3RpY2tzIHdpdGhpbiByYW5nZSwgYW5kIGRyb3BwaW5nIGR1cGxpY2F0ZXMuCgoqKjQuIFdoYXQgd2UndmUgbGVhcm5lZCoqCgpJbiBjaGFwdGVyIDIsIHdlIGxlYXJuZWQgYWJvdXQgY29tbW9uIHByb2JsZW1zIGFmZmVjdGluZyBjYXRlZ29yaWNhbCBhbmQgdGV4dCBkYXRhLgoKKio1LiBXaGF0IHdlJ3ZlIGxlYXJuZWQqKgoKSW4gY2hhcHRlciAzLCB3ZSBsZWFybmVkIGFib3V0IG1vcmUgYWR2YW5jZWQgZGF0YSBwcm9ibGVtcywgc3VjaCBhcyB1bmlmeWluZyBkaWZmZXJlbnRseSBmb3JtYXR0ZWQgZGF0YSwgY3Jvc3MgZmllbGQgdmFsaWRhdGlvbiBhbmQgY29tcGxldGVuZXNzLgoKKio2LiBXaGF0IHdlJ3ZlIGxlYXJuZWQqKgoKRmluYWxseSBpbiBjaGFwdGVyIDQsIHdlIHNhdyBob3cgdG8gbGluayBkYXRhc2V0cyB3aGVyZSBqb2lucyBkb24ndCB3b3JrLCBieSBsZWFybmluZyBhYm91dCByZWNvcmQgbGlua2FnZS4KCioqNy4gTW9yZSB0byBsZWFybiBvbiBEYXRhQ2FtcCEqKgoKV2l0aCB0aGF0IGluIG1pbmQsIHRoZXJlIGlzIHN0aWxsIHNvIG11Y2ggbW9yZSB0byBsZWFybiBvbiB5b3VyIHdheSB0byBiZWNvbWUgYSBkYXRhIGNsZWFuaW5nIGV4cGVydCEgU28gbWFrZSBzdXJlIHRvIGNoZWNrIG91dCBEYXRhQ2FtcCdzIGNvbnRlbnQgbGlicmFyeSBhbG9uZyB0aGUgd2F5LCB3aGV0aGVyIHRoYXQgbWVhbnMgY291cnNlcywKCioqOC4gTW9yZSB0byBsZWFybiEqKgoKdHJhY2tzLAoKKio5LiBNb3JlIHRvIGxlYXJuISoqCgpvciBwcm9qZWN0cyEKCioqMTAuIFRoYW5rIHlvdSEqKgoKRmluYWxseSwgZG9uJ3QgZm9yZ2V0IHRvIGFwcGx5IHdoYXQgeW91IGxlYXJuZWQgaW4geW91ciBkYWlseSBkYXRhIHRhc2tzISBUaGFuayB5b3UgZm9yIHRha2luZyB0aGlzIGpvdXJuZXkgaW4gY2xlYW5pbmcgZGF0YSBpbiBQeXRob24sIGFuZCBzZWUgeW91IG5leHQgdGltZSE=</div>
 
 
 
